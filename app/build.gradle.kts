@@ -1,6 +1,9 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+
+    id("org.jetbrains.kotlin.plugin.serialization") version("1.8.10")
+    id("kotlin-kapt")
 }
 
 android {
@@ -30,17 +33,17 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.4.2"
     }
     packaging {
         resources {
@@ -66,4 +69,50 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+    /** Dependencias Viewmodel*/
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1")
+
+    //Dependencias de Navigation
+    implementation ("androidx.navigation:navigation-compose:2.5.3")
+
+    //Room
+    implementation ("androidx.room:room-runtime:2.5.2")
+    kapt ("androidx.room:room-compiler:2.5.2")
+    implementation ("androidx.room:room-ktx:2.5.2")
+
+    //data store
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
+    // ktor
+    //implementation 'io.ktor:ktor-client-android:2.3.0'
+    implementation ("io.ktor:ktor-client-okhttp:2.3.0")
+    implementation ("io.ktor:ktor-client-serialization:2.3.0")
+    implementation ("io.ktor:ktor-serialization-kotlinx-json:2.3.0")
+    implementation ("io.ktor:ktor-client-content-negotiation:2.3.0")
+    implementation ("io.ktor:ktor-client-logging-jvm:2.3.0")
+    implementation("io.ktor:ktor-client-core:2.3.0")
+
+    //Video player
+    implementation ("com.google.android.exoplayer:exoplayer:2.19.1")
+
+    //splash
+    implementation ("androidx.core:core-splashscreen:1.0.0-alpha02")
+
+    //timber
+    implementation ("com.jakewharton.timber:timber:4.7.1")
+
+    //More Icons
+    implementation ("androidx.compose.material:material-icons-extended:1.3.1")
+
+    //pull refresh
+    implementation ("androidx.compose.material:material:1.4.0-beta01")
+
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.0-beta01")
+
+    //lottie
+    implementation ("com.airbnb.android:lottie-compose:6.1.0")
+
+    //system ui controller (Cambiar color status bar y navigation buttons)
+    implementation ("com.google.accompanist:accompanist-systemuicontroller:0.27.0")
 }

@@ -1,3 +1,28 @@
 <resources>
-    <string name="app_name">classroom</string>
+    <string name="app_name">Consulta Popular</string>
+    <string name="home_destination">home</string>
+    <string name="error_3xx">Ha ocurrido un error obteniendo la ruta del servidor. Intente nuevamente y si el problema persiste contacte con nuestro equipo de soporte</string>
+    <string name="error_4xx">Ha ocurrido un error con la solicitud del servidor. Intente nuevamente y si el problema persiste contacte con nuestro equipo de soporte</string>
+    <string name="error_5xx">Ha ocurrido un error conectándose con el servidor. Revise su conexión a internet e intente nuevamente y si el problema persiste contacte con nuestro equipo de soporte</string>
+    <string name="errorGeneric">Ha ocurrido un error conectándose con el servidor. Revise su conexión a internet e intente nuevamente y si el problema persiste contacte con nuestro equipo de soporte</string>
+    <string name="timeout">El tiempo de la consulta ha expirado, intente nuevamente o revise su conexión a intenet</string>
+    <string name="serializationError">"Usuario/Contraseña incorrecta"</string>
+
+    <string name="login_correo_text">Usuario</string>
+    <string name="login_clave_text">Contraseña</string>
+    <string name="login_boton_text">Ingresar</string>
+    <string name="login_registrar_text">Registrar</string>
+    <string name="registroActa">Registro de acta de escrutinio</string>
+    <string name="registroActa_boton_text">Enviar</string>
+    <string name="successTitle">Exitoso</string>
+    <string name="errorTitle">Error</string>
+    <string name="loading">Cargando</string>
+    <string name="warningTitle">Advertencia</string>
+    <string name="cancel">Cancelar</string>
+    <string name="guardarActa_boton_text">Guardar</string>
+    <string name="register_correo_text">correo</string>
+    <string name="register_name_text">nombre</string>
+    <string name="register_lastname_text">apellido</string>
+    <string name="register_birthdate_text">fecha de nacimiento</string>
+    <string name="register_phone_text">Numero de telefono</string>
 </resources>

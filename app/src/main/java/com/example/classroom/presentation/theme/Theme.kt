@@ -1,8 +1,10 @@
-package com.example.classroom.ui.theme
+package com.example.classroom.presentation.theme
 
 import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Shapes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -13,6 +15,8 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
@@ -66,5 +70,29 @@ fun ClassroomTheme(
         colorScheme = colorScheme,
         typography = Typography,
         content = content
+    )
+}
+
+val Shapes = Shapes(
+    small = RoundedCornerShape(8.dp),
+    medium = RoundedCornerShape(12.dp),
+    large = RoundedCornerShape(24.dp)
+)
+
+enum class PaddingCustom(val size: Dp) {
+    VERY_SMALL(
+        size = 4.dp
+    ),
+    SMALL(
+        size = 8.dp
+    ),
+    MEDIUM(
+        size = 12.dp
+    ),
+    LARGE(
+        size = 16.dp
+    ),
+    HORIZONTAL_STANDARD(
+        size = 24.dp
     )
 }
