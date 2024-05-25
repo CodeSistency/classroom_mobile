@@ -1,5 +1,6 @@
 package com.example.classroom.data.remote.dto.login.signUp
 
+import com.example.classroom.domain.model.entity.Gender
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -17,4 +18,6 @@ data class SignUpRequestDto(
     val birthdate: String,
     @SerialName("phone")
     val phone: String,
+    @SerialName("gender")
+    val gender: Gender,
 )

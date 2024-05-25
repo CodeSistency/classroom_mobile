@@ -8,8 +8,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CourseRequestDto(
-    @SerialName("id_api")
-    val idApi: String,
     @SerialName("title")
     val title: String,
     @SerialName("description")
@@ -24,7 +22,6 @@ data class CourseRequestDto(
     val subject: String,
     @SerialName("area")
     val area: Area,
-    @SerialName("users")
-    val users: List<UserDto>
+
 )
 

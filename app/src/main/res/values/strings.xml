@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Consulta Popular</string>
+    <string name="app_name">Classroom</string>
     <string name="home_destination">home</string>
     <string name="error_3xx">Ha ocurrido un error obteniendo la ruta del servidor. Intente nuevamente y si el problema persiste contacte con nuestro equipo de soporte</string>
     <string name="error_4xx">Ha ocurrido un error con la solicitud del servidor. Intente nuevamente y si el problema persiste contacte con nuestro equipo de soporte</string>
@@ -8,7 +8,7 @@
     <string name="timeout">El tiempo de la consulta ha expirado, intente nuevamente o revise su conexión a intenet</string>
     <string name="serializationError">"Usuario/Contraseña incorrecta"</string>
 
-    <string name="login_correo_text">Usuario</string>
+    <string name="login_correo_text">Email</string>
     <string name="login_clave_text">Contraseña</string>
     <string name="login_boton_text">Ingresar</string>
     <string name="login_registrar_text">Registrar</string>
@@ -25,4 +25,14 @@
     <string name="register_lastname_text">apellido</string>
     <string name="register_birthdate_text">fecha de nacimiento</string>
     <string name="register_phone_text">Numero de telefono</string>
+    <string name="register_course_title_text">Titulo</string>
+    <string name="register_course_descripcion_text">Descripción</string>
+    <string name="register_course_seccion_text">Seccion</string>
+    <string name="register_course_subject_text">Contenido</string>
+    <string name="register_course_boton_text">Crear</string>
+    <string name="register_activity_title_text">Titulo</string>
+    <string name="register_activity_descripcion_text">Descripcion</string>
+    <string name="register_activity_grade_text">Notas</string>
+    <string name="register_activity_boton_text" />
+    <string name="join_class_text">Unirse a clase</string>
 </resources>

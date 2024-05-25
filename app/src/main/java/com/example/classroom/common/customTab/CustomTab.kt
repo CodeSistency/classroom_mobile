@@ -4,6 +4,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -25,6 +27,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 private fun MyTabItem(
@@ -82,13 +86,17 @@ private fun MyTabIndicator(
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CustomTab(
     selectedItemIndex: Int,
     items: List<String>,
+    pagerState: PagerState?,
     modifier: Modifier = Modifier,
     tabWidth: Dp = 100.dp,
     onClick: (index: Int) -> Unit,
+    color: Color,
+    scope: CoroutineScope
 ) {
     val indicatorOffset: Dp by animateDpAsState(
         targetValue = tabWidth * selectedItemIndex,
@@ -104,7 +112,7 @@ fun CustomTab(
         MyTabIndicator(
             indicatorWidth = tabWidth,
             indicatorOffset = indicatorOffset,
-            indicatorColor = androidx.compose.material3.MaterialTheme.colorScheme.primary,
+            indicatorColor = color,
         )
         Row(
             horizontalArrangement = Arrangement.Center,
@@ -116,6 +124,11 @@ fun CustomTab(
                     isSelected = isSelected,
                     onClick = {
                         onClick(index)
+                        if (pagerState != null){
+                            scope.launch {
+                                pagerState.animateScrollToPage(index)
+                            }
+                        }
                     },
                     tabWidth = tabWidth,
                     text = text,

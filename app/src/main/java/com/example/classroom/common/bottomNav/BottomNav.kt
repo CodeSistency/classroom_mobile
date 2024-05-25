@@ -13,8 +13,12 @@ import androidx.compose.material.FabPosition
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
+import androidx.compose.material.ScaffoldState
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,6 +35,9 @@ import androidx.navigation.compose.rememberNavController
 import com.example.classroom.R
 import com.example.classroom.presentation.navigation.Destination
 import com.example.classroom.presentation.navigation.Icon
+import com.example.classroom.presentation.theme.Azul
+import com.example.classroom.presentation.theme.Azul2
+import proyecto.person.appconsultapopular.common.SnackbarDelegate
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -38,9 +45,20 @@ fun ScaffoldBottomNav(
     navController: NavController,
     topBar: @Composable () -> Unit,
     content: @Composable() () -> Unit,
-    items: List<Destination>
-) {
+    items: List<Destination>,
+    scaffoldState: ScaffoldState,
+    snackbarHost: SnackbarHostState,
+    snackbarDelegate: SnackbarDelegate,
+    action: () -> Unit,
+    isFloatingAction: Boolean,
+
+    ) {
     Scaffold(
+        scaffoldState = scaffoldState,
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHost)
+
+        },
         topBar = topBar,
         bottomBar = {
             BottomAppBar(
@@ -48,7 +66,7 @@ fun ScaffoldBottomNav(
                     .height(65.dp)
                     .clip(RoundedCornerShape(15.dp, 15.dp, 0.dp, 0.dp)),
                 cutoutShape = CircleShape,
-                //backgroundColor = Color.White,
+                backgroundColor = Azul2,
                 elevation = 22.dp
             ) {
                 BottomNav(navController = navController, items)
@@ -57,23 +75,28 @@ fun ScaffoldBottomNav(
         floatingActionButtonPosition = FabPosition.Center,
         isFloatingActionButtonDocked = true,
         floatingActionButton = {
-            FloatingActionButton(
-                shape = CircleShape,
-                onClick = {
-                    Destination.HOME.screenRoute.let {
-                        navController.navigate(it) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    }
-                    Destination.HOME.screenRoute.let { navController.navigate(it) }
-                },
-                contentColor = Color.White
-            ) {
-                Icon(imageVector = Icons.Filled.CameraAlt, contentDescription = "Add icon")
+            if (isFloatingAction){
+                FloatingActionButton(
+                    shape = CircleShape,
+                    onClick = {
+                        action()
+//                    Destination.HOME.screenRoute.let {
+//                        navController.navigate(it) {
+//                            popUpTo(navController.graph.findStartDestination().id) {
+//                                saveState = true
+//                            }
+//                            launchSingleTop = true
+//                            restoreState = true
+//                        }
+//                    }
+//                    Destination.HOME.screenRoute.let { navController.navigate(it) }
+                    },
+                    contentColor = Color.White,
+                    backgroundColor = Azul2
+                ) {
+                    Icon(imageVector = Icons.Filled.Add, contentDescription = "Add icon")
+                }
+
             }
         }
     ) {
@@ -89,7 +112,7 @@ fun BottomNav(navController: NavController, items: List<Destination>) {
         modifier = Modifier
             .padding(12.dp, 0.dp, 12.dp, 0.dp)
             .height(100.dp),
-        //backgroundColor = Color.White,
+        backgroundColor = Azul2,
         elevation = 0.dp
     ) {
         items.forEach {
@@ -124,7 +147,7 @@ fun BottomNav(navController: NavController, items: List<Destination>) {
                 },
                 selected = currentRoute?.hierarchy?.any { it.route == it.route } == true,
 
-                selectedContentColor = Color(R.color.purple_700),
+                selectedContentColor = Color.White,
                 unselectedContentColor = Color.White.copy(alpha = 0.4f),
                 onClick = {
                     it.screenRoute?.let { it1 ->

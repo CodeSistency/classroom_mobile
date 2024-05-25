@@ -1,7 +1,9 @@
 package com.example.classroom.presentation.screens.auth.composables
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -38,7 +40,9 @@ fun ItemInputField(
     isPassword: Boolean = false,
     showPassword: Boolean = false,
     changePasswordValue: ()-> Unit = {},
-    onNextClick: () -> Unit
+    errorMsg: String? = null,
+    onNextClick: () -> Unit,
+
 ) {
     Column(Modifier.padding(horizontal = PaddingCustom.HORIZONTAL_STANDARD.size, vertical = 2.dp)) {
         Text(
@@ -115,6 +119,10 @@ fun ItemInputField(
                 maxLines = 1
             )
         }
-
+        if (errorMsg !=null){
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(text = errorMsg, style = TextStyle(fontSize = 12.sp, color = Color.Red))
+            Spacer(modifier = Modifier.height(4.dp))
+        }
     }
 }

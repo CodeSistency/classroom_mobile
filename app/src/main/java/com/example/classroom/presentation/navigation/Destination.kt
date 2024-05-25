@@ -17,7 +17,7 @@ enum class Destination(val screenRoute: String, val title: String, val icon: Ico
     HOME(
         screenRoute = "HOME",
         title = "HOME",
-        icon = Icon.Vector(Icons.Default.AccountCircle)
+        icon = Icon.Resource(R.drawable.ic_home)
     ),
     LOGIN(
         screenRoute = "LOGIN",
@@ -33,5 +33,25 @@ enum class Destination(val screenRoute: String, val title: String, val icon: Ico
         screenRoute = "REGISTRO",
         title = "REGISTRO",
         icon = Icon.Resource(R.drawable.ic_launcher_background)
+    ),
+    REGISTRO_COURSE(
+        screenRoute = "REGISTRO_COURSE",
+        title = "REGISTRO CURSO",
+        icon = Icon.Resource(R.drawable.ic_launcher_background)
+    ),
+    REGISTRO_ACTIVITY(
+        screenRoute = "REGISTRO_ACTIVITY",
+        title = "REGISTRO ACTIVIDAD",
+        icon = Icon.Resource(R.drawable.ic_launcher_background)
+    ),
+    ACTIVITIES(
+        screenRoute = "ACTIVITIES",
+        title = "ACTIVITIES",
+        icon = Icon.Resource(R.drawable.ic_edit)
+    ),
+    COURSES(
+        screenRoute = "COURSES",
+        title = "COURSES",
+        icon = Icon.Resource(R.drawable.ic_edit)
     ),
 }

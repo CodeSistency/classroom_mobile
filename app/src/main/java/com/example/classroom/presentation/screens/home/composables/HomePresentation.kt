@@ -2,44 +2,92 @@ package com.example.classroom.presentation.screens.home.composables
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Usb
+import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.example.classroom.R
 import com.example.classroom.common.customTab.CustomTab
+import com.example.classroom.domain.model.entity.Gender
+import com.example.classroom.presentation.screens.home.HomeViewmodel
 import com.example.classroom.presentation.theme.Azul
+import com.example.classroom.presentation.theme.Azul2
+import com.example.classroom.presentation.theme.Azul3
+import com.example.classroom.presentation.theme.AzulGradient
 import com.example.classroom.presentation.theme.Gris
 import com.example.classroom.presentation.theme.PaddingCustom
+import proyecto.person.appconsultapopular.common.shimmerEffects.ListShimmer
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun HomePresentation(){
-    var input by remember { mutableStateOf("") }
-    var selectedOption by remember { mutableStateOf(SelectedOption.COURSES) }
-    Column {
+fun HomePresentation(viewModel: HomeViewmodel, navController: NavController){
+    val tabTitles = listOf(SelectedOption.COURSES.title, SelectedOption.MY_COURSES.title)
+    val pagerState = rememberPagerState(pageCount = { tabTitles.size })
+    val (selected, setSelected) = remember { mutableStateOf(0) }
+    val userInfo = viewModel.userInfo.collectAsState(initial = null)
+    var scope = rememberCoroutineScope()
+    LaunchedEffect(key1 = true, block = {
+        userInfo.value.let {
+            if (it != null){
+                viewModel.getCourses(it.idApi)
+            }
+
+        }
+
+        viewModel.getCoursesLocal()
+        viewModel.getMyCoursesLocal()
+    })
+    Column(
+        modifier = Modifier.background(Azul3)
+    ) {
         Box(modifier = Modifier
             .fillMaxWidth()
             .background(
-                Azul,
+
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Azul,
+                        AzulGradient
+                    ),
+                ),
                 shape = RoundedCornerShape(
-                    bottomStart = PaddingCustom.MEDIUM.size
+                    bottomStart = PaddingCustom.EXTRA_LARGE.size
                 )
             )
         ){
@@ -48,14 +96,72 @@ fun HomePresentation(){
                     .fillMaxWidth()
                     .padding(10.dp)
             ) {
-                Row {
+                Row(
+                    Modifier.fillMaxWidth(),
+                    Arrangement.SpaceBetween,
+//                    Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text(text = userInfo.value.let {
+                            if (it != null){
+                               "Hola " + it.name
+                            }else{
+                                "Nombre"
+                            }
+                        } ,
+                            style = TextStyle(
+                                Color.White,
+                                fontSize = 26.sp,
+                                FontWeight.Bold
+                            ))
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(text = userInfo.value.let {
+                            if (it != null){
+                                it.email
+                            }else{
+                                "Email"
+                            }
+                        } ,
+                            style = TextStyle(
+                                Color.White,
+                                fontSize = 16.sp,
+                            )
+                        )
+                    }
+                    val icon = if (userInfo.value.let { it != null }){
 
+                            if (userInfo.value!!.gender == Gender.Man){
+                                painterResource(R.drawable.ic_male_avatar)
+                            }else if (userInfo.value!!.gender == Gender.Woman){
+                                painterResource(R.drawable.ic_female_avatar)
+                            }else{
+                                painterResource(R.drawable.ic_male_avatar)
+                            }
+
+                    }else{
+                        painterResource(R.drawable.ic_male_avatar)
+                    }
+                    Icon(
+                        icon, contentDescription = null,
+                        modifier = Modifier
+                            .size(70.dp)
+                            .background(Color.White, CircleShape)
+                            .padding(horizontal = 5.dp))
                 }
+                Spacer(modifier = Modifier.height(10.dp))
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth(),
-                    value = input,
+                    value = if (selected == 0){
+                        viewModel.coursesInput.value
+                    }else{
+                        viewModel.myCoursesInput.value
+                    },
                     onValueChange = {
-                        input = it
+                        if (selected == 0){
+                            viewModel.coursesInput.value = it
+                        }else{
+                            viewModel.myCoursesInput.value = it
+                        }
                     },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         backgroundColor = Color.White,
@@ -64,7 +170,7 @@ fun HomePresentation(){
                         unfocusedBorderColor = Gris,
                     ),
                     singleLine = true,
-                    shape = RoundedCornerShape(12.dp),
+                    shape = RoundedCornerShape(PaddingCustom.EXTRA_LARGE.size),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
 //                    keyboardActions = KeyboardActions(
 //                        onNext = {
@@ -77,33 +183,51 @@ fun HomePresentation(){
             }
         }
 
-        Column(modifier = Modifier.padding(horizontal = 5.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth()
+        Column(modifier = Modifier
+            .padding(horizontal = 5.dp)
             ) {
-                val tabTitles = listOf("CURSOS", "MIS CURSOS")
-                val pagerState = rememberPagerState(pageCount = { tabTitles.size })
-                val (selected, setSelected) = remember { mutableStateOf(0) }
-
+//            Spacer(modifier = Modifier.height(5.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 5.dp),
+                Arrangement.Center,
+                Alignment.CenterVertically
+            ) {
                 CustomTab(
-                    items = listOf("CURSOS", "MIS CURSOS"),
+                    items = tabTitles,
                     selectedItemIndex = selected,
                     onClick = setSelected,
+                    pagerState = pagerState,
+                    tabWidth = 150.dp,
+                    color = AzulGradient,
+                    scope = scope
                 )
+
+            }
+            if (viewModel.stateCourse.value.isLoading){
+                ListShimmer(quantity = 10)
+            }else{
                 HorizontalPager(
                     state = pagerState,
                 ) { page ->
                     when(page){
-                        0 -> {}
-                        1 -> {}
+                        0 -> {
+                            ListCourses(viewModel, scope, navController)
+                        }
+                        1 -> {
+                            ListMyCourses(viewModel, scope, navController)
+                        }
                     }
                 }
             }
+           
         }
     }
 }
 
-enum class SelectedOption {
-    MY_COURSES,
-    COURSES
+
+enum class SelectedOption(val title: String) {
+    MY_COURSES("Mis clases"),
+    COURSES("Clases")
 }

@@ -4,6 +4,7 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
+import android.util.Log
 
 import com.example.classroom.di.AppModule
 import com.example.classroom.di.AppModuleImpl
@@ -35,7 +36,8 @@ class App: Application() {
         super.onCreate()
         instance = this
         appModule = AppModuleImpl(this)
-        createNotificationChannel()
+        Log.e("onCreateMsg", "onCreateMsg")
+//        createNotificationChannel()
     }
 
 }

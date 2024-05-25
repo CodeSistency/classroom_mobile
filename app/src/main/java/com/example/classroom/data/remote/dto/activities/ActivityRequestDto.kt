@@ -6,8 +6,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ActivityRequestDto(
-    @SerialName("id_api")
-    val idApi: String,
+
     @SerialName("id_course")
     val idCourse: String,
     @SerialName("owner")

@@ -94,5 +94,8 @@ enum class PaddingCustom(val size: Dp) {
     ),
     HORIZONTAL_STANDARD(
         size = 24.dp
-    )
+    ),
+    EXTRA_LARGE(
+        size = 32.dp
+    ),
 }

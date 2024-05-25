@@ -1,4 +1,4 @@
-package com.example.classroom.presentation.screens.auth.signIn
+package com.example.classroom.presentation.screens.auth.signIn.states
 
 import com.example.classroom.domain.model.entity.LocalUser
 import proyecto.person.appconsultapopular.common.apiUtils.GenericCodeModel

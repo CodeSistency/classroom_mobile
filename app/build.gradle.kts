@@ -93,6 +93,8 @@ dependencies {
     implementation ("io.ktor:ktor-client-logging-jvm:2.3.0")
     implementation("io.ktor:ktor-client-core:2.3.0")
 
+    implementation ("com.google.code.gson:gson:2.8.8")
+
     //Video player
     implementation ("com.google.android.exoplayer:exoplayer:2.19.1")
 

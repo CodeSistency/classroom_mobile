@@ -15,19 +15,23 @@ data class SignInResponseDto(
 ) {
     @Serializable
     data class Data(
-        @SerialName("user_id")
-        val userId: String,
-        @SerialName("name")
-        val name: String,
-        @SerialName("lastname")
-        val lastame: String,
+        @SerialName("id")
+        val userId: Int,
         @SerialName("email")
         val email: String,
+        @SerialName("password")
+        val password: String,
+        @SerialName("user_name")
+        val username: String,
+        @SerialName("create_date")
+        val creation: String,
+        @SerialName("genderId")
+        val gender: Int,
         @SerialName("phone")
         val phone: String,
-        @SerialName("birthdate")
-        val birthdate: String,
-        @SerialName("gender")
-        val gender: Gender,
+        @SerialName("name")
+        val name: String,
+        @SerialName("last_name")
+        val lastName: String
     )
 }

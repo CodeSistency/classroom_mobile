@@ -73,7 +73,7 @@ class UserDataValidator {
         }
     }
 
-    private fun calculateAge(birthdate: Date): Int {
+    fun calculateAge(birthdate: Date): Int {
         val now = Calendar.getInstance()
         val birth = Calendar.getInstance()
         birth.time = birthdate
