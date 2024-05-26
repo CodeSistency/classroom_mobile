@@ -99,7 +99,8 @@ fun Navigation(
                         navController = navController,
                         HomeViewmodel(
                             repositoryBundle = App.appModule.repositoryBundle,
-                            getCoursesUseCase = App.appModule.getCoursesUseCase
+                            getCoursesUseCase = App.appModule.getCoursesUseCase,
+                            joinCourseUseCase = App.appModule.joinCourseUseCase,
                         )
                     )
                 }
@@ -157,7 +158,8 @@ fun Navigation(
                         insertCourseUseCase = App.appModule.insertCourseUseCase,
                         updateCourseUseCase = App.appModule.updateCourseUseCase,
                         coursesValidator = App.appModule.validatorBundle.coursesValidator,
-                        getCoursesByIdUseCase = App.appModule.getCoursesByIdUseCase
+                        getCoursesByIdUseCase = App.appModule.getCoursesByIdUseCase,
+                        joinUserToCourseUseCase = App.appModule.joinUserToCourseUseCase,
 
                     ), // Assuming you have a RegisterViewModel
                     navController = navController,
@@ -183,7 +185,8 @@ fun Navigation(
                             insertCourseUseCase = App.appModule.insertCourseUseCase,
                             updateCourseUseCase = App.appModule.updateCourseUseCase,
                             coursesValidator = App.appModule.validatorBundle.coursesValidator,
-                            getCoursesByIdUseCase = App.appModule.getCoursesByIdUseCase
+                            getCoursesByIdUseCase = App.appModule.getCoursesByIdUseCase,
+                            joinUserToCourseUseCase = App.appModule.joinUserToCourseUseCase,
                             ),
                         activityViewmodel = ActivityViewmodel(
                             activityDataValidator = ActivityDataValidator(),

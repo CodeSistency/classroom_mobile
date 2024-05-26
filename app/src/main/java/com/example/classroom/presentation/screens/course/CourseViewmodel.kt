@@ -11,18 +11,21 @@ import com.example.classroom.common.validator.CourseDataValidator
 import com.example.classroom.data.remote.dto.courses.CourseRequestDto
 import com.example.classroom.data.repository.RepositoryBundle
 import com.example.classroom.domain.model.entity.Area
+import com.example.classroom.domain.model.entity.LocalActivities
 import com.example.classroom.domain.model.entity.LocalCourses
 import com.example.classroom.domain.model.entity.LocalUser
 import com.example.classroom.domain.model.entity.toCoursesLocal
 import com.example.classroom.domain.use_case.activities.GetActivitiesUseCase
 import com.example.classroom.domain.use_case.courses.GetCoursesByIdUseCase
 import com.example.classroom.domain.use_case.courses.InsertCourseUseCase
+import com.example.classroom.domain.use_case.courses.JoinUserToCourseUseCase
 import com.example.classroom.domain.use_case.courses.UpdateCourseUseCase
 import com.example.classroom.domain.use_case.validators.courses.CoursesValidator
 import com.example.classroom.presentation.screens.course.AddCourse.states.AddCourseState
 import com.example.classroom.presentation.screens.course.AddCourse.CourseFormEvent
 import com.example.classroom.presentation.screens.course.AddCourse.states.CourseFormState
 import com.example.classroom.presentation.screens.course.states.GetCourseState
+import com.example.classroom.presentation.screens.course.states.JoinUserState
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -30,6 +33,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
@@ -43,6 +47,7 @@ class CourseViewmodel(
     private val updateCourseUseCase: UpdateCourseUseCase,
     private val getActivitiesUseCase: GetActivitiesUseCase,
     private val getCoursesByIdUseCase: GetCoursesByIdUseCase,
+    private val joinUserToCourseUseCase: JoinUserToCourseUseCase,
     private val repositoryBundle: RepositoryBundle,
 //    private val insertActivityUseCase: InsertActivityUseCase,
 //    private val updateActivityUseCase: UpdateActivityUseCase,
@@ -54,6 +59,10 @@ class CourseViewmodel(
     var isOwner: Flow<Boolean?> = emptyFlow()
 
     var courseFlow: Flow<LocalCourses?> = emptyFlow()
+
+    var filteredListUsersByCourseFLow: Flow<List<LocalUser>> = emptyFlow()
+    var listStudensFlow: Flow<List<LocalUser>> = emptyFlow()
+
     var stateCourseForm by mutableStateOf(CourseFormState())
 
     private val _stateCourse = mutableStateOf(AddCourseState())
@@ -61,6 +70,25 @@ class CourseViewmodel(
 
     private val _stateGetCourse = mutableStateOf(GetCourseState())
     val stateGetCourse: State<GetCourseState> = _stateGetCourse
+
+    private val _stateJoinUser = mutableStateOf(JoinUserState())
+    val stateJoinUser: State<JoinUserState> = _stateJoinUser
+
+    val userInput = mutableStateOf("")
+
+    init {
+        viewModelScope.launch {
+
+            filteredListUsersByCourseFLow = if (userInput.value.isNotBlank()){
+                listStudensFlow.map { list ->
+                    list.filter { it.name.startsWith(userInput.value) }
+                        .sortedByDescending { activity -> activity.id }
+                }
+            }else{
+                listStudensFlow
+            }
+        }
+    }
 
     val titleField = mutableStateOf("")
     val descripcionField = mutableStateOf("")
@@ -83,14 +111,18 @@ class CourseViewmodel(
         }
     }
 
-    suspend fun isOwnerCourse(){
-        isOwner = if (courseFlow.first().let { if (it != null) it.owner } == userInfo.first().let { if (it != null) it.idApi }){
-            flow {  true  }
-        }else{
-            flow {  false  }
+   suspend fun getUsersByCourse(id: String){
+       listStudensFlow = repositoryBundle.coursesRepository.getUsersByCourseWithFlow(id)
 
-        }
-    }
+       filteredListUsersByCourseFLow = if (userInput.value.isNotBlank()){
+           listStudensFlow.map { list ->
+               list.filter { it.name.startsWith(userInput.value) }
+                   .sortedByDescending { activity -> activity.id }
+           }
+       }else{
+           listStudensFlow
+       }
+   }
     suspend fun getUserLogged(){
         userInfo = repositoryBundle.loginRepository.getUserLogged()
     }
@@ -237,6 +269,32 @@ class CourseViewmodel(
             }.launchIn(viewModelScope)
         }
 
+    }
+
+    suspend fun joinUser(id: String, token: String){
+        joinUserToCourseUseCase(id, token).onEach { result ->
+            when(result){
+                is Resource.Error -> {
+                    //Timber.tag("AUTH_VM").e("Error ${result.message?.uiMessage}")
+                    Log.e("ACTIVITIES:", "Error ${result.message?.uiMessage}")
+                    _stateJoinUser.value = JoinUserState(error = result.message)
+                }
+                is Resource.Loading -> {
+                    Timber.tag("ACTIVITIES").e("is loading")
+                    _stateJoinUser.value = JoinUserState(isLoading = true)
+                }
+                is Resource.Success -> {
+                    Timber.tag("ACTIVITIES_VM").e("success")
+                    Log.e("ACTIVITIES:", "success")
+                    _stateJoinUser.value = JoinUserState(info = result.data)
+                    Log.e("ACTIVITIES:", "${_stateCourse.value.info}")
+                    _stateJoinUser.value.info?.let {
+//                            insertUserDb(it)
+                        delay(300)
+                    }
+                }
+            }
+        }.launchIn(viewModelScope)
     }
 
     suspend fun onCreateCourseClick(course: CourseRequestDto, id: String?){

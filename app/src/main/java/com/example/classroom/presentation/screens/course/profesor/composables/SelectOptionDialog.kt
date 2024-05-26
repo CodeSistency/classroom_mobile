@@ -45,6 +45,7 @@ import androidx.navigation.NavController
 import com.example.classroom.R
 import com.example.classroom.presentation.navigation.Destination
 import com.example.classroom.presentation.screens.auth.composables.ItemInputField
+import com.example.classroom.presentation.screens.home.composables.Options
 import com.example.classroom.presentation.theme.Azul
 
 @Composable
@@ -57,7 +58,7 @@ fun SelectedOptionDialog(
     ) {
         val context = LocalContext.current
         var isSelectedOption by remember {
-            mutableStateOf(Options.NO_SELECTED)
+            mutableStateOf(OptionsActivity.CREATE_ACTIVITY)
         }
         var input by remember {
             mutableStateOf("")
@@ -74,7 +75,7 @@ fun SelectedOptionDialog(
             ) {
 
                 when(isSelectedOption){
-                    Options.NO_SELECTED -> {
+                    OptionsActivity.CREATE_ACTIVITY -> {
                         Text(text = "Selecciona una opcion",
                             style = TextStyle(
                                 fontWeight = FontWeight.Normal,
@@ -88,7 +89,7 @@ fun SelectedOptionDialog(
 
                         Button(
                             onClick = {
-
+                                isSelectedOption = OptionsActivity.ADD_USER
                             },
                             colors = ButtonDefaults.buttonColors(
                                 backgroundColor = Azul
@@ -99,7 +100,7 @@ fun SelectedOptionDialog(
                                 Arrangement.SpaceBetween,
                                 Alignment.CenterVertically
                             ) {
-                                Text(text = "Unirse a una clase", modifier = Modifier.weight(1f))
+                                Text(text = "Unir a un estudiante", modifier = Modifier.weight(1f))
                                 Icon(Icons.Default.ArrowForwardIos, contentDescription = null)
                             }
 
@@ -107,7 +108,7 @@ fun SelectedOptionDialog(
                         Spacer(modifier = Modifier.height(5.dp))
                         Button(
                             onClick = {
-                                navController.navigate(Destination.REGISTRO_COURSE.screenRoute)
+                                navController.navigate(Destination.ADD_USER_COURSE.screenRoute)
                             },
                             colors = ButtonDefaults.buttonColors(
                                 backgroundColor = Azul
@@ -118,16 +119,16 @@ fun SelectedOptionDialog(
                                 Arrangement.SpaceBetween,
                                 Alignment.CenterVertically
                             ) {
-                                Text(text = "Crear una clase", modifier = Modifier.weight(1f))
+                                Text(text = "Crear una actividad", color = Color.White, modifier = Modifier.weight(1f))
                                 Icon(Icons.Default.ArrowForwardIos, contentDescription = null)
                             }
 
                         }
                     }
-                    Options.JOIN_CLASS -> {
+                    OptionsActivity.ADD_USER -> {
                         IconButton(
                             modifier = position,
-                            onClick = { isSelectedOption = Options.NO_SELECTED }) {
+                            onClick = { isSelectedOption = OptionsActivity.CREATE_ACTIVITY }) {
                             Icon(Icons.Default.ArrowBack, contentDescription = null)
                         }
                         Text(text = "Únete",
@@ -146,7 +147,7 @@ fun SelectedOptionDialog(
                             Alignment.CenterVertically
                         ){
                             ItemInputField(
-                                titulo = stringResource(id = R.string.join_class_text),
+                                titulo = stringResource(id = R.string.join_user_text),
                                 darkTheme = false,
                                 valueField = input,
                                 fieldRestriction = {
@@ -169,16 +170,13 @@ fun SelectedOptionDialog(
                         }
                     }
                 }
-
             }
-
         }
     }
-
-
 }
 
-enum class Options {
-    NO_SELECTED,
-    JOIN_CLASS
+
+enum class OptionsActivity {
+    CREATE_ACTIVITY,
+    ADD_USER
 }

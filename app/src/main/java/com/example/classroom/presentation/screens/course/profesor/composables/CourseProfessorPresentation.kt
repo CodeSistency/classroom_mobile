@@ -42,12 +42,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.classroom.R
 import com.example.classroom.common.customTab.CustomTab
 import com.example.classroom.domain.model.entity.Gender
 import com.example.classroom.presentation.screens.activity.ActivityViewmodel
 import com.example.classroom.presentation.screens.course.CourseViewmodel
 import com.example.classroom.presentation.screens.home.HomeViewmodel
+import com.example.classroom.presentation.screens.home.composables.ListCourses
+import com.example.classroom.presentation.screens.home.composables.ListMyCourses
 import com.example.classroom.presentation.theme.Azul
 import com.example.classroom.presentation.theme.Azul2
 import com.example.classroom.presentation.theme.Azul3
@@ -58,8 +61,13 @@ import proyecto.person.appconsultapopular.common.shimmerEffects.ListShimmer
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CourseProfessorPresentation(viewModel: ActivityViewmodel, courseViewmodel: CourseViewmodel, id: String){
-    val tabTitles = listOf(SelectedOption.COURSES.title, SelectedOption.MY_COURSES.title)
+fun CourseProfessorPresentation(
+    viewModel: ActivityViewmodel,
+    courseViewmodel: CourseViewmodel,
+    id: String,
+    navController: NavController
+){
+    val tabTitles = listOf(SelectedOption.MY_STUDENTS.title, SelectedOption.ACTIVITIES.title)
     val pagerState = rememberPagerState(pageCount = { tabTitles.size })
     val (selected, setSelected) = remember { mutableStateOf(0) }
 //    val userInfo = viewModel.userInfo.collectAsState(initial = emptyList())
@@ -174,23 +182,50 @@ fun CourseProfessorPresentation(viewModel: ActivityViewmodel, courseViewmodel: C
             }
         }
 
-        Column(modifier = Modifier.fillMaxSize()
+        Column(modifier = Modifier
             .padding(horizontal = 5.dp)
-            ) {
+        ) {
 //            Spacer(modifier = Modifier.height(5.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 5.dp),
+                Arrangement.Center,
+                Alignment.CenterVertically
+            ) {
+                CustomTab(
+                    items = tabTitles,
+                    selectedItemIndex = selected,
+                    onClick = setSelected,
+                    pagerState = pagerState,
+                    tabWidth = 150.dp,
+                    color = AzulGradient,
+                    scope = scope
+                )
 
+            }
             if (viewModel.stateGetActivities.value.isLoading){
                 ListShimmer(quantity = 10)
             }else{
-              ListActivities(viewModel = viewModel, scope = scope, id = id)
+                HorizontalPager(
+                    state = pagerState,
+                ) { page ->
+                    when(page){
+                        0 -> {
+                            ListUsers(viewModel, courseViewmodel, scope, id)
+                        }
+                        1 -> {
+                            ListActivities(viewModel, scope, id, navController)
+                        }
+                    }
+                }
             }
-           
         }
     }
 }
 
 
 enum class SelectedOption(val title: String) {
-    MY_COURSES("Mis clases"),
-    COURSES("Clases")
+    MY_STUDENTS("Alumnos"),
+    ACTIVITIES("Actividades")
 }

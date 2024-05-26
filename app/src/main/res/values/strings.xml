@@ -35,4 +35,5 @@
     <string name="register_activity_grade_text">Notas</string>
     <string name="register_activity_boton_text" />
     <string name="join_class_text">Unirse a clase</string>
+    <string name="join_user_text">Unir estudiante</string>
 </resources>

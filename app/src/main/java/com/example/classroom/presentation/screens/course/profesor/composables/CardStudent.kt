@@ -30,15 +30,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.classroom.R
+import com.example.classroom.common.CustomDialog
 import com.example.classroom.domain.model.entity.LocalActivities
+import com.example.classroom.domain.model.entity.LocalUser
 import com.example.classroom.presentation.theme.Azul2
 import com.example.classroom.presentation.theme.PaddingCustom
 
 @Composable
 fun CardStudent(
-    activity: LocalActivities,
-//    msgDelete: String,
-//    msgDeleteBtn: String,
+    student: LocalUser,
+    msgDelete: String,
+    msgDeleteBtn: String,
     action: () -> Unit
 ){
     val shape = RoundedCornerShape(PaddingCustom.MEDIUM.size)
@@ -56,7 +58,7 @@ fun CardStudent(
             ){
                 Column {
                     Text(
-                        text = activity.title,
+                        text = student.name + " ${student.lastname}",
                         style = TextStyle(
                             color = Color.DarkGray,
                             fontSize = 20.sp,
@@ -66,7 +68,7 @@ fun CardStudent(
                     )
                     Spacer(modifier = Modifier.height(5.dp))
                     Text(
-                        text = activity.endDate,
+                        text = student.email,
                         style = TextStyle(
                             color = Color.DarkGray,
                             fontSize = 10.sp,
@@ -93,16 +95,16 @@ fun CardStudent(
             .align(Alignment.CenterStart),)
     }
 
-//    if (isDeleteOpen){
-//        CustomDialog(
-//            message = msgDelete,
-//            messageBtn = msgDeleteBtn,
-//            loading = false,
-//            action = { action() },
-//            dismissDialog = { isDeleteOpen = false },
-//            icon = painterResource(id = R.drawable.ic_logout)
-//        )
-//    }
+    if (isDeleteOpen){
+        CustomDialog(
+            message = msgDelete,
+            messageBtn = msgDeleteBtn,
+            loading = false,
+            action = { action() },
+            dismissDialog = { isDeleteOpen = false },
+            icon = painterResource(id = R.drawable.ic_person_remove)
+        )
+    }
 
 }
 

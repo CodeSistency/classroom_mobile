@@ -1,5 +1,7 @@
 package com.example.classroom.presentation.screens.home.composables
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -7,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -23,6 +26,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,13 +49,20 @@ import androidx.navigation.NavController
 import com.example.classroom.R
 import com.example.classroom.presentation.navigation.Destination
 import com.example.classroom.presentation.screens.auth.composables.ItemInputField
+import com.example.classroom.presentation.screens.home.HomeViewmodel
 import com.example.classroom.presentation.theme.Azul
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun SelectedOptionDialog(
     dismissDialog: () -> Unit,
-    navController: NavController// Lambda to dismiss the dialog
+    navController: NavController,
+    viewmodel: HomeViewmodel,
+    scope: CoroutineScope
 ) {
+    val state = viewmodel.stateJoinCourse.value
+    val user = viewmodel.userInfo.collectAsState(initial = null)
     Dialog(
         onDismissRequest = dismissDialog,
     ) {
@@ -88,7 +99,7 @@ fun SelectedOptionDialog(
 
                         Button(
                             onClick = {
-
+                                isSelectedOption = Options.JOIN_CLASS
                             },
                             colors = ButtonDefaults.buttonColors(
                                 backgroundColor = Azul
@@ -130,6 +141,11 @@ fun SelectedOptionDialog(
                             onClick = { isSelectedOption = Options.NO_SELECTED }) {
                             Icon(Icons.Default.ArrowBack, contentDescription = null)
                         }
+                        if (state.isLoading){
+                            Box(modifier = Modifier.fillMaxSize()){
+                                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                            }
+                        }
                         Text(text = "Únete",
                             style = TextStyle(
                                 fontWeight = FontWeight.Bold,
@@ -164,7 +180,16 @@ fun SelectedOptionDialog(
                             }
                             Icon(Icons.Default.ArrowForwardIos, contentDescription = null,
                                 modifier = Modifier.clickable {
+                                    if (state.isLoading){
 
+                                    }else{
+                                        if (input.isNotBlank()){
+                                            scope.launch {
+                                                viewmodel.joinCourse(user.value!!.idApi, input)
+                                            }
+                                        }
+                                       
+                                    }
                                 })
                         }
                     }

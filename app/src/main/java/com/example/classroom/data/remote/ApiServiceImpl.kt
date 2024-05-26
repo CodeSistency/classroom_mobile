@@ -39,6 +39,7 @@ import proyecto.person.appconsultapopular.common.HttpRoutes
 import com.example.classroom.common.ResponseGenericAPi
 import com.example.classroom.common.json
 import com.example.classroom.common.parseResponseToGenericObject
+import com.example.classroom.domain.model.entity.areatoInt
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import java.util.UUID
@@ -104,29 +105,39 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
 
     @OptIn(InternalAPI::class)
     private suspend fun courseInnerMethod(courseRequestDto: CourseRequestDto, id: String?): HttpResponse {
-        val data = hashMapOf<String, Any>()
-        data["title"] = courseRequestDto.title
-        data["description"] = courseRequestDto.description ?: ""
-        data["owner_id"] = courseRequestDto.owner
-        data["section"] = courseRequestDto.section
-        data["subject"] = courseRequestDto.subject
-        data["area"] = courseRequestDto.area
 
-        Log.e("RUTA:", "${Constants.BASE_URL}${HttpRoutes.COURSES_ENDPOINT}\${method")
+        val json = buildJsonObject {
+            put("title", courseRequestDto.title)
+            put("description", courseRequestDto.description ?: "")
+            put("owner_id", courseRequestDto.owner)
+            put("section", courseRequestDto.section)
+            put("subject", courseRequestDto.subject)
+            put("area", areatoInt(courseRequestDto.area))
+        }
+
+        val jsonUpdate = buildJsonObject {
+            put("title", courseRequestDto.title)
+            put("description", courseRequestDto.description ?: "")
+            put("section", courseRequestDto.section)
+            put("subject", courseRequestDto.subject)
+            put("area", areatoInt(courseRequestDto.area))
+        }
+
+        Log.e("RUTA:", "${Constants.BASE_URL}${HttpRoutes.COURSES_ENDPOINT}")
         val method = if (id != null) "update" else "new"
+
         val response = if (id != null) {
             App.appModule.apiClient.put{
-                data["title"] = id
-                data.remove("owner_id")
+
                 url("${Constants.BASE_URL}${HttpRoutes.COURSES_ENDPOINT}${method}")
                 contentType(ContentType.Application.Json)
-                body = Json.encodeToString(data)
+                body = jsonUpdate.toString()
             }
         }else{
             App.appModule.apiClient.post{
                 url("${Constants.BASE_URL}${HttpRoutes.COURSES_ENDPOINT}${method}")
                 contentType(ContentType.Application.Json)
-                body = Json.encodeToString(data)
+                body = json.toString()
             }
         }
         return response
@@ -150,7 +161,7 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
     override suspend fun getCoursesRemote(id: String): ResponseGenericAPi<GetCoursesResponseDto> = withContext(
     Dispatchers.IO)  {
         val response = client.get{
-            url("${Constants.BASE_URL}${HttpRoutes.COURSES_ENDPOINT}${id}")
+            url("${Constants.BASE_URL}${HttpRoutes.COURSES_ENDPOINT}/mine/${id}")
             contentType(ContentType.Application.Json)
         }
         return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
@@ -159,20 +170,64 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
     override suspend fun getCourseByIdRemote(id: String): ResponseGenericAPi<CourseResponseDto> = withContext(
         Dispatchers.IO)  {
         val response = client.get{
-            url("${Constants.BASE_URL}${HttpRoutes.COURSES_ENDPOINT}${id}")
+            url("${Constants.BASE_URL}${HttpRoutes.COURSES_ENDPOINT}/${id}")
             contentType(ContentType.Application.Json)
         }
         return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
     }
 
-    override suspend fun getUsersByCourseRemote(id: String): ResponseGenericAPi<GetCoursesResponseDto> {
-        TODO("Not yet implemented")
+    override suspend fun getUsersByCourseRemote(id: String): ResponseGenericAPi<GetCoursesResponseDto> = withContext(
+        Dispatchers.IO)  {
+        val response = client.get{
+            url("${Constants.BASE_URL}${HttpRoutes.COURSES_ENDPOINT}/users/${id}")
+            contentType(ContentType.Application.Json)
+        }
+        return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
     }
 
     override suspend fun getCoursesWithFlowRemote(): Flow<List<LocalCourses>> {
         TODO("Not yet implemented")
     }
 
+    @OptIn(InternalAPI::class)
+    override suspend fun joinCourseRemote(
+        id: String,
+        token: String
+    ): ResponseGenericAPi<CourseResponseDto> = withContext(
+        Dispatchers.IO)  {
+        val json = buildJsonObject {
+            put("id", id.toInt())
+            put("token", token)
+        }
+        Log.e("RUTA:", "${Constants.BASE_URL}${HttpRoutes.COURSES_ENDPOINT}/join")
+        val response = client.post{
+            url("${Constants.BASE_URL}${HttpRoutes.COURSES_ENDPOINT}")
+            contentType(ContentType.Application.Json)
+            body = json.toString()
+        }
+        return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
+
+    }
+
+    @OptIn(InternalAPI::class)
+    override suspend fun joinUserToCourseRemote(
+        id: String,
+        token: String
+    ): ResponseGenericAPi<CourseResponseDto> = withContext(
+        Dispatchers.IO)  {
+        val json = buildJsonObject {
+            put("id", id.toInt())
+            put("token", token)
+        }
+        Log.e("RUTA:", "${Constants.BASE_URL}${HttpRoutes.COURSES_ENDPOINT}")
+        val response = client.post{
+            url("${Constants.BASE_URL}${HttpRoutes.COURSES_ENDPOINT}")
+            contentType(ContentType.Application.Json)
+            body = json.toString()
+        }
+        return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
+
+    }
     @OptIn(InternalAPI::class)
     override suspend fun insertActivityRemote(activity: ActivityRequestDto): ResponseGenericAPi<ActivityResponseDto> = withContext(
         Dispatchers.IO)  {
@@ -183,7 +238,7 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
             put("endDate", activity.endDate)
             put("startDate", activity.startDate)
         }
-        Log.e("RUTA:", "${Constants.BASE_URL}${HttpRoutes.ACTIVITIES_ENDPOINT}")
+        Log.e("RUTA:", "${Constants.BASE_URL}${HttpRoutes.ACTIVITIES_ENDPOINT}/new")
         val response = client.post{
             url("${Constants.BASE_URL}${HttpRoutes.ACTIVITIES_ENDPOINT}")
             contentType(ContentType.Application.Json)
@@ -202,14 +257,13 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
             put("endDate", activity.endDate)
             put("startDate", activity.startDate)
         }
-        Log.e("RUTA:", "${Constants.BASE_URL}${HttpRoutes.ACTIVITIES_ENDPOINT}/${id}")
+        Log.e("RUTA:", "${Constants.BASE_URL}${HttpRoutes.ACTIVITIES_ENDPOINT}/update")
         val response = client.post{
             url("${Constants.BASE_URL}${HttpRoutes.ACTIVITIES_ENDPOINT}/${id}")
             contentType(ContentType.Application.Json)
             body = json.toString()
         }
         return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
-
     }
 
     @OptIn(InternalAPI::class)
@@ -227,7 +281,7 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
     override suspend fun getActivitiesRemote(id: String): ResponseGenericAPi<GetActivitiesResponseDto> = withContext(
         Dispatchers.IO)  {
         val response = client.get{
-            url("${Constants.BASE_URL}${HttpRoutes.ACTIVITIES_ENDPOINT}/${id}")
+            url("${Constants.BASE_URL}${HttpRoutes.ACTIVITIES_ENDPOINT}/activity/${id}")
             contentType(ContentType.Application.Json)
         }
         return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)

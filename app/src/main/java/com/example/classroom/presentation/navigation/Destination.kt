@@ -54,4 +54,9 @@ enum class Destination(val screenRoute: String, val title: String, val icon: Ico
         title = "COURSES",
         icon = Icon.Resource(R.drawable.ic_edit)
     ),
+    ADD_USER_COURSE(
+        screenRoute = "ADD_USER_COURSE",
+        title = "ADD_USER_COURSE",
+        icon = Icon.Resource(R.drawable.ic_launcher_background)
+    ),
 }

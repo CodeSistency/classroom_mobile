@@ -36,16 +36,16 @@ enum class Area {
     NO_SELECTED
 }
 
-fun Area.toInt(area: Area): Int {
+fun areatoInt(area: Area): Int {
     return when(area){
         Area.SCIENCE -> 1
-        Area.MATH -> 1
-        Area.LANGUAGE -> 1
-        Area.BIOLOGY -> 1
-        Area.NATURE -> 1
-        Area.CODING -> 1
-        Area.OTHER -> 1
-        Area.NO_SELECTED -> 1
+        Area.MATH -> 2
+        Area.LANGUAGE -> 3
+        Area.BIOLOGY -> 4
+        Area.NATURE -> 5
+        Area.CODING -> 6
+        Area.OTHER -> 7
+        Area.NO_SELECTED -> 8
     }
 }
 

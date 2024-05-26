@@ -50,6 +50,8 @@ fun HomeScreen(navController: NavController, viewmodel: HomeViewmodel){
         })
 
     if (isDialogOpen){
-        SelectedOptionDialog(dismissDialog = { isDialogOpen = false }, navController = navController)
+        SelectedOptionDialog(dismissDialog = { isDialogOpen = false },
+            navController = navController,
+            viewmodel, scope)
     }
 }

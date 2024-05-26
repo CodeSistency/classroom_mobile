@@ -9,6 +9,7 @@ import com.example.classroom.domain.model.entity.LocalCourses
 import com.example.classroom.domain.repository.CoursesRepository
 import kotlinx.coroutines.flow.Flow
 import com.example.classroom.common.ResponseGenericAPi
+import com.example.classroom.domain.model.entity.LocalUser
 
 class CoursesRepositoryImpl(
     private val apiService: ApiService,
@@ -34,6 +35,21 @@ class CoursesRepositoryImpl(
     override suspend fun getCoursesWithFlowRemote(): Flow<List<LocalCourses>> {
         return apiService.getCoursesWithFlowRemote()
     }
+
+    override suspend fun joinCourseRemote(
+        id: String,
+        token: String
+    ): ResponseGenericAPi<CourseResponseDto> {
+        return apiService.joinCourseRemote(id, token)
+    }
+
+    override suspend fun joinUserToCourseRemote(
+        id: String,
+        token: String
+    ): ResponseGenericAPi<CourseResponseDto> {
+        return apiService.joinUserToCourseRemote(id, token)
+    }
+
     override suspend fun insertCourse(localCourses: LocalCourses) {
         return dao.insertLocalCourse(localCourses)
     }
@@ -54,5 +70,9 @@ class CoursesRepositoryImpl(
     }
     override suspend fun getCoursesWithFlowById(id: String): Flow<LocalCourses?> {
         return dao.getCourseById(id)
+    }
+
+    override suspend fun getUsersByCourseWithFlow(id: String): Flow<List<LocalUser>> {
+        return dao.getUsersByCourseIdWithFlow(id)
     }
 }

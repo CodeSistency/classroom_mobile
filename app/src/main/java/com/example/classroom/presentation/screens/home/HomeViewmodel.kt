@@ -10,8 +10,11 @@ import com.example.classroom.domain.model.entity.LocalCourses
 import com.example.classroom.domain.model.entity.LocalUser
 import com.example.classroom.domain.model.entity.toCoursesLocal
 import com.example.classroom.domain.use_case.courses.GetCoursesUseCase
+import com.example.classroom.domain.use_case.courses.JoinCourseUseCase
+import com.example.classroom.presentation.screens.course.states.JoinUserState
 import com.example.classroom.presentation.screens.home.composables.SelectedOption
 import com.example.classroom.presentation.screens.home.states.CourseState
+import com.example.classroom.presentation.screens.home.states.JoinCourseState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -25,6 +28,7 @@ import timber.log.Timber
 
 class HomeViewmodel(
     private val getCoursesUseCase: GetCoursesUseCase,
+    private val joinCourseUseCase: JoinCourseUseCase,
     private val repositoryBundle: RepositoryBundle
 ): ViewModel() {
 
@@ -41,6 +45,8 @@ class HomeViewmodel(
     private val _stateCourse = mutableStateOf(CourseState())
     val stateCourse: State<CourseState> = _stateCourse
 
+    private val _stateJoinCourse = mutableStateOf(JoinCourseState())
+    val stateJoinCourse: State<JoinCourseState> = _stateJoinCourse
     init {
         viewModelScope.launch {
             userInfo = repositoryBundle.loginRepository.getUserLogged()
@@ -154,5 +160,32 @@ class HomeViewmodel(
             }
         }
     }
+
+    suspend fun joinCourse(id: String, token: String){
+        joinCourseUseCase(id, token).onEach { result ->
+            when(result){
+                is Resource.Error -> {
+                    //Timber.tag("AUTH_VM").e("Error ${result.message?.uiMessage}")
+                    Log.e("ACTIVITIES:", "Error ${result.message?.uiMessage}")
+                    _stateJoinCourse.value = JoinCourseState(error = result.message)
+                }
+                is Resource.Loading -> {
+                    Timber.tag("ACTIVITIES").e("is loading")
+                    _stateJoinCourse.value = JoinCourseState(isLoading = true)
+                }
+                is Resource.Success -> {
+                    Timber.tag("ACTIVITIES_VM").e("success")
+                    Log.e("ACTIVITIES:", "success")
+                    _stateJoinCourse.value = JoinCourseState(info = result.data)
+                    Log.e("ACTIVITIES:", "${_stateCourse.value.info}")
+                    _stateJoinCourse.value.info?.let {
+//                            insertUserDb(it)
+                        delay(300)
+                    }
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
+
 
 }

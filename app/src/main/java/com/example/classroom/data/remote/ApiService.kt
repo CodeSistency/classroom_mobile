@@ -29,6 +29,8 @@ interface ApiService {
     suspend fun getCourseByIdRemote(id: String) : ResponseGenericAPi<CourseResponseDto>
     suspend fun getUsersByCourseRemote(id: String) : ResponseGenericAPi<GetCoursesResponseDto>
     suspend fun getCoursesWithFlowRemote() : Flow<List<LocalCourses>>
+    suspend fun joinCourseRemote(id: String, token: String) : ResponseGenericAPi<CourseResponseDto>
+    suspend fun joinUserToCourseRemote(id: String, token: String) : ResponseGenericAPi<CourseResponseDto>
 
     //Activity Methods
     suspend fun insertActivityRemote(activity: ActivityRequestDto) : ResponseGenericAPi<ActivityResponseDto>

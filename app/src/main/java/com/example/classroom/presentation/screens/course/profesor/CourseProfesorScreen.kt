@@ -10,6 +10,10 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,6 +23,7 @@ import com.example.classroom.presentation.screens.activity.ActivityViewmodel
 import com.example.classroom.presentation.screens.course.CourseViewmodel
 import com.example.classroom.presentation.screens.course.profesor.composables.CourseProfessorPresentation
 import com.example.classroom.presentation.screens.course.profesor.composables.TopBarProfessor
+import com.example.classroom.presentation.screens.course.profesor.composables.SelectedOptionDialog
 import com.example.classroom.presentation.theme.Azul
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -29,8 +34,8 @@ fun CourseProfesorScreen(viewModel: ActivityViewmodel, courseViewmodel: CourseVi
             TopBarProfessor(navController = navController)
         }
     ) {
-        CourseProfessorPresentation(viewModel = viewModel, courseViewmodel = courseViewmodel, id = id)
-
+        CourseProfessorPresentation(viewModel = viewModel, courseViewmodel = courseViewmodel, id = id, navController)
+        var isDialogOpen by remember { mutableStateOf(false) }
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.BottomEnd
@@ -39,8 +44,7 @@ fun CourseProfesorScreen(viewModel: ActivityViewmodel, courseViewmodel: CourseVi
                     FloatingActionButton(
                         modifier = Modifier.padding(bottom = 16.dp, end = 16.dp), // Add padding
                         onClick = {
-
-
+                            isDialogOpen = true
                         },
                         backgroundColor = Azul
                     ) {
@@ -51,5 +55,8 @@ fun CourseProfesorScreen(viewModel: ActivityViewmodel, courseViewmodel: CourseVi
                         )
                     }
                 }
+        if (isDialogOpen){
+            SelectedOptionDialog(dismissDialog = { isDialogOpen = false }, navController = navController)
+        }
     }
 }

@@ -22,17 +22,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.example.classroom.presentation.screens.activity.ActivityViewmodel
+import com.example.classroom.presentation.screens.course.CourseViewmodel
 import com.example.classroom.presentation.screens.home.HomeViewmodel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 @Composable
-fun ListActivities(viewModel: ActivityViewmodel, scope: CoroutineScope, id: String, navController: NavController) {
+fun ListUsers(viewModel: ActivityViewmodel, courseViewmodel: CourseViewmodel, scope: CoroutineScope, id: String) {
 
-    val items by viewModel.filteredListActivitiesByCourseFLow.collectAsState(initial = listOf())
+    val items by courseViewmodel.filteredListUsersByCourseFLow.collectAsState(initial = listOf())
     LaunchedEffect(key1 = items, block = {
         Log.e("Activities", items.toString())
 
@@ -68,13 +68,11 @@ fun ListActivities(viewModel: ActivityViewmodel, scope: CoroutineScope, id: Stri
             ){
                 items(items){
                     Box(modifier = Modifier.padding(vertical = 6.dp, horizontal = 2.dp)){
-                        CardActivity(activity = it, msgDeleteBtn = "Eliminar",
-                            msgDelete = "¿Estás seguro que deseas eliminar esta actividad?",
-                            navController = navController,
-                            action = {
+                        CardStudent(student = it,
+                            msgDelete = "¿Estás seguro de retirar este estudiante?",
+                            msgDeleteBtn = "Retirar") {
 
-                            }
-                        )
+                        }
                     }
                 }
             }
