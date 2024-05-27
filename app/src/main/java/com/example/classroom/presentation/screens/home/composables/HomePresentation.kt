@@ -208,18 +208,21 @@ fun HomePresentation(viewModel: HomeViewmodel, navController: NavController){
             if (viewModel.stateCourse.value.isLoading){
                 ListShimmer(quantity = 10)
             }else{
-                HorizontalPager(
-                    state = pagerState,
-                ) { page ->
-                    when(page){
-                        0 -> {
-                            ListCourses(viewModel, scope, navController)
-                        }
-                        1 -> {
-                            ListMyCourses(viewModel, scope, navController)
+                if (userInfo.value != null){
+                    HorizontalPager(
+                        state = pagerState,
+                    ) { page ->
+                        when(page){
+                            0 -> {
+                                ListCourses(viewModel, scope, navController, email = userInfo.value!!.email)
+                            }
+                            1 -> {
+                                ListMyCourses(viewModel, scope, navController, email = userInfo.value!!.email)
+                            }
                         }
                     }
                 }
+
             }
            
         }

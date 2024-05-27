@@ -17,6 +17,7 @@ import com.example.classroom.presentation.screens.course.student.CourseStudentSc
 @Composable
 fun CourseScreen(
     id: String,
+    email: String,
     isOwner: Boolean,
     viewModel: CourseViewmodel,
     activityViewmodel: ActivityViewmodel,
@@ -25,11 +26,11 @@ fun CourseScreen(
 ){
 
     LaunchedEffect(key1 = true, block = {
-        Log.e("isOwner", isOwner.toString())
+        viewModel.getCourseById(id)
     })
 
     if (isOwner){
-        CourseProfesorScreen(viewModel = activityViewmodel, courseViewmodel = viewModel, id = id, navController)
+        CourseProfesorScreen(viewModel = activityViewmodel, courseViewmodel = viewModel, id = id, email = email, navController)
     }else{
         CourseStudentScreen(activityViewmodel = activityViewmodel, courseViewmodel = viewModel, id = id, navController)
     }

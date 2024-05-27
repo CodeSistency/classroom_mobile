@@ -15,25 +15,32 @@ data class GetActivitiesResponseDto(
     @SerialName("message")
     val message: String,
     @SerialName("data")
-    val data: Data
+    val data: List<Data>
 ) {
-    @Serializable
-    data class Data(
-        @SerialName("courses")
-        val courses: List<Activties>
-    ){
+
+
         @Serializable
-        data class Activties(
-            @SerialName("id") val id: String,
-            @SerialName("idCourse") val idCourse: String,
-            @SerialName("owner") val owner: String,
-            @SerialName("owner_name") val ownerName: String,
-            @SerialName("title") val title: String,
-            @SerialName("description") val description: String?,
-            @SerialName("grade") val grade: Double? = null,
-            @SerialName("start_date") val startDate: String,
-            @SerialName("end_date") val endDate: String,
-            @SerialName("status") val status: Status,
+        data class Data(
+            @SerialName("id")
+            val idApi: Int,
+            @SerialName("course_id")
+            val idCourse: Int,
+            @SerialName("course_name")
+            val nameCourse: String,
+            @SerialName("title")
+            val title: String,
+            @SerialName("description")
+            val description: String?,
+            @SerialName("grade")
+            val grade: Int,
+            @SerialName("start_date")
+            val startDate: String,
+            @SerialName("end_date")
+            val endDate: String,
+            @SerialName("status_id")
+            val status: Int,
+            @SerialName("status_name")
+            val statusName: Status
         )
-    }
+
 }

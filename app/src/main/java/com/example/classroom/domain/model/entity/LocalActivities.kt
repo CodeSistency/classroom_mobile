@@ -12,11 +12,9 @@ data class LocalActivities(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     @ColumnInfo("idApi") val idApi: String,
     @ColumnInfo("idCourse") val idCourse: String,
-    @ColumnInfo("owner") val owner: String,
-    @ColumnInfo("owner_name") val ownerName: String,
     @ColumnInfo("title") val title: String,
     @ColumnInfo("description") val description: String?,
-    @ColumnInfo("grade") val grade: Double? = null,
+    @ColumnInfo("grade") val grade: Int = 0,
     @ColumnInfo("start_date") val startDate: String,
     @ColumnInfo("end_date") val endDate: String,
     @ColumnInfo("status") val status: Status,
@@ -27,7 +25,7 @@ enum class Status{
     FINISHED
 }
 
-fun Status.toInt(status: Status): Int{
+fun statusToInt(status: Status): Int{
     return when(status){
         Status.LATE -> 1
         Status.OPEN -> 1
@@ -35,35 +33,42 @@ fun Status.toInt(status: Status): Int{
     }
 }
 
+fun intToStatus(id: Int): Status{
+    return when(id){
+        1 -> Status.LATE
+        2 -> Status.OPEN
+        3 -> Status.FINISHED
+
+        else -> {Status.OPEN}
+    }
+}
+
 fun ActivityResponseDto.toLocal(): LocalActivities {
     return LocalActivities(
-        idApi = data.idApi,
-        owner = data.owner,
+        idApi = data.idApi.toString(),
         title = data.title,
         description = data.description,
-        ownerName = data.ownerName,
-        endDate = data.endDate,
+        endDate = data.endDate ?: "",
         grade = data.grade,
-        idCourse = data.idCourse,
-        startDate = data.startDate,
-        status = data.status
+        idCourse = data.idCourse.toString(),
+        startDate = data.startDate ?: "",
+        status = intToStatus(data.status)
 
     )
 }
 
 fun GetActivitiesResponseDto.toLocal() : List<LocalActivities>{
-    return data.courses.map {
+    return data.map {
         LocalActivities(
-            idApi = it.id,
+            idApi = it.idApi.toString(),
             description = it.description,
-            status = it.status,
+            status = intToStatus(it.status),
             startDate = it.startDate,
             title = it.title,
             endDate = it.endDate,
             grade = it.grade,
-            idCourse = it.idCourse,
-            ownerName = it.ownerName,
-            owner = it.owner,
+            idCourse = it.idCourse.toString(),
+
         )
     }
 }

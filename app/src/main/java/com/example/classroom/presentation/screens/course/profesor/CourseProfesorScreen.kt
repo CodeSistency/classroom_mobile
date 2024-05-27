@@ -10,6 +10,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,7 +29,13 @@ import com.example.classroom.presentation.theme.Azul
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun CourseProfesorScreen(viewModel: ActivityViewmodel, courseViewmodel: CourseViewmodel, id: String, navController: NavController){
+fun CourseProfesorScreen(
+    viewModel: ActivityViewmodel,
+    courseViewmodel: CourseViewmodel,
+    id: String,
+    email: String,
+    navController: NavController
+){
     Scaffold(
         topBar = {
             TopBarProfessor(navController = navController)
@@ -56,7 +63,7 @@ fun CourseProfesorScreen(viewModel: ActivityViewmodel, courseViewmodel: CourseVi
                     }
                 }
         if (isDialogOpen){
-            SelectedOptionDialog(dismissDialog = { isDialogOpen = false }, navController = navController)
+            SelectedOptionDialog(dismissDialog = { isDialogOpen = false }, navController = navController, id, email)
         }
     }
 }

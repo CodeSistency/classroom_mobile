@@ -14,6 +14,7 @@ import com.example.classroom.domain.use_case.activities.InsertActivityUseCase
 import com.example.classroom.domain.use_case.activities.UpdateActivityUseCase
 import com.example.classroom.domain.use_case.courses.GetCoursesByIdUseCase
 import com.example.classroom.domain.use_case.courses.GetCoursesUseCase
+import com.example.classroom.domain.use_case.courses.GetUsersByCourseUseCase
 import com.example.classroom.domain.use_case.courses.InsertCourseUseCase
 import com.example.classroom.domain.use_case.courses.JoinCourseUseCase
 import com.example.classroom.domain.use_case.courses.JoinUserToCourseUseCase
@@ -60,6 +61,7 @@ interface AppModule {
     val getCoursesByIdUseCase: GetCoursesByIdUseCase
     val joinUserToCourseUseCase: JoinUserToCourseUseCase
     val joinCourseUseCase: JoinCourseUseCase
+    val getUsersByCourseUseCase: GetUsersByCourseUseCase
     val validatorBundle : ValidatorBundle
     val db: AppDatabase
 }
@@ -141,6 +143,9 @@ class AppModuleImpl(
     }
     override val joinCourseUseCase: JoinCourseUseCase by lazy{
         JoinCourseUseCase(repositoryBundle)
+    }
+    override val getUsersByCourseUseCase: GetUsersByCourseUseCase by lazy {
+        GetUsersByCourseUseCase(repositoryBundle)
     }
 
     override val validatorBundle: ValidatorBundle by lazy {

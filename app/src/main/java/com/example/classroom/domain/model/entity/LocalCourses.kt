@@ -18,6 +18,7 @@ data class LocalCourses(
     @ColumnInfo("owner_name") val ownerName: String,
     @ColumnInfo("section") val section: String,
     @ColumnInfo("subject") val subject: String,
+    @ColumnInfo("token") val token: String,
     @ColumnInfo("area") val area: Area?,
 //    @ColumnInfo("users", defaultValue = "") var users: List<CourseResponseDto.Data.Users>,
 //    @TypeConverters(UsersInCourseConverter::class)
@@ -49,16 +50,31 @@ fun areatoInt(area: Area): Int {
     }
 }
 
+fun intToArea(id: Int): Area {
+    return when(id) {
+        1 -> Area.SCIENCE
+        2 -> Area.MATH
+        3 -> Area.LANGUAGE
+        4 -> Area.BIOLOGY
+        5 -> Area.NATURE
+        6 -> Area.CODING
+        7 -> Area.OTHER
+        8 -> Area.NO_SELECTED
+        else -> Area.NO_SELECTED // default case for unknown values
+    }
+}
+
 fun CourseResponseDto.toCourseLocal(): LocalCourses {
     return LocalCourses(
-        idApi = data.idApi,
+        idApi = data.idApi.toString(),
         title = data.title,
         subject = data.subject,
         section = data.section,
         ownerName = data.ownerName,
-        owner = data.owner,
+        owner = data.owner.toString(),
         description = data.description,
-        area = data.area,
+        area = intToArea(data.areaId),
+        token = data.token
 //        users = data.users.map {
 //            LocalUser(
 //                name = it.name,
@@ -76,16 +92,17 @@ fun CourseResponseDto.toCourseLocal(): LocalCourses {
 }
 
 fun GetCoursesResponseDto.toCoursesLocal(): List<LocalCourses> {
-    return data.courses.map {
+    return data.map {
          LocalCourses(
-            idApi = it.id,
+            idApi = it.id.toString(),
             title = it.title,
             subject = it.subject,
             section = it.section,
             ownerName = it.ownerName,
-            owner = it.owner,
-            description = it.description,
-            area = it.area,
+            owner = it.owner.toString(),
+             area = intToArea(it.areaId),
+             token = it.token,
+             description = it.description
 //            users = it.users.map {
 //                LocalUser(
 //                    name = it.name,

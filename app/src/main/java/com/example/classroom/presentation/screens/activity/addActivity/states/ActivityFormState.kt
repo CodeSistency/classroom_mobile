@@ -13,7 +13,7 @@ data class ActivityFormState(
     val titleError: String? = null,
     val description: String = "",
     val descriptionError: String? = null,
-    val grade: Double? = null,
+    val grade: Int = 0,
     val gradeError: String? = null,
     val startDate: String = "",
     val startDateError: String? = null,

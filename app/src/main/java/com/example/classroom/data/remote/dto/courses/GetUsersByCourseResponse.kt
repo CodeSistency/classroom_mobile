@@ -1,15 +1,10 @@
 package com.example.classroom.data.remote.dto.courses
 
-import androidx.room.ColumnInfo
-import androidx.room.PrimaryKey
-import com.example.classroom.domain.model.entity.Area
-import com.example.classroom.domain.model.entity.Gender
-import com.example.classroom.domain.model.entity.LocalUser
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class CourseResponseDto(
+data class GetUsersByCourseResponse(
     @SerialName("status")
     val status: Boolean,
     @SerialName("message")
@@ -38,6 +33,30 @@ data class CourseResponseDto(
         @SerialName("token")
         val token: String,
         @SerialName("areaName")
-        val areaName: String
-    )
+        val areaName: String,
+        @SerialName("users")
+        val users: List<Users>
+    ){
+        @Serializable
+        data class Users(
+            @SerialName("id")
+            val userId: Int,
+            @SerialName("email")
+            val email: String,
+            @SerialName("password")
+            val password: String,
+            @SerialName("user_name")
+            val username: String,
+            @SerialName("create_date")
+            val creation: String,
+            @SerialName("genderId")
+            val gender: Int,
+            @SerialName("phone")
+            val phone: String,
+            @SerialName("name")
+            val name: String,
+            @SerialName("last_name")
+            val lastName: String
+        )
+    }
 }

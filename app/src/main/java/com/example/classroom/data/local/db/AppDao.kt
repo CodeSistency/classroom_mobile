@@ -12,6 +12,7 @@ import com.example.classroom.domain.model.entity.LocalActivities
 import com.example.classroom.domain.model.entity.LocalCourses
 import com.example.classroom.domain.model.entity.LocalUser
 import com.example.classroom.domain.model.typeConverter.UsersCoursesIdConverter
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
@@ -42,6 +43,8 @@ interface AppDao {
     @Transaction
     suspend fun logout(){
         deleteLocalUser()
+        deleteLocalCourses()
+        deleteLocalActivities()
     }
     @Query("SELECT * FROM localUser_table WHERE isLogged = 1 LIMIT 1")
     fun getLoggedInUser(): Flow<LocalUser?>
@@ -89,7 +92,15 @@ interface AppDao {
     @Insert
     suspend fun insertLocalCourse(localCourse: LocalCourses)
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAllLocalCourse(course: List<LocalCourses>)
+    suspend fun insertAllCourses(course: List<LocalCourses>)
+
+    @Transaction
+    suspend fun insertAllLocalCourse(course: List<LocalCourses>){
+        deleteLocalCourses()
+        delay(100)
+        insertAllCourses(course)
+    }
+
     @Update
     suspend fun updateLocalCourse(localUser: LocalCourses)
 

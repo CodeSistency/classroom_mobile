@@ -9,6 +9,7 @@ import com.example.classroom.domain.model.entity.LocalCourses
 import com.example.classroom.domain.repository.CoursesRepository
 import kotlinx.coroutines.flow.Flow
 import com.example.classroom.common.ResponseGenericAPi
+import com.example.classroom.data.remote.dto.courses.GetUsersByCourseResponse
 import com.example.classroom.domain.model.entity.LocalUser
 
 class CoursesRepositoryImpl(
@@ -26,6 +27,10 @@ class CoursesRepositoryImpl(
     }
     override suspend fun getCoursesRemote(id: String): ResponseGenericAPi<GetCoursesResponseDto> {
         return apiService.getCoursesRemote(id)
+    }
+
+    override suspend fun getUsersByCourseRemote(id: String): ResponseGenericAPi<GetUsersByCourseResponse> {
+        return apiService.getUsersByCourseRemote(id)
     }
 
     override suspend fun getCourseByIdRemote(id: String): ResponseGenericAPi<CourseResponseDto> {
@@ -68,11 +73,16 @@ class CoursesRepositoryImpl(
     override suspend fun getCoursesWithFlow(): Flow<List<LocalCourses>> {
         return dao.getCoursesInfoWithFlow()
     }
+
     override suspend fun getCoursesWithFlowById(id: String): Flow<LocalCourses?> {
         return dao.getCourseById(id)
     }
 
     override suspend fun getUsersByCourseWithFlow(id: String): Flow<List<LocalUser>> {
         return dao.getUsersByCourseIdWithFlow(id)
+    }
+
+    override suspend fun updateUsersInCourse(users: List<LocalUser>, newCourseId: String) {
+        return dao.updateUsersExcludingLoggedIn(users, newCourseId)
     }
 }

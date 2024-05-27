@@ -20,6 +20,8 @@ import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,13 +40,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.classroom.R
+import com.example.classroom.common.composables.customDialogs.SetupCustomDialog
 import com.example.classroom.common.composables.customDialogs.SetupCustomDialogState
 import com.example.classroom.data.remote.dto.courses.CourseRequestDto
 import com.example.classroom.data.remote.dto.login.signUp.SignUpRequestDto
+import com.example.classroom.presentation.navigation.Destination
 import com.example.classroom.presentation.screens.auth.composables.ItemInputField
 import com.example.classroom.presentation.screens.course.CourseViewmodel
 import com.example.classroom.presentation.theme.Azul
 import com.example.classroom.presentation.theme.PaddingCustom
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import proyecto.person.appconsultapopular.common.SnackbarDelegate
 
@@ -61,8 +66,9 @@ fun AddCourseScreen(
     var dialogState: SetupCustomDialogState by remember {
         mutableStateOf(SetupCustomDialogState.Default())
     }
+    var userInfo = viewModel.userInfo.collectAsState(initial = null)
 
-
+    var state = viewModel.stateCourseForm
     var isPasswordOpen by remember { mutableStateOf(false) }
 
     val snackbarHost = remember { SnackbarHostState() }
@@ -107,17 +113,19 @@ fun AddCourseScreen(
                         ItemInputField(
                             titulo = stringResource(id = R.string.register_course_title_text),
                             darkTheme = false,
-                            valueField = viewModel.titleField.value,
+                            errorMsg = state.titleError,
+                            valueField = state.title,
                             fieldRestriction = {
-                                val withoutWhiteSpace = it.removeSuffix(" ")
-                                if (withoutWhiteSpace != "" || it.isEmpty()) {
-                                    withoutWhiteSpace
-                                } else {
-                                    null
-                                }
+                                               it
+//                                val withoutWhiteSpace = it.removeSuffix(" ")
+//                                if (withoutWhiteSpace != "" || it.isEmpty()) {
+//                                    withoutWhiteSpace
+//                                } else {
+//                                    null
+//                                }
                             },
                             valueOnChange = {
-                                viewModel.titleField.value = it
+                                viewModel.onCourseEvent(CourseFormEvent.TitleChanged(it))
                             }
                         ) {
                             focusManager.moveFocus(FocusDirection.Down)
@@ -128,17 +136,20 @@ fun AddCourseScreen(
                         ItemInputField(
                             titulo = stringResource(id = R.string.register_course_descripcion_text),
                             darkTheme = false,
-                            valueField = viewModel.descripcionField.value,
+                            errorMsg = state.descriptionError,
+                            valueField = state.description,
                             fieldRestriction = {
-                                val withoutWhiteSpace = it.removeSuffix(" ")
-                                if (withoutWhiteSpace != "" || it.isEmpty()) {
-                                    withoutWhiteSpace
-                                } else {
-                                    null
-                                }
+                                               it
+//                                val withoutWhiteSpace = it.removeSuffix(" ")
+//                                if (withoutWhiteSpace != "" || it.isEmpty()) {
+//                                    withoutWhiteSpace
+//                                } else {
+//                                    null
+//                                }
                             },
                             valueOnChange = {
-                                viewModel.descripcionField.value = it
+                                viewModel.onCourseEvent(CourseFormEvent.DescriptionChanged(it))
+
                             }
                         ) {
                             focusManager.moveFocus(FocusDirection.Down)
@@ -149,17 +160,19 @@ fun AddCourseScreen(
                         ItemInputField(
                             titulo = stringResource(id = R.string.register_course_seccion_text),
                             darkTheme = false,
-                            valueField = viewModel.seccionField.value,
+                            errorMsg = state.sectionError,
+                            valueField = state.section,
                             fieldRestriction = {
-                                val withoutWhiteSpace = it.removeSuffix(" ")
-                                if (withoutWhiteSpace != "" || it.isEmpty()) {
-                                    withoutWhiteSpace
-                                } else {
-                                    null
-                                }
+                                               it
+//                                val withoutWhiteSpace = it.removeSuffix(" ")
+//                                if (withoutWhiteSpace != "" || it.isEmpty()) {
+//                                    withoutWhiteSpace
+//                                } else {
+//                                    null
+//                                }
                             },
                             valueOnChange = {
-                                viewModel.seccionField.value = it
+                                viewModel.onCourseEvent(CourseFormEvent.SectionChanged(it))
                             }
                         ) {
                             focusManager.moveFocus(FocusDirection.Down)
@@ -170,17 +183,20 @@ fun AddCourseScreen(
                         ItemInputField(
                             titulo = stringResource(id = R.string.register_course_subject_text),
                             darkTheme = false,
-                            valueField = viewModel.subjectField.value,
+                            errorMsg = state.subjectError,
+                            valueField = state.subject,
                             fieldRestriction = {
-                                val withoutWhiteSpace = it.removeSuffix(" ")
-                                if (withoutWhiteSpace != "" || it.isEmpty()) {
-                                    withoutWhiteSpace
-                                } else {
-                                    null
-                                }
+                                               it
+//                                val withoutWhiteSpace = it.removeSuffix(" ")
+//                                if (withoutWhiteSpace != "" || it.isEmpty()) {
+//                                    withoutWhiteSpace
+//                                } else {
+//                                    null
+//                                }
                             },
                             valueOnChange = {
-                                viewModel.subjectField.value = it
+                                viewModel.onCourseEvent(CourseFormEvent.SubjectChanged(it))
+
                             }
                         ) {
                             focusManager.moveFocus(FocusDirection.Down)
@@ -196,18 +212,19 @@ fun AddCourseScreen(
                         Button(
                             onClick = {
                                 scope.launch {
-                                    viewModel.onCreateCourseClick(
+                                    viewModel.onCourseEvent(CourseFormEvent.Submit(
+                                        id,
                                         CourseRequestDto(
-                                            area = viewModel.areaField.value,
-                                            description = viewModel.descripcionField.value,
-                                            owner = "",
-                                            ownerName = "",
-                                            section = viewModel.seccionField.value,
-                                            subject = viewModel.subjectField.value,
-                                            title = viewModel.titleField.value,
-                                        ),
-                                        null
-                                    )
+                                            area = state.area,
+                                            description = state.description,
+                                            owner = userInfo.value.let { it!!.idApi },
+                                            ownerName = userInfo.value.let { it!!.name },
+                                            section = state.section,
+                                            subject = state.subject,
+                                            title = state.title,
+                                        )
+                                    ))
+
                                 }
                             },
                             modifier = Modifier
@@ -233,5 +250,36 @@ fun AddCourseScreen(
             }
         }
     }
+    LaunchedEffect(key1 = courseInfoState, block = {
+        when{
+            courseInfoState.isLoading -> {
+                dialogState = SetupCustomDialogState.Loading()
+            }
+            courseInfoState.error != null -> {
+                dialogState = SetupCustomDialogState.Error(courseInfoState.error.uiMessage)
+            }
 
+            else -> {
+                if (courseInfoState.info != null){
+                    dialogState = SetupCustomDialogState.Success(message = "El curso ha sido creado exitosamente")
+                    delay(1000)
+                    if (id != null){
+                        navController.popBackStack()
+                        navController.navigate(Destination.HOME.screenRoute){
+                            popUpTo(Destination.REGISTRO_COURSE.screenRoute){
+                                inclusive = true
+                            }
+                            launchSingleTop = true
+                        }
+                    }else{
+                        navController.popBackStack()
+                    }
+
+                }
+            }
+        }
+    })
+    SetupCustomDialog(setupCustomDialogState = dialogState, showDialog = dialogState != SetupCustomDialogState.Default()) {
+        dialogState = SetupCustomDialogState.Default()
+    }
 }

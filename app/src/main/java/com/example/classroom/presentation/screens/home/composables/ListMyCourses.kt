@@ -27,7 +27,12 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 @Composable
-fun ListMyCourses(viewModel: HomeViewmodel, scope: CoroutineScope, navController: NavController){
+fun ListMyCourses(
+    viewModel: HomeViewmodel,
+    scope: CoroutineScope,
+    navController: NavController,
+    email: String,
+){
     val items =  viewModel.filteredListMyCoursesFLow.collectAsState(initial = listOf())
 
     Box(modifier = Modifier){
@@ -58,10 +63,12 @@ fun ListMyCourses(viewModel: HomeViewmodel, scope: CoroutineScope, navController
             ){
                 items(items.value){
                     Box(modifier = Modifier.padding(vertical = 6.dp, horizontal = 2.dp)){
+
                         CardCourses(course = it,
                             msgDelete = "¿Estás seguro de eliminar tu clase?",
                             msgDeleteBtn = "Eliminar", isOwner = true, action = {},
-                            navController = navController)
+                            navController = navController,
+                            email = email)
                     }
 
                 }

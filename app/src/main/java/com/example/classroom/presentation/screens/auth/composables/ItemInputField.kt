@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -41,6 +42,7 @@ fun ItemInputField(
     showPassword: Boolean = false,
     changePasswordValue: ()-> Unit = {},
     errorMsg: String? = null,
+    isNumberInput: Boolean = false,
     onNextClick: () -> Unit,
 
 ) {
@@ -77,7 +79,11 @@ fun ItemInputField(
                 ),
                 singleLine = true,
                 shape = RoundedCornerShape(12.dp),
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                keyboardOptions = if (isNumberInput){
+                    KeyboardOptions(imeAction = ImeAction.Next).copy(keyboardType = KeyboardType.Number)
+                } else {
+                    KeyboardOptions(imeAction = ImeAction.Next)
+                },
                 keyboardActions = KeyboardActions(
                     onNext = {
                         onNextClick()

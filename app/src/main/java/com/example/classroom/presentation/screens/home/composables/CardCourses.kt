@@ -43,6 +43,7 @@ import com.example.classroom.presentation.theme.PaddingCustom
 @Composable
 fun CardCourses(
     course: LocalCourses,
+    email: String,
     isOwner: Boolean,
     msgDelete: String,
     msgDeleteBtn: String,
@@ -59,7 +60,7 @@ fun CardCourses(
                 .padding(16.dp)
                 .clickable {
 
-                        navController.navigate("${Destination.COURSES.screenRoute}?id=${course.idApi}&isOwner=${isOwner.toString()}")
+                        navController.navigate("${Destination.COURSES.screenRoute}?id=${course.idApi}&email=${email}&isOwner=${isOwner.toString()}")
 
 
                 }

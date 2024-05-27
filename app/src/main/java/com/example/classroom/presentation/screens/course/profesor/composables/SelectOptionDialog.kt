@@ -51,7 +51,9 @@ import com.example.classroom.presentation.theme.Azul
 @Composable
 fun SelectedOptionDialog(
     dismissDialog: () -> Unit,
-    navController: NavController// Lambda to dismiss the dialog
+    navController: NavController,
+    id: String,
+    email: String// Lambda to dismiss the dialog
 ) {
     Dialog(
         onDismissRequest = dismissDialog,
@@ -108,7 +110,9 @@ fun SelectedOptionDialog(
                         Spacer(modifier = Modifier.height(5.dp))
                         Button(
                             onClick = {
-                                navController.navigate(Destination.ADD_USER_COURSE.screenRoute)
+                                navController.navigate(
+                                    Destination.REGISTRO_ACTIVITY.screenRoute + "?idCourse=${id}&email=${email}"
+                                )
                             },
                             colors = ButtonDefaults.buttonColors(
                                 backgroundColor = Azul

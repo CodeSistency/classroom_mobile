@@ -126,8 +126,8 @@ class ActivityViewmodel(
     private fun submitActivityData(id: String?, activity: ActivityRequestDto) {
         val titleResult = activitiesValidator.validateNames.execute(stateActivityForm.title)
         val descriptionResult = activitiesValidator.validateNames.execute(stateActivityForm.description)
-        val startDateResult = activitiesValidator.validateDate.execute(stateActivityForm.startDate)
-        val endDateResult = activitiesValidator.validateDate.execute(stateActivityForm.endDate)
+//        val startDateResult = activitiesValidator.validateDate.execute(stateActivityForm.startDate)
+//        val endDateResult = activitiesValidator.validateDate.execute(stateActivityForm.endDate)
         val gradeResult = activitiesValidator.validateGrade.execute(stateActivityForm.grade)
 
 
@@ -135,15 +135,15 @@ class ActivityViewmodel(
         val hasError = listOf(
             titleResult,
             descriptionResult,
-            startDateResult,
-            endDateResult,
+//            startDateResult,
+//            endDateResult,
             gradeResult
         ).any { !it.successful }
 
         if(hasError) {
             stateActivityForm = stateActivityForm.copy(
-                startDateError = startDateResult.errorMessage,
-                endDateError = endDateResult.errorMessage,
+//                startDateError = startDateResult.errorMessage,
+//                endDateError = endDateResult.errorMessage,
                 titleError = titleResult.errorMessage,
                 descriptionError = descriptionResult.errorMessage,
                 gradeError = gradeResult.errorMessage,
@@ -317,139 +317,139 @@ class ActivityViewmodel(
 //        }
 //    }
 
-    suspend fun onCreateActivtyClick(activity: ActivityRequestDto, id: String?){
-            val isValid = mutableStateOf(false)
-
-            when (val result = activityDataValidator.validateTitle(activity.title)) {
-                is com.example.classroom.common.validator.Result.Error -> {
-                    when (result.error) {
-                        ActivityDataValidator.InputError.TOO_SHORT -> {
-                            isValid.value = false
-                        }
-                    }
-                }
-
-                is com.example.classroom.common.validator.Result.Success -> {
-                    isValid.value = true
-                }
-            }
-
-            when (val result =
-                activity.description?.let { activityDataValidator.validateDescription(it) }) {
-                is com.example.classroom.common.validator.Result.Error -> {
-                    when (result.error) {
-                        ActivityDataValidator.InputError.TOO_SHORT -> {
-                            isValid.value = false
-                        }
-                    }
-                }
-
-                is com.example.classroom.common.validator.Result.Success -> {
-                    isValid.value = true
-                }
-
-                else -> {
-                    isValid.value = true
-                }
-            }
-
-
-
-            when (val result = activityDataValidator.validateDate()) {
-                is com.example.classroom.common.validator.Result.Error -> {
-                    when (result.error) {
-                        ActivityDataValidator.GradeError.TOO_MUCH -> {
-                            isValid.value = false
-                        }
-                        ActivityDataValidator.GradeError.TOO_LITTLE -> {
-                            isValid.value = false
-                        }
-                    }
-                }
-
-                is com.example.classroom.common.validator.Result.Success -> {
-                    isValid.value = true
-                }
-            }
-
-            when (val result = activity.grade?.let { activityDataValidator.validateGrade(it) }) {
-                is com.example.classroom.common.validator.Result.Error -> {
-                    when (result.error) {
-                        ActivityDataValidator.GradeError.TOO_MUCH -> {
-                            isValid.value = false
-                        }
-                        ActivityDataValidator.GradeError.TOO_LITTLE -> {
-                            isValid.value = false
-                        }
-                    }
-                }
-
-                is com.example.classroom.common.validator.Result.Success -> {
-                    isValid.value = true
-                }
-
-                else -> {
-                    isValid.value = true
-                }
-            }
-
-
-            if (isValid.value){
-                if (id != null){
-//                updateActivityUseCase(activity).onEach { result ->
-//                    when(result){
-//                        is Resource.Error -> {
-//                            //Timber.tag("AUTH_VM").e("Error ${result.message?.uiMessage}")
-//                            Log.e("AUTH_VM:", "Error ${result.message?.uiMessage}")
-//                            _stateAddActivity.value = AddActivityState(error = result.message)
-//                        }
-//                        is Resource.Loading -> {
-//                            Timber.tag("AUTH_VM").e("is loading")
-//                            _stateAddActivity.value = AddActivityState(isLoading = true)
-//                        }
-//                        is Resource.Success -> {
-//                            Timber.tag("AUTH_VM").e("success")
-//                            Log.e("AUTH_VM:", "success")
-//                            _stateAddActivity.value = AddActivityState(info = result.data)
-//                            Log.e("AUTH_VM:", "${stateAddActivity.value.info}")
-//                            _stateAddActivity.value.info?.let {
+//    suspend fun onCreateActivtyClick(activity: ActivityRequestDto, id: String?){
+//            val isValid = mutableStateOf(false)
 //
-//                                delay(1000)
-//
-//                            }
+//            when (val result = activityDataValidator.validateTitle(activity.title)) {
+//                is com.example.classroom.common.validator.Result.Error -> {
+//                    when (result.error) {
+//                        ActivityDataValidator.InputError.TOO_SHORT -> {
+//                            isValid.value = false
 //                        }
 //                    }
+//                }
 //
-//                }.launchIn(viewModelScope)
-                }else{
-//                    insertActivityUseCase(activity).onEach { result ->
-//                    when(result){
-//                        is Resource.Error -> {
-//                            //Timber.tag("AUTH_VM").e("Error ${result.message?.uiMessage}")
-//                            Log.e("AUTH_VM:", "Error ${result.message?.uiMessage}")
-//                            _stateAddActivity.value = AddActivityState(error = result.message)
-//                        }
-//                        is Resource.Loading -> {
-//                            Timber.tag("AUTH_VM").e("is loading")
-//                            _stateAddActivity.value = AddActivityState(isLoading = true)
-//                        }
-//                        is Resource.Success -> {
-//                            Timber.tag("AUTH_VM").e("success")
-//                            Log.e("AUTH_VM:", "success")
-//                            _stateAddActivity.value = AddActivityState(info = result.data)
-//                            Log.e("AUTH_VM:", "${stateAddActivity.value.info}")
-//                            _stateAddActivity.value.info?.let {
+//                is com.example.classroom.common.validator.Result.Success -> {
+//                    isValid.value = true
+//                }
+//            }
 //
-//                                delay(1000)
-//
-//                            }
+//            when (val result =
+//                activity.description?.let { activityDataValidator.validateDescription(it) }) {
+//                is com.example.classroom.common.validator.Result.Error -> {
+//                    when (result.error) {
+//                        ActivityDataValidator.InputError.TOO_SHORT -> {
+//                            isValid.value = false
 //                        }
 //                    }
+//                }
 //
-//                }.launchIn(viewModelScope)
-                }
-            }
-        }
+//                is com.example.classroom.common.validator.Result.Success -> {
+//                    isValid.value = true
+//                }
+//
+//                else -> {
+//                    isValid.value = true
+//                }
+//            }
+//
+//
+//
+//            when (val result = activityDataValidator.validateDate()) {
+//                is com.example.classroom.common.validator.Result.Error -> {
+//                    when (result.error) {
+//                        ActivityDataValidator.GradeError.TOO_MUCH -> {
+//                            isValid.value = false
+//                        }
+//                        ActivityDataValidator.GradeError.TOO_LITTLE -> {
+//                            isValid.value = false
+//                        }
+//                    }
+//                }
+//
+//                is com.example.classroom.common.validator.Result.Success -> {
+//                    isValid.value = true
+//                }
+//            }
+//
+//            when (val result = activity.grade?.let { activityDataValidator.validateGrade(it) }) {
+//                is com.example.classroom.common.validator.Result.Error -> {
+//                    when (result.error) {
+//                        ActivityDataValidator.GradeError.TOO_MUCH -> {
+//                            isValid.value = false
+//                        }
+//                        ActivityDataValidator.GradeError.TOO_LITTLE -> {
+//                            isValid.value = false
+//                        }
+//                    }
+//                }
+//
+//                is com.example.classroom.common.validator.Result.Success -> {
+//                    isValid.value = true
+//                }
+//
+//                else -> {
+//                    isValid.value = true
+//                }
+//            }
+//
+//
+//            if (isValid.value){
+//                if (id != null){
+////                updateActivityUseCase(activity).onEach { result ->
+////                    when(result){
+////                        is Resource.Error -> {
+////                            //Timber.tag("AUTH_VM").e("Error ${result.message?.uiMessage}")
+////                            Log.e("AUTH_VM:", "Error ${result.message?.uiMessage}")
+////                            _stateAddActivity.value = AddActivityState(error = result.message)
+////                        }
+////                        is Resource.Loading -> {
+////                            Timber.tag("AUTH_VM").e("is loading")
+////                            _stateAddActivity.value = AddActivityState(isLoading = true)
+////                        }
+////                        is Resource.Success -> {
+////                            Timber.tag("AUTH_VM").e("success")
+////                            Log.e("AUTH_VM:", "success")
+////                            _stateAddActivity.value = AddActivityState(info = result.data)
+////                            Log.e("AUTH_VM:", "${stateAddActivity.value.info}")
+////                            _stateAddActivity.value.info?.let {
+////
+////                                delay(1000)
+////
+////                            }
+////                        }
+////                    }
+////
+////                }.launchIn(viewModelScope)
+//                }else{
+////                    insertActivityUseCase(activity).onEach { result ->
+////                    when(result){
+////                        is Resource.Error -> {
+////                            //Timber.tag("AUTH_VM").e("Error ${result.message?.uiMessage}")
+////                            Log.e("AUTH_VM:", "Error ${result.message?.uiMessage}")
+////                            _stateAddActivity.value = AddActivityState(error = result.message)
+////                        }
+////                        is Resource.Loading -> {
+////                            Timber.tag("AUTH_VM").e("is loading")
+////                            _stateAddActivity.value = AddActivityState(isLoading = true)
+////                        }
+////                        is Resource.Success -> {
+////                            Timber.tag("AUTH_VM").e("success")
+////                            Log.e("AUTH_VM:", "success")
+////                            _stateAddActivity.value = AddActivityState(info = result.data)
+////                            Log.e("AUTH_VM:", "${stateAddActivity.value.info}")
+////                            _stateAddActivity.value.info?.let {
+////
+////                                delay(1000)
+////
+////                            }
+////                        }
+////                    }
+////
+////                }.launchIn(viewModelScope)
+//                }
+//            }
+//        }
 
     sealed class ValidationEvent {
         object Success: ValidationEvent()

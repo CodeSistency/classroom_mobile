@@ -4,7 +4,7 @@ import android.util.Patterns
 import com.example.classroom.domain.use_case.validators.ValidationResult
 
 class ValidateGrade {
-    fun execute(grade: Double?): ValidationResult {
+    fun execute(grade: Int): ValidationResult {
         if(grade == null) {
             return ValidationResult(
                 successful = false,

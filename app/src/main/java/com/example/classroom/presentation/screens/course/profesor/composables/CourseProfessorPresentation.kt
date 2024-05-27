@@ -72,10 +72,11 @@ fun CourseProfessorPresentation(
     val (selected, setSelected) = remember { mutableStateOf(0) }
 //    val userInfo = viewModel.userInfo.collectAsState(initial = emptyList())
     val courseInfo = courseViewmodel.courseFlow.collectAsState(initial = null)
-    var scope = rememberCoroutineScope()
+    val scope = rememberCoroutineScope()
     LaunchedEffect(key1 = true, block = {
         courseViewmodel.getCourseByIdLocal(id)
-        viewModel.getActivitiesByCourse(id)
+        courseViewmodel.getUsersByCourseRemote(id)
+        courseViewmodel.getUsersByCourseLocal(id)
         viewModel.getActivitiesByCourse(id)
     })
     Column(
@@ -215,7 +216,7 @@ fun CourseProfessorPresentation(
                             ListUsers(viewModel, courseViewmodel, scope, id)
                         }
                         1 -> {
-                            ListActivities(viewModel, scope, id, navController)
+                            ListActivities(viewModel, courseViewmodel, scope, id, navController)
                         }
                     }
                 }

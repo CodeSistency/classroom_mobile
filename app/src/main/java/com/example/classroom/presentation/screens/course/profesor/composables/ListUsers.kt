@@ -55,6 +55,9 @@ fun ListUsers(viewModel: ActivityViewmodel, courseViewmodel: CourseViewmodel, sc
                     Spacer(modifier = Modifier.height(10.dp))
                     IconButton(onClick = {
                         scope.launch {
+                            courseViewmodel.getCourseByIdLocal(id)
+                            courseViewmodel.getUsersByCourseRemote(id)
+                            courseViewmodel.getUsersByCourseLocal(id)
                             viewModel.getActivitiesByCourse(id)
                         }
                       }) {

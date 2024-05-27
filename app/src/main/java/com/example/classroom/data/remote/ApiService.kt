@@ -14,6 +14,7 @@ import com.example.classroom.domain.model.entity.LocalActivities
 import com.example.classroom.domain.model.entity.LocalCourses
 import kotlinx.coroutines.flow.Flow
 import com.example.classroom.common.ResponseGenericAPi
+import com.example.classroom.data.remote.dto.courses.GetUsersByCourseResponse
 
 interface ApiService {
 
@@ -27,7 +28,7 @@ interface ApiService {
     suspend fun deleteCourseRemote(id: String) : ResponseGenericAPi<Boolean>
     suspend fun getCoursesRemote(id: String) : ResponseGenericAPi<GetCoursesResponseDto>
     suspend fun getCourseByIdRemote(id: String) : ResponseGenericAPi<CourseResponseDto>
-    suspend fun getUsersByCourseRemote(id: String) : ResponseGenericAPi<GetCoursesResponseDto>
+    suspend fun getUsersByCourseRemote(id: String) : ResponseGenericAPi<GetUsersByCourseResponse>
     suspend fun getCoursesWithFlowRemote() : Flow<List<LocalCourses>>
     suspend fun joinCourseRemote(id: String, token: String) : ResponseGenericAPi<CourseResponseDto>
     suspend fun joinUserToCourseRemote(id: String, token: String) : ResponseGenericAPi<CourseResponseDto>

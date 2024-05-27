@@ -178,19 +178,22 @@ fun SelectedOptionDialog(
                                 }
                             ) {
                             }
-                            Icon(Icons.Default.ArrowForwardIos, contentDescription = null,
-                                modifier = Modifier.clickable {
-                                    if (state.isLoading){
+                            IconButton(onClick = {
+                                if (state.isLoading){
 
-                                    }else{
-                                        if (input.isNotBlank()){
-                                            scope.launch {
-                                                viewmodel.joinCourse(user.value!!.idApi, input)
-                                            }
+                                }else{
+                                    if (input.isNotBlank()){
+                                        scope.launch {
+                                            viewmodel.joinCourse(user.value!!.idApi, input)
                                         }
-                                       
                                     }
-                                })
+                                }
+                            }) {
+                                Icon(Icons.Default.ArrowForwardIos,
+                                    contentDescription = null,
+                                    tint = Color.Black)
+                            }
+
                         }
                     }
                 }

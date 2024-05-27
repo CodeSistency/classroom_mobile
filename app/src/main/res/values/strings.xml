@@ -33,7 +33,7 @@
     <string name="register_activity_title_text">Titulo</string>
     <string name="register_activity_descripcion_text">Descripcion</string>
     <string name="register_activity_grade_text">Notas</string>
-    <string name="register_activity_boton_text" />
+    <string name="register_activity_boton_text" >Registrar</string>
     <string name="join_class_text">Unirse a clase</string>
     <string name="join_user_text">Unir estudiante</string>
 </resources>

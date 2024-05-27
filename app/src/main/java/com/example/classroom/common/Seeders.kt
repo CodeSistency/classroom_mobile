@@ -11,6 +11,7 @@ import com.example.classroom.domain.model.entity.Status
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import proyecto.person.appconsultapopular.data.local.db.AppDatabase
+import java.util.UUID
 import kotlin.random.Random
 
 class Seeders(
@@ -63,6 +64,7 @@ class Seeders(
                 section = sections[i],
                 subject = subjects[i],
                 area = Area.values().random(),
+                token = "${UUID(4, 4)}"
 //                users = users.shuffled().take(Random.nextInt(1, 4)) // Randomly assign 1 to 3 users to each course
             )
             lifecycle.coroutineScope.launch {
@@ -82,7 +84,7 @@ class Seeders(
             "Complete a biology project.",
             "Finish the computer science assignment."
         )
-        val grades = listOf(95.0, 88.5, 92.0, 85.5, 90.0)
+        val grades = listOf(95, 88, 92, 85, 90)
         val startDates = listOf("2024-06-01", "2024-06-05", "2024-06-10", "2024-06-15", "2024-06-20")
         val endDates = listOf("2024-06-15", "2024-06-20", "2024-06-25", "2024-06-30", "2024-07-05")
         val statuses = listOf(Status.OPEN, Status.LATE, Status.FINISHED, Status.OPEN, Status.LATE)
@@ -93,8 +95,7 @@ class Seeders(
                 val activity = LocalActivities(
                     idApi = "${i}",
                     idCourse = courses[i].idApi,
-                    owner = courses[i].owner,
-                    ownerName = courses[i].ownerName,
+
                     title = activityTitles[i],
                     description = activityDescriptions[i],
                     grade = grades[i],

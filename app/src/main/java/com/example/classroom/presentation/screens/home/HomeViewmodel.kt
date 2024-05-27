@@ -50,11 +50,31 @@ class HomeViewmodel(
     init {
         viewModelScope.launch {
             userInfo = repositoryBundle.loginRepository.getUserLogged()
-            filteredListCoursesFLow = repositoryBundle.coursesRepository.getCoursesWithFlow()
-            filteredListMyCoursesFLow = userInfo.first()?.let { user ->
+            listCoursesFlow = userInfo.first()?.let { user ->
                 repositoryBundle.coursesRepository.getCoursesWithFlow().map { courses ->
                     courses.filter {
                         it.owner != user.idApi
+                    }
+                }
+            } ?: emptyFlow()
+            filteredListCoursesFLow = userInfo.first()?.let { user ->
+                repositoryBundle.coursesRepository.getCoursesWithFlow().map { courses ->
+                    courses.filter {
+                        it.owner != user.idApi
+                    }
+                }
+            } ?: emptyFlow()
+            filteredListMyCoursesFLow = userInfo.first()?.let { user ->
+                repositoryBundle.coursesRepository.getCoursesWithFlow().map { courses ->
+                    courses.filter {
+                        it.owner == user.idApi
+                    }
+                }
+            } ?: emptyFlow()
+            listMyCoursesFlow = userInfo.first()?.let { user ->
+                repositoryBundle.coursesRepository.getCoursesWithFlow().map { courses ->
+                    courses.filter {
+                        it.owner == user.idApi
                     }
                 }
             } ?: emptyFlow()
@@ -187,5 +207,8 @@ class HomeViewmodel(
         }.launchIn(viewModelScope)
     }
 
+    suspend fun logout(){
+        repositoryBundle.loginRepository.logout()
+    }
 
 }

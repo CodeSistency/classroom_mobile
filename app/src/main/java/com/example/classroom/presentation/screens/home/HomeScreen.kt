@@ -39,7 +39,7 @@ fun HomeScreen(navController: NavController, viewmodel: HomeViewmodel){
         snackbarDelegate = snackbarDelegate,
         snackbarHost = snackbarHost,
         navController = navController,
-        topBar = { TopBarHome() },
+        topBar = { TopBarHome(viewmodel, navController, scope) },
         content = {
                     HomePresentation(viewmodel, navController)
                   },

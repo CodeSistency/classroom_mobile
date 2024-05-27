@@ -124,59 +124,46 @@ fun Navigation(
             }
 
             composable(
-                route = "${Destination.REGISTRO_ACTIVITY.screenRoute}?id={id}",
-                arguments = listOf(navArgument("id") { nullable = true })
+                route = "${Destination.REGISTRO_ACTIVITY.screenRoute}?idCourse={idCourse}&email={email}&id={id}",
+                arguments = listOf(
+                    navArgument("idCourse") { nullable = false },
+                    navArgument("email") { nullable = false },
+                    navArgument("id") { nullable = true })
             ) { backStackEntry ->
                 val id = backStackEntry.arguments?.getString("id")
-                AddActivityScreen(
-                    id = id,
-                    viewModel = ActivityViewmodel(
-                        activityDataValidator = ActivityDataValidator(),
-                        insertActivityUseCase = App.appModule.insertActivityUseCase,
-                        repositoryBundle = App.appModule.repositoryBundle,
-                        updateActivityUseCase = App.appModule.updateActivityUseCase,
-                        getActivitiesUseCase = App.appModule.getActivitiesUseCase,
-                        activitiesValidator = App.appModule.validatorBundle.activitiesValidator,
-                        getActivitiesByUserUseCase = App.appModule.getActivitiesByUserUseCase
-                    ), // Assuming you have a RegisterViewModel
-                    navController = navController,
-                    focusManager = focusManager
-                )
+                val idCourse = backStackEntry.arguments?.getString("idCourse")
+                val email = backStackEntry.arguments?.getString("email")
+
+                if (idCourse != null && email != null) {
+                    AddActivityScreen(
+                        idCourse,
+                        email = email,
+                        id = id,
+                        viewModel = ActivityViewmodel(
+                            activityDataValidator = ActivityDataValidator(),
+                            insertActivityUseCase = App.appModule.insertActivityUseCase,
+                            repositoryBundle = App.appModule.repositoryBundle,
+                            updateActivityUseCase = App.appModule.updateActivityUseCase,
+                            getActivitiesUseCase = App.appModule.getActivitiesUseCase,
+                            activitiesValidator = App.appModule.validatorBundle.activitiesValidator,
+                            getActivitiesByUserUseCase = App.appModule.getActivitiesByUserUseCase
+                        ), // Assuming you have a RegisterViewModel
+                        navController = navController,
+                        focusManager = focusManager
+                    )
+                }
             }
 
             composable(
                 route = "${Destination.REGISTRO_COURSE.screenRoute}?id={id}",
-                arguments = listOf(navArgument("id") { nullable = true })
-            ) { backStackEntry ->
-                val id = backStackEntry.arguments?.getString("id")
-                AddCourseScreen(
-                    id = id,
-                    viewModel = CourseViewmodel(
-                        repositoryBundle = App.appModule.repositoryBundle,
-                        courseDataValidator = CourseDataValidator(),
-                        getActivitiesUseCase = App.appModule.getActivitiesUseCase,
-                        insertCourseUseCase = App.appModule.insertCourseUseCase,
-                        updateCourseUseCase = App.appModule.updateCourseUseCase,
-                        coursesValidator = App.appModule.validatorBundle.coursesValidator,
-                        getCoursesByIdUseCase = App.appModule.getCoursesByIdUseCase,
-                        joinUserToCourseUseCase = App.appModule.joinUserToCourseUseCase,
-
-                    ), // Assuming you have a RegisterViewModel
-                    navController = navController,
-                    focusManager = focusManager
-                )
-            }
-            composable(
-                route = "${Destination.COURSES.screenRoute}?id={id}&isOwner={isOwner}",
                 arguments = listOf(
-                    navArgument("id") { type = NavType.StringType; nullable = false },
-                    navArgument("isOwner") { type = NavType.BoolType; nullable = false }
-                    )
+
+                    navArgument("id") { nullable = true }
+                )
             ) { backStackEntry ->
                 val id = backStackEntry.arguments?.getString("id")
-                val isOwner = backStackEntry.arguments?.getBoolean("isOwner")
-                if (id != null && isOwner != null) {
-                    CourseScreen(
+
+                    AddCourseScreen(
                         id = id,
                         viewModel = CourseViewmodel(
                             repositoryBundle = App.appModule.repositoryBundle,
@@ -187,7 +174,39 @@ fun Navigation(
                             coursesValidator = App.appModule.validatorBundle.coursesValidator,
                             getCoursesByIdUseCase = App.appModule.getCoursesByIdUseCase,
                             joinUserToCourseUseCase = App.appModule.joinUserToCourseUseCase,
-                            ),
+                            getUsersByCourseUseCase = App.appModule.getUsersByCourseUseCase,
+                            ), // Assuming you have a RegisterViewModel
+                        navController = navController,
+                        focusManager = focusManager
+                    )
+
+            }
+            composable(
+                route = "${Destination.COURSES.screenRoute}?id={id}&email={email}&isOwner={isOwner}",
+                arguments = listOf(
+                    navArgument("id") { type = NavType.StringType; nullable = false },
+                    navArgument("email") { nullable = false },
+                    navArgument("isOwner") { type = NavType.BoolType; nullable = false }
+                    )
+            ) { backStackEntry ->
+                val id = backStackEntry.arguments?.getString("id")
+                val email = backStackEntry.arguments?.getString("email")
+                val isOwner = backStackEntry.arguments?.getBoolean("isOwner")
+                if (id != null && isOwner != null && email != null) {
+                    CourseScreen(
+                        id = id,
+                        email = email,
+                        viewModel = CourseViewmodel(
+                            repositoryBundle = App.appModule.repositoryBundle,
+                            courseDataValidator = CourseDataValidator(),
+                            getActivitiesUseCase = App.appModule.getActivitiesUseCase,
+                            insertCourseUseCase = App.appModule.insertCourseUseCase,
+                            updateCourseUseCase = App.appModule.updateCourseUseCase,
+                            coursesValidator = App.appModule.validatorBundle.coursesValidator,
+                            getCoursesByIdUseCase = App.appModule.getCoursesByIdUseCase,
+                            joinUserToCourseUseCase = App.appModule.joinUserToCourseUseCase,
+                            getUsersByCourseUseCase = App.appModule.getUsersByCourseUseCase,
+                        ),
                         activityViewmodel = ActivityViewmodel(
                             activityDataValidator = ActivityDataValidator(),
                             insertActivityUseCase = App.appModule.insertActivityUseCase,

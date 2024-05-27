@@ -3,6 +3,7 @@ package com.example.classroom.domain.model.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.classroom.data.remote.dto.courses.GetUsersByCourseResponse
 import com.example.classroom.data.remote.dto.login.signIn.SignInResponseDto
 import com.example.classroom.data.remote.dto.login.signUp.SignUpResponseDto
 
@@ -71,4 +72,20 @@ fun SignUpResponseDto.toLoginLocal(): LocalUser {
         birthdate = "",
         isLogged = false
     )
+}
+
+fun GetUsersByCourseResponse.toLocal(): List<LocalUser> {
+    return data.users.map {
+        LocalUser(
+            idApi = it.userId.toString(),
+            name = it.name,
+            lastname = it.lastName,
+            email = it.email,
+            phone = it.phone,
+//        birthdate = data.birthdate,
+            gender = gendertoInt(it.gender),
+            birthdate = "",
+            isLogged = false
+        )
+    }
 }

@@ -63,6 +63,8 @@ import proyecto.person.appconsultapopular.common.SnackbarDelegate
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun AddActivityScreen(
+    idCourse: String,
+    email: String,
     id: String?,
     viewModel: ActivityViewmodel,
     focusManager: FocusManager,
@@ -117,12 +119,13 @@ fun AddActivityScreen(
                             darkTheme = false,
                             valueField = state.title,
                             fieldRestriction = {
-                                val withoutWhiteSpace = it.removeSuffix(" ")
-                                if (withoutWhiteSpace != "" || it.isEmpty()) {
-                                    withoutWhiteSpace
-                                } else {
-                                    null
-                                }
+                                               it
+//                                val withoutWhiteSpace = it.removeSuffix(" ")
+//                                if (withoutWhiteSpace != "" || it.isEmpty()) {
+//                                    withoutWhiteSpace
+//                                } else {
+//                                    null
+//                                }
                             },
                             valueOnChange = {
                                 viewModel.onActivityEvent(ActivityFormEvent.TitleChanged(it))
@@ -138,12 +141,13 @@ fun AddActivityScreen(
                             darkTheme = false,
                             valueField = state.description,
                             fieldRestriction = {
-                                val withoutWhiteSpace = it.removeSuffix(" ")
-                                if (withoutWhiteSpace != "" || it.isEmpty()) {
-                                    withoutWhiteSpace
-                                } else {
-                                    null
-                                }
+                                               it
+//                                val withoutWhiteSpace = it.removeSuffix(" ")
+//                                if (withoutWhiteSpace != "" || it.isEmpty()) {
+//                                    withoutWhiteSpace
+//                                } else {
+//                                    null
+//                                }
                             },
                             valueOnChange = {
                                 viewModel.onActivityEvent(ActivityFormEvent.DescriptionChanged(it))
@@ -167,7 +171,10 @@ fun AddActivityScreen(
                                 }
                             },
                             valueOnChange = {
-                                viewModel.onActivityEvent(ActivityFormEvent.GradeChanged(it.toDouble()))
+                                if ( it.all { it.isDigit() }) {
+                                    viewModel.onActivityEvent(ActivityFormEvent.GradeChanged(it.toInt()))
+                                }
+
                             }
                         ) {
                             focusManager.moveFocus(FocusDirection.Down)
@@ -229,14 +236,13 @@ fun AddActivityScreen(
                                     id,
                                     ActivityRequestDto(
                                         description = state.description,
-                                        owner = "",
-                                        ownerName = "",
                                         title = state.title,
                                         status = state.status,
-                                        startDate = state.startDate,
-                                        endDate = state.endDate,
-                                        idCourse = "1",
+                                        startDate = "16/06/24",
+                                        endDate = "16/07/24",
+                                        idCourse = idCourse,
                                         grade = state.grade,
+                                        email = email
                                     )
                                     ))
 

@@ -36,7 +36,7 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Seeders(lifecycle).addActivities(App.appModule.db)
+//        Seeders(lifecycle).addActivities(App.appModule.db)
         setContent {
             val systemUiController = rememberSystemUiController()
 //            systemUiController.setStatusBarColor(

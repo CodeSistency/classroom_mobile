@@ -17,6 +17,7 @@ import com.example.classroom.domain.model.entity.LocalUser
 import com.example.classroom.domain.model.entity.toCoursesLocal
 import com.example.classroom.domain.use_case.activities.GetActivitiesUseCase
 import com.example.classroom.domain.use_case.courses.GetCoursesByIdUseCase
+import com.example.classroom.domain.use_case.courses.GetUsersByCourseUseCase
 import com.example.classroom.domain.use_case.courses.InsertCourseUseCase
 import com.example.classroom.domain.use_case.courses.JoinUserToCourseUseCase
 import com.example.classroom.domain.use_case.courses.UpdateCourseUseCase
@@ -25,6 +26,7 @@ import com.example.classroom.presentation.screens.course.AddCourse.states.AddCou
 import com.example.classroom.presentation.screens.course.AddCourse.CourseFormEvent
 import com.example.classroom.presentation.screens.course.AddCourse.states.CourseFormState
 import com.example.classroom.presentation.screens.course.states.GetCourseState
+import com.example.classroom.presentation.screens.course.states.GetUsersState
 import com.example.classroom.presentation.screens.course.states.JoinUserState
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -48,6 +50,7 @@ class CourseViewmodel(
     private val getActivitiesUseCase: GetActivitiesUseCase,
     private val getCoursesByIdUseCase: GetCoursesByIdUseCase,
     private val joinUserToCourseUseCase: JoinUserToCourseUseCase,
+    private val getUsersByCourseUseCase: GetUsersByCourseUseCase,
     private val repositoryBundle: RepositoryBundle,
 //    private val insertActivityUseCase: InsertActivityUseCase,
 //    private val updateActivityUseCase: UpdateActivityUseCase,
@@ -70,6 +73,9 @@ class CourseViewmodel(
 
     private val _stateGetCourse = mutableStateOf(GetCourseState())
     val stateGetCourse: State<GetCourseState> = _stateGetCourse
+
+    private val _stateGetUsers = mutableStateOf(GetUsersState())
+    val stateGetUsers: State<GetUsersState> = _stateGetUsers
 
     private val _stateJoinUser = mutableStateOf(JoinUserState())
     val stateJoinUser: State<JoinUserState> = _stateJoinUser
@@ -111,9 +117,36 @@ class CourseViewmodel(
         }
     }
 
-   suspend fun getUsersByCourse(id: String){
-       listStudensFlow = repositoryBundle.coursesRepository.getUsersByCourseWithFlow(id)
+    suspend fun getUsersByCourseRemote(id: String){
+        getUsersByCourseUseCase(id).onEach { result ->
+            when(result){
+                is Resource.Error -> {
+                    //Timber.tag("AUTH_VM").e("Error ${result.message?.uiMessage}")
+                    Log.e("ACTIVITIES:", "Error ${result.message?.uiMessage}")
+                    _stateGetUsers.value = GetUsersState(error = result.message)
+                }
+                is Resource.Loading -> {
+                    Timber.tag("ACTIVITIES").e("is loading")
+                    _stateGetUsers.value = GetUsersState(isLoading = true)
+                }
+                is Resource.Success -> {
+                    Timber.tag("ACTIVITIES_VM").e("success")
+                    Log.e("ACTIVITIES:", "success")
+                    _stateGetUsers.value = GetUsersState(info = result.data)
+                    Log.e("ACTIVITIES:", "${_stateCourse.value.info}")
+                    _stateGetUsers.value.info?.let {
+                        repositoryBundle.coursesRepository.updateUsersInCourse(it, id)
+                        delay(300)
+                    }
+                }
+            }
+        }.launchIn(viewModelScope)
 
+    }
+
+   suspend fun getUsersByCourseLocal(id: String){
+       listStudensFlow = repositoryBundle.coursesRepository.getUsersByCourseWithFlow(id)
+        Log.e("students", listStudensFlow.first().toString())
        filteredListUsersByCourseFLow = if (userInput.value.isNotBlank()){
            listStudensFlow.map { list ->
                list.filter { it.name.startsWith(userInput.value) }
@@ -157,7 +190,7 @@ class CourseViewmodel(
         }.launchIn(viewModelScope)
 
     }
-    fun onActivityEvent(event: CourseFormEvent) {
+    fun onCourseEvent(event: CourseFormEvent) {
         when(event) {
 
             is CourseFormEvent.AreaChanged -> {
@@ -235,6 +268,7 @@ class CourseViewmodel(
                         _stateCourse.value = AddCourseState(info = result.data)
                         Log.e("ACTIVITIES:", "${_stateCourse.value.info}")
                         _stateCourse.value.info?.let {
+                            repositoryBundle.coursesRepository.insertCourse(it)
 //                            insertUserDb(it)
                             delay(300)
 

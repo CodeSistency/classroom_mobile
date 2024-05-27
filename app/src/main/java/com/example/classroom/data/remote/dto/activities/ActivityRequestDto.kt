@@ -9,16 +9,18 @@ data class ActivityRequestDto(
 
     @SerialName("id_course")
     val idCourse: String,
-    @SerialName("owner")
-    val owner: String,
-    @SerialName("owner_name")
-    val ownerName: String,
+//    @SerialName("owner")
+//    val owner: String,
+//    @SerialName("owner_name")
+//    val ownerName: String,
     @SerialName("title")
     val title: String,
     @SerialName("description")
     val description: String?,
     @SerialName("grade")
-    val grade: Double? = null,
+    val grade: Int = 0,
+    @SerialName("email")
+    val email: String,
     @SerialName("start_date")
     val startDate: String,
     @SerialName("end_date")

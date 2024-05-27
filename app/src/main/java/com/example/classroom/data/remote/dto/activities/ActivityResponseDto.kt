@@ -15,25 +15,25 @@ data class ActivityResponseDto(
 ) {
     @Serializable
     data class Data(
-        @SerialName("id_api")
-        val idApi: String,
-        @SerialName("id_course")
-        val idCourse: String,
-        @SerialName("owner")
-        val owner: String,
-        @SerialName("owner_name")
-        val ownerName: String,
+        @SerialName("id")
+        val idApi: Int,
+        @SerialName("course_id")
+        val idCourse: Int,
+        @SerialName("course_name")
+        val nameCourse: String,
         @SerialName("title")
         val title: String,
         @SerialName("description")
         val description: String?,
         @SerialName("grade")
-        val grade: Double? = null,
+        val grade: Int,
         @SerialName("start_date")
-        val startDate: String,
+        val startDate: String?,
         @SerialName("end_date")
-        val endDate: String,
-        @SerialName("status")
-        val status: Status
+        val endDate: String?,
+        @SerialName("status_id")
+        val status: Int,
+        @SerialName("status_name")
+        val statusName: Status
     )
 }
