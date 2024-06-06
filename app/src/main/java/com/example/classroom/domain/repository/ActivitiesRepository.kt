@@ -14,6 +14,9 @@ interface ActivitiesRepository {
     suspend fun deleteActivityRemote(id: String) : ResponseGenericAPi<Boolean>
     suspend fun getActivitiesRemote(id: String) : ResponseGenericAPi<GetActivitiesResponseDto>
     suspend fun getActivitiesByCourseRemote(id: String) : ResponseGenericAPi<GetActivitiesResponseDto>
+
+    suspend fun getActivitiesByUserRemote(id: String) : ResponseGenericAPi<GetActivitiesResponseDto>
+
     suspend fun getActivitiesWithFlowRemote() : Flow<List<LocalActivities>>
 
     //Local Methods

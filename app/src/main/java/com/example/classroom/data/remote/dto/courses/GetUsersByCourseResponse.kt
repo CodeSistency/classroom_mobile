@@ -35,28 +35,40 @@ data class GetUsersByCourseResponse(
         @SerialName("areaName")
         val areaName: String,
         @SerialName("users")
-        val users: List<Users>
-    ){
+        val users: List<User>
+    ) {
         @Serializable
-        data class Users(
+        data class User(
             @SerialName("id")
+            val id: Int,
+            @SerialName("userId")
             val userId: Int,
-            @SerialName("email")
-            val email: String,
-            @SerialName("password")
-            val password: String,
-            @SerialName("user_name")
-            val username: String,
-            @SerialName("create_date")
-            val creation: String,
-            @SerialName("genderId")
-            val gender: Int,
-            @SerialName("phone")
-            val phone: String,
-            @SerialName("name")
-            val name: String,
-            @SerialName("last_name")
-            val lastName: String
-        )
+            @SerialName("courseId")
+            val courseId: Int,
+            @SerialName("user")
+            val user: UserDetails
+        ) {
+            @Serializable
+            data class UserDetails(
+                @SerialName("id")
+                val id: Int,
+                @SerialName("email")
+                val email: String,
+                @SerialName("password")
+                val password: String,
+                @SerialName("create_date")
+                val createDate: String,
+                @SerialName("user_name")
+                val userName: String,
+                @SerialName("genderId")
+                val genderId: Int,
+                @SerialName("name")
+                val name: String,
+                @SerialName("last_name")
+                val lastName: String,
+                @SerialName("phone")
+                val phone: String
+            )
+        }
     }
 }

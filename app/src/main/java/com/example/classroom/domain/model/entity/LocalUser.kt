@@ -18,7 +18,9 @@ data class LocalUser(
     @ColumnInfo("birthdate") val birthdate: String,
     @ColumnInfo("phone") val phone: String,
     @ColumnInfo("isLogged") val isLogged: Boolean,
-    @ColumnInfo( "coursesId") val coursesId: String = "[]")
+    @ColumnInfo( "coursesId") val coursesId: List<Int> = listOf(),
+//    @ColumnInfo( "coursesId") val coursesId: String = "[]"
+)
 
 enum class Gender(
     name: String,
@@ -78,12 +80,12 @@ fun GetUsersByCourseResponse.toLocal(): List<LocalUser> {
     return data.users.map {
         LocalUser(
             idApi = it.userId.toString(),
-            name = it.name,
-            lastname = it.lastName,
-            email = it.email,
-            phone = it.phone,
+            name = it.user.name,
+            lastname = it.user.lastName,
+            email = it.user.email,
+            phone = it.user.phone,
 //        birthdate = data.birthdate,
-            gender = gendertoInt(it.gender),
+            gender = gendertoInt(it.user.genderId),
             birthdate = "",
             isLogged = false
         )

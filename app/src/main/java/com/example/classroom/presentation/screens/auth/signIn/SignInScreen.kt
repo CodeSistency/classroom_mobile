@@ -113,11 +113,7 @@ fun SignInScreen(
                         painter = painterResource(id = R.drawable.ic_logo),
                         contentDescription = "logo"
                     )
-                    Text(text = "Registro",
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .padding(vertical = 10.dp),
-                    )
+
                 }
                 LazyColumn() {
                     item {

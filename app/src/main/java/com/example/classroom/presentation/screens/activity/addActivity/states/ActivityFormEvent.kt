@@ -7,7 +7,7 @@ import com.example.classroom.domain.model.entity.Status
 sealed class ActivityFormEvent {
     data class TitleChanged(val title : String) : ActivityFormEvent()
     data class DescriptionChanged(val description : String) : ActivityFormEvent()
-    data class GradeChanged(val grade : Int) : ActivityFormEvent()
+    data class GradeChanged(val grade : String) : ActivityFormEvent()
     data class StartDateChanged(val date : String) : ActivityFormEvent()
     data class EndDateChanged(val date : String) : ActivityFormEvent()
     data class StatusChanged(val status : Status) : ActivityFormEvent()

@@ -57,8 +57,7 @@ interface AppDao {
         return getAllUsersWithFlow()
             .map { users ->
                 users.filter { user ->
-                    val courses = UsersCoursesIdConverter().fromString(user.coursesId)
-                    courses.contains(courseId)
+                    user.coursesId.contains(courseId.toInt())
                 }
             }
     }
@@ -73,9 +72,8 @@ interface AppDao {
 
         // Update the coursesId for each user in the list if the course ID is not already present
         val updatedUsers = usersToUpdate.map { user ->
-            val courses = UsersCoursesIdConverter().fromString(user.coursesId)
-            if (!courses.contains(newCourseId)) {
-                user.copy(coursesId = UsersCoursesIdConverter().fromList(courses + newCourseId))
+            if (!user.coursesId.contains(newCourseId.toInt())) {
+                user.copy(coursesId = user.coursesId + newCourseId.toInt())
             } else {
                 user
             }

@@ -20,11 +20,11 @@ class Seeders(
 
     fun addUsers(db: AppDatabase){
         val users = listOf(
-            LocalUser(idApi = "U1", name = "Alice", lastname = "Smith", email = "alice@example.com", gender = Gender.Woman, birthdate = "1990-01-01", phone = "123-456-7890", isLogged = true, coursesId = "[1, 2, 3, 4, 5]"),
-            LocalUser(idApi = "U2", name = "Bob", lastname = "Johnson", email = "bob@example.com", gender = Gender.Man, birthdate = "1985-05-23", phone = "123-456-7891", isLogged = false, coursesId = "[1, 2, 3, 4, 5]"),
-            LocalUser(idApi = "U3", name = "Charlie", lastname = "Lee", email = "charlie@example.com", gender = Gender.Other, birthdate = "1992-08-15", phone = "123-456-7892", isLogged = false, coursesId = "[1, 2, 3, 4, 5]"),
-            LocalUser(idApi = "U4", name = "Diana", lastname = "Brown", email = "diana@example.com", gender = Gender.Woman, birthdate = "1988-11-30", phone = "123-456-7893", isLogged = false, coursesId = "[1, 2, 3, 4, 5]"),
-            LocalUser(idApi = "U5", name = "Evan", lastname = "Davis", email = "evan@example.com", gender = Gender.Man, birthdate = "1995-02-18", phone = "123-456-7894", isLogged = false, coursesId = "[1, 2, 3, 4, 5]")
+            LocalUser(idApi = "U1", name = "Alice", lastname = "Smith", email = "alice@example.com", gender = Gender.Woman, birthdate = "1990-01-01", phone = "123-456-7890", isLogged = true, coursesId = listOf(1, 2, 3, 4, 5)),
+            LocalUser(idApi = "U2", name = "Bob", lastname = "Johnson", email = "bob@example.com", gender = Gender.Man, birthdate = "1985-05-23", phone = "123-456-7891", isLogged = false, coursesId = listOf(1, 2, 3, 4, 5)),
+            LocalUser(idApi = "U3", name = "Charlie", lastname = "Lee", email = "charlie@example.com", gender = Gender.Other, birthdate = "1992-08-15", phone = "123-456-7892", isLogged = false, coursesId = listOf(1, 2, 3, 4, 5)),
+            LocalUser(idApi = "U4", name = "Diana", lastname = "Brown", email = "diana@example.com", gender = Gender.Woman, birthdate = "1988-11-30", phone = "123-456-7893", isLogged = false, coursesId = listOf(1, 2, 3, 4, 5)),
+            LocalUser(idApi = "U5", name = "Evan", lastname = "Davis", email = "evan@example.com", gender = Gender.Man, birthdate = "1995-02-18", phone = "123-456-7894", isLogged = false, coursesId = listOf(1, 2, 3, 4, 5))
         )
         lifecycle.coroutineScope.launch {
             db.appDao.insertAllLocalUsers(users)
@@ -47,11 +47,11 @@ class Seeders(
         val subjects = listOf("Science", "Math", "Literature", "Biology", "CS")
 
         val users = listOf(
-            LocalUser(idApi = "U1", name = "Alice", lastname = "Smith", email = "alice@example.com", gender = Gender.Woman, birthdate = "1990-01-01", phone = "123-456-7890", isLogged = true, coursesId = "[1, 2, 3, 4, 5]"),
-            LocalUser(idApi = "U2", name = "Bob", lastname = "Johnson", email = "bob@example.com", gender = Gender.Man, birthdate = "1985-05-23", phone = "123-456-7891", isLogged = false, coursesId = "[1, 2, 3, 4, 5]"),
-            LocalUser(idApi = "U3", name = "Charlie", lastname = "Lee", email = "charlie@example.com", gender = Gender.Other, birthdate = "1992-08-15", phone = "123-456-7892", isLogged = false, coursesId = "[1, 2, 3, 4, 5]"),
-            LocalUser(idApi = "U4", name = "Diana", lastname = "Brown", email = "diana@example.com", gender = Gender.Woman, birthdate = "1988-11-30", phone = "123-456-7893", isLogged = false, coursesId = "[1, 2, 3, 4, 5]"),
-            LocalUser(idApi = "U5", name = "Evan", lastname = "Davis", email = "evan@example.com", gender = Gender.Man, birthdate = "1995-02-18", phone = "123-456-7894", isLogged = false, coursesId = "[1, 2, 3, 4, 5]")
+            LocalUser(idApi = "U1", name = "Alice", lastname = "Smith", email = "alice@example.com", gender = Gender.Woman, birthdate = "1990-01-01", phone = "123-456-7890", isLogged = true, coursesId = listOf(1, 2, 3, 4, 5)),
+            LocalUser(idApi = "U2", name = "Bob", lastname = "Johnson", email = "bob@example.com", gender = Gender.Man, birthdate = "1985-05-23", phone = "123-456-7891", isLogged = false, coursesId = listOf(1, 2, 3, 4, 5)),
+            LocalUser(idApi = "U3", name = "Charlie", lastname = "Lee", email = "charlie@example.com", gender = Gender.Other, birthdate = "1992-08-15", phone = "123-456-7892", isLogged = false, coursesId = listOf(1, 2, 3, 4, 5)),
+            LocalUser(idApi = "U4", name = "Diana", lastname = "Brown", email = "diana@example.com", gender = Gender.Woman, birthdate = "1988-11-30", phone = "123-456-7893", isLogged = false, coursesId = listOf(1, 2, 3, 4, 5)),
+            LocalUser(idApi = "U5", name = "Evan", lastname = "Davis", email = "evan@example.com", gender = Gender.Man, birthdate = "1995-02-18", phone = "123-456-7894", isLogged = false, coursesId = listOf(1, 2, 3, 4, 5))
         )
 
         for (i in 0 until 5) {

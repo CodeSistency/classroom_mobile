@@ -40,7 +40,7 @@ data class GetActivitiesResponseDto(
             @SerialName("status_id")
             val status: Int,
             @SerialName("status_name")
-            val statusName: Status
+            val statusName: String
         )
 
 }

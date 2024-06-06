@@ -33,6 +33,7 @@ import com.example.classroom.domain.use_case.signUp.SignUpUseCase
 import com.example.classroom.presentation.SplashScreen
 import com.example.classroom.presentation.screens.activity.ActivityViewmodel
 import com.example.classroom.presentation.screens.activity.addActivity.AddActivityScreen
+import com.example.classroom.presentation.screens.activity.userActivities.UserActivitiesScreen
 import com.example.classroom.presentation.screens.auth.AuthViewModel
 import com.example.classroom.presentation.screens.auth.signIn.SignInScreen
 import com.example.classroom.presentation.screens.auth.signUp.SignUpScreen
@@ -222,6 +223,47 @@ fun Navigation(
                     )
                 }
             }
+            composable(
+                route = "${Destination.USER_ACTIVITIES.screenRoute}?id={id}&name={name}&course={course}",
+                arguments = listOf(
+                    navArgument("id") { type = NavType.StringType; nullable = false },
+                    navArgument("name") { nullable = false },
+                    navArgument("course") {  nullable = false }
+                )
+            ) { backStackEntry ->
+                val id = backStackEntry.arguments?.getString("id")
+                val name = backStackEntry.arguments?.getString("name")
+                val course = backStackEntry.arguments?.getString("course")
+                if (id != null && name != null && course != null) {
+                    UserActivitiesScreen(
+                        id = id,
+                        name = name,
+                        course = course,
+                        courseViewmodel = CourseViewmodel(
+                            repositoryBundle = App.appModule.repositoryBundle,
+                            courseDataValidator = CourseDataValidator(),
+                            getActivitiesUseCase = App.appModule.getActivitiesUseCase,
+                            insertCourseUseCase = App.appModule.insertCourseUseCase,
+                            updateCourseUseCase = App.appModule.updateCourseUseCase,
+                            coursesValidator = App.appModule.validatorBundle.coursesValidator,
+                            getCoursesByIdUseCase = App.appModule.getCoursesByIdUseCase,
+                            joinUserToCourseUseCase = App.appModule.joinUserToCourseUseCase,
+                            getUsersByCourseUseCase = App.appModule.getUsersByCourseUseCase,
+                        ),
+                        viewModel = ActivityViewmodel(
+                            activityDataValidator = ActivityDataValidator(),
+                            insertActivityUseCase = App.appModule.insertActivityUseCase,
+                            repositoryBundle = App.appModule.repositoryBundle,
+                            updateActivityUseCase = App.appModule.updateActivityUseCase,
+                            getActivitiesUseCase = App.appModule.getActivitiesUseCase,
+                            activitiesValidator = App.appModule.validatorBundle.activitiesValidator,
+                            getActivitiesByUserUseCase = App.appModule.getActivitiesByUserUseCase
+                        ),
+                        navController = navController,
+                    )
+                }
+            }
+
         }
     )
 }

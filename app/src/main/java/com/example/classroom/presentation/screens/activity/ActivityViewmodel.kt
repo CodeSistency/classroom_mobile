@@ -128,7 +128,7 @@ class ActivityViewmodel(
         val descriptionResult = activitiesValidator.validateNames.execute(stateActivityForm.description)
 //        val startDateResult = activitiesValidator.validateDate.execute(stateActivityForm.startDate)
 //        val endDateResult = activitiesValidator.validateDate.execute(stateActivityForm.endDate)
-        val gradeResult = activitiesValidator.validateGrade.execute(stateActivityForm.grade)
+        val gradeResult = activitiesValidator.validateGrade.execute(stateActivityForm.grade.toInt())
 
 
 
@@ -257,7 +257,7 @@ class ActivityViewmodel(
                 is Resource.Success -> {
                     Timber.tag("HOME_VM").e("success")
                     Log.e("HOME_VM:", "success")
-                    _stateGetActivities.value = GetActivitiesState(info = result.data?.toLocal())
+                    _stateGetActivities.value = GetActivitiesState(info = result.data)
                     Log.e("HOME_VM:", "${_stateGetActivities.value.info}")
                     _stateGetActivities.value.info?.let {
                         repositoryBundle.activitiesRepository.insertAllActivities(it)

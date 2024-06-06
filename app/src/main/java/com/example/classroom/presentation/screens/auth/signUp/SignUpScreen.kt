@@ -135,11 +135,7 @@ fun SignUpScreen(
                         painter = painterResource(id = R.drawable.ic_logo),
                         contentDescription = "logo"
                     )
-                    Text(text = "Registro",
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .padding(vertical = 10.dp),
-                        )
+
                 }
 
                 LazyColumn() {

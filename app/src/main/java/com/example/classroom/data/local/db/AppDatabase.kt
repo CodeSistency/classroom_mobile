@@ -7,6 +7,7 @@ import com.example.classroom.data.local.db.AppDao
 import com.example.classroom.domain.model.entity.LocalActivities
 import com.example.classroom.domain.model.entity.LocalCourses
 import com.example.classroom.domain.model.entity.LocalUser
+import com.example.classroom.domain.model.typeConverter.IntListTypeConverter
 import com.example.classroom.domain.model.typeConverter.UsersCoursesIdConverter
 import com.example.classroom.domain.model.typeConverter.UsersInCourseConverter
 
@@ -19,7 +20,7 @@ import com.example.classroom.domain.model.typeConverter.UsersInCourseConverter
 )
 
 @TypeConverters(
-    UsersInCourseConverter::class, UsersCoursesIdConverter::class
+    UsersInCourseConverter::class, UsersCoursesIdConverter::class, IntListTypeConverter::class
 )
 
 abstract class AppDatabase: RoomDatabase() {

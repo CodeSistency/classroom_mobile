@@ -236,6 +236,7 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
     override suspend fun insertActivityRemote(activity: ActivityRequestDto): ResponseGenericAPi<ActivityResponseDto> = withContext(
         Dispatchers.IO)  {
         val json = buildJsonObject {
+            put("course_id", activity.idCourse.toInt())
             put("title", activity.title)
             put("description", activity.description)
             put("grade", activity.grade)
@@ -257,6 +258,7 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
     override suspend fun updateActivityRemote(activity: ActivityRequestDto, id: String): ResponseGenericAPi<ActivityResponseDto> = withContext(
         Dispatchers.IO)  {
         val json = buildJsonObject {
+            put("id", id.toInt())
             put("title", activity.title)
             put("description", activity.description)
             put("grade", activity.grade)
@@ -298,6 +300,16 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
         Dispatchers.IO)  {
         val response = client.get{
             url("${Constants.BASE_URL}${HttpRoutes.ACTIVITIES_ENDPOINT}/${id}")
+            contentType(ContentType.Application.Json)
+        }
+        return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
+
+    }
+
+    override suspend fun getActivitiesByUserRemote(id: String): ResponseGenericAPi<GetActivitiesResponseDto> = withContext(
+        Dispatchers.IO)  {
+        val response = client.get{
+            url("${Constants.BASE_URL}${HttpRoutes.ACTIVITIES_ENDPOINT}/mine/${id}")
             contentType(ContentType.Application.Json)
         }
         return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)

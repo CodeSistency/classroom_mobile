@@ -2,6 +2,8 @@ package com.example.classroom.presentation.screens.activity.addActivity
 
 import android.annotation.SuppressLint
 import android.os.Build
+import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -35,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -57,6 +60,8 @@ import com.example.classroom.presentation.theme.Azul
 import com.example.classroom.presentation.theme.PaddingCustom
 import kotlinx.coroutines.launch
 import proyecto.person.appconsultapopular.common.SnackbarDelegate
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -76,6 +81,7 @@ fun AddActivityScreen(
     var dialogState: SetupCustomDialogState by remember {
         mutableStateOf(SetupCustomDialogState.Default())
     }
+    val context = LocalContext.current
     val snackbarHost = remember { SnackbarHostState() }
     val snackbarDelegate = remember { SnackbarDelegate() }
     val scaffoldState = rememberScaffoldState()
@@ -104,11 +110,7 @@ fun AddActivityScreen(
                         painter = painterResource(id = R.drawable.ic_logo),
                         contentDescription = "logo"
                     )
-                    Text(text = "Registro",
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .padding(vertical = 10.dp),
-                    )
+
                 }
 
                 LazyColumn() {
@@ -161,18 +163,20 @@ fun AddActivityScreen(
                         ItemInputField(
                             titulo = stringResource(id = R.string.register_activity_grade_text),
                             darkTheme = false,
+                            isNumberInput = true,
                             valueField = state.grade.toString() ?: "",
                             fieldRestriction = {
-                                val withoutWhiteSpace = it.removeSuffix(" ")
-                                if (withoutWhiteSpace != "" || it.isEmpty()) {
-                                    withoutWhiteSpace
-                                } else {
-                                    null
-                                }
+                                               it
+//                                val withoutWhiteSpace = it.removeSuffix(" ")
+//                                if (withoutWhiteSpace != "" || it.isEmpty()) {
+//                                    withoutWhiteSpace
+//                                } else {
+//                                    null
+//                                }
                             },
                             valueOnChange = {
                                 if ( it.all { it.isDigit() }) {
-                                    viewModel.onActivityEvent(ActivityFormEvent.GradeChanged(it.toInt()))
+                                    viewModel.onActivityEvent(ActivityFormEvent.GradeChanged(it))
                                 }
 
                             }
@@ -190,13 +194,21 @@ fun AddActivityScreen(
                             DateUtils().dateToString(millisToLocalDate)
                         } ?: "Selecciona una fecha"
 
-                        LaunchedEffect(key1 = dateState, block = {
-                            viewModel.onActivityEvent(ActivityFormEvent.EndDateChanged(dateToString))
+                        LaunchedEffect(key1 = dateState.selectedDateMillis, block = {
+
+                            if (millisToLocalDate != null){
+                                viewModel.onActivityEvent(ActivityFormEvent.EndDateChanged(formatDate(millisToLocalDate)))
+                            }else{
+//                                Toast.makeText(context, "Intente de nuevo", Toast.LENGTH_SHORT).show()
+                            }
                         })
                         var isOpenDatePicker by remember { mutableStateOf(false) }
-                        Button(onClick = { isOpenDatePicker = true }) {
-                            Text(text = state.startDate)
+                        Box(modifier = Modifier.fillMaxWidth().padding(start = 24.dp)){
+                            Button(onClick = { isOpenDatePicker = true }) {
+                                Text(text = if (state.endDate.isBlank()) "Seleccione una fecha" else state.endDate)
+                            }
                         }
+
                         if (isOpenDatePicker){
                             DatePickerWithDialog(
                                 dateState = dateState,
@@ -207,41 +219,20 @@ fun AddActivityScreen(
 
                         Spacer(modifier = Modifier.padding(1.dp))
 
-                        val dateState2 = rememberDatePickerState()
-                        val millisToLocalDate2 = dateState2.selectedDateMillis?.let {
-                            DateUtils().convertMillisToLocalDate(it)
-                        }
-                        val dateToString2 = millisToLocalDate?.let {
-                            DateUtils().dateToString(millisToLocalDate)
-                        } ?: "Selecciona una fecha"
-                        LaunchedEffect(key1 = dateState2, block = {
-                            viewModel.onActivityEvent(ActivityFormEvent.EndDateChanged(dateToString2))
-                        })
-                        var isOpenDatePicker2 by remember { mutableStateOf(false) }
-                        Button(onClick = { isOpenDatePicker2 = true }) {
-                            Text(text = state.endDate)
-                        }
-                        if (isOpenDatePicker2){
-                            DatePickerWithDialog(
-                                dateState = dateState2,
-                                action = {},
-                                dismissDialog = { isOpenDatePicker2 = false}
-                            )
-                        }
-                        Spacer(modifier = Modifier.padding(1.dp))
 
                         Button(
                             onClick = {
+                                val currentDateFormatted = getCurrentDateInDesiredFormat()
                                 viewModel.onActivityEvent(ActivityFormEvent.Submit(
                                     id,
                                     ActivityRequestDto(
                                         description = state.description,
                                         title = state.title,
                                         status = state.status,
-                                        startDate = "16/06/24",
-                                        endDate = "16/07/24",
+                                        startDate = currentDateFormatted,
+                                        endDate = state.endDate,
                                         idCourse = idCourse,
-                                        grade = state.grade,
+                                        grade = state.grade.toInt(),
                                         email = email
                                     )
                                     ))
@@ -271,4 +262,18 @@ fun AddActivityScreen(
         }
     }
 
+}
+
+// Function to get current date in DD-MM-AA format
+@RequiresApi(Build.VERSION_CODES.O)
+fun getCurrentDateInDesiredFormat(): String {
+    val currentDate = LocalDate.now()
+    val formatter = DateTimeFormatter.ofPattern("dd-MM-yy")
+    return currentDate.format(formatter)
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun formatDate(date: LocalDate): String {
+    val formatter = DateTimeFormatter.ofPattern("dd-MM-yy")
+    return date.format(formatter)
 }

@@ -26,9 +26,11 @@ class ActivitiesRepositoryImpl(
     override suspend fun getActivitiesRemote(id: String): ResponseGenericAPi<GetActivitiesResponseDto> {
         return apiService.getActivitiesRemote(id)
     }
-
     override suspend fun getActivitiesByCourseRemote(id: String): ResponseGenericAPi<GetActivitiesResponseDto> {
         return apiService.getActivitiesByCourseRemote(id)
+    }
+    override suspend fun getActivitiesByUserRemote(id: String): ResponseGenericAPi<GetActivitiesResponseDto> {
+        return apiService.getActivitiesByUserRemote(id)
     }
 
     override suspend fun getActivitiesWithFlowRemote(): Flow<List<LocalActivities>> {
