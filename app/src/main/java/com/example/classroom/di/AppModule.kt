@@ -7,7 +7,9 @@ import com.example.classroom.data.remote.ApiServiceImpl
 import com.example.classroom.data.repository.ActivitiesRepositoryImpl
 import com.example.classroom.data.repository.CoursesRepositoryImpl
 import com.example.classroom.data.repository.LoginRepositoryImpl
+import com.example.classroom.data.repository.QuizzRepositoryImpl
 import com.example.classroom.data.repository.RepositoryBundle
+import com.example.classroom.data.repository.StudentsRepositoryImpl
 import com.example.classroom.domain.use_case.activities.GetActivitiesByUserUseCase
 import com.example.classroom.domain.use_case.activities.GetActivitiesUseCase
 import com.example.classroom.domain.use_case.activities.InsertActivityUseCase
@@ -99,7 +101,9 @@ class AppModuleImpl(
         RepositoryBundle(
             loginRepository = LoginRepositoryImpl(apiService, db.appDao),
             activitiesRepository = ActivitiesRepositoryImpl(apiService, db.appDao),
-            coursesRepository = CoursesRepositoryImpl(apiService, db.appDao)
+            coursesRepository = CoursesRepositoryImpl(apiService, db.appDao),
+            quizzRepository = QuizzRepositoryImpl(apiService, db.appDao),
+            studentsRepository = StudentsRepositoryImpl(apiService, db.appDao)
         )
     }
     override val signInUseCase: SignInUseCase by lazy {
