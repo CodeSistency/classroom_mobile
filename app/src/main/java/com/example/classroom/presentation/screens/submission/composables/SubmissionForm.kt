@@ -18,8 +18,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.classroom.common.CustomButton.CustomButton
 import com.example.classroom.common.CustomButton.NavigationButtonStyle
+import com.example.classroom.common.CustomInput.CustomTextField
 import com.example.classroom.common.FileUploadComponent.FileUploadComponent
 import com.example.classroom.presentation.screens.submission.SubmissionViewModel
+import com.example.classroom.presentation.theme.Azul
+import com.example.classroom.presentation.theme.AzulGradient
 
 @Composable
 fun SubmissionForm(
@@ -45,12 +48,19 @@ fun SubmissionForm(
         )
 
         // Message input field
-        OutlinedTextField(
-            value = message,
+//        OutlinedTextField(
+//            value = message,
+//            onValueChange = { message = it },
+//            label = { Text("Mensaje") },
+//            modifier = Modifier.fillMaxWidth()
+//        )
+
+        CustomTextField(value = message,
             onValueChange = { message = it },
-            label = { Text("Mensaje") },
-            modifier = Modifier.fillMaxWidth()
-        )
+            label = "Mensaje",
+            modifier = Modifier.fillMaxWidth()) {
+
+        }
 
         // Submit button
         CustomButton(
@@ -61,9 +71,9 @@ fun SubmissionForm(
             },
             modifier = Modifier.fillMaxWidth(),
             disabled = selectedFileUri == null && message.isBlank(),
-            style = NavigationButtonStyle.OutlineOnly,
-            color1 = Color.Black,
-            color2 = Color.Black,
+            style = NavigationButtonStyle.SolidGradient,
+            color1 = Azul,
+            color2 = AzulGradient,
             text = "Enviar"
         )
     }

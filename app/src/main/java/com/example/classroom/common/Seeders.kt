@@ -150,17 +150,17 @@ class Seeders(
                 title = "Welcome to Mathematics 101",
                 content = "This course covers basic math concepts and problem-solving.",
                 createdAt = "2023-01-01",
-                courseId = 1, // Reference to created course
-                activityId = null,
-                authorId = 1 // Reference to the logged-in user
+                courseId = "course1", // Reference to created course
+                idApi = "1",
+                authorId = "1" // Reference to the logged-in user
             ),
             LocalPost(
                 title = "Biology Introduction",
                 content = "This course covers basic concepts in biology.",
                 createdAt = "2023-02-01",
-                courseId = 2, // Reference to joined course
-                activityId = null,
-                authorId = 2 // Reference to another professor
+                courseId = "course2", // Reference to joined course
+                idApi = "2",
+                authorId = "2"// Reference to another professor
             )
         )
         posts.forEach { dao.insertOrUpdatePost(it) }
@@ -168,21 +168,21 @@ class Seeders(
 
     private suspend fun seedQuizzes(dao: AppDao) {
         val quizzes = listOf(
-            QuizzEntity(activityId = 1, courseId = 1),
-            QuizzEntity(activityId = 2, courseId = 2)
+            QuizzEntity(activityId = "1", courseId = "1"),
+            QuizzEntity(activityId = "2", courseId = "2")
         )
         quizzes.forEach { dao.insertOrUpdateQuiz(it) }
 
         val questions = listOf(
             QuestionsEntity(
                 quizzId = 1,
-                courseId = 1,
+                courseId = "1",
                 text = "What is 2 + 2?",
                 answer = 4
             ),
             QuestionsEntity(
                 quizzId = 2,
-                courseId = 2,
+                courseId = "2",
                 text = "What is the function of mitochondria?",
                 answer = 1
             )

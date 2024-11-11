@@ -47,55 +47,34 @@ fun EvaluationItem(
 ) {
     val shape = RoundedCornerShape(PaddingCustom.MEDIUM.size)
 
-    Box(
-        modifier = Modifier
-            .shadow(8.dp, shape)
-            .background(Color.White, shape)
-            .fillMaxWidth()
-            .clickable {
-                navController.navigate("${Destination.PROFESSOR_REVIEW_EVALUATION.screenRoute}?idStudent=${idStudent}&idActivity=${evaluation.idApi}&idCourse=${idCourse}")
-            }
-            .padding(16.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+    Box(modifier = Modifier){
+        Box(
+            modifier = Modifier
+                .shadow(8.dp, shape)
+                .background(Color.White, shape)
+                .fillMaxWidth()
+                .clickable {
+                    navController.navigate("${Destination.PROFESSOR_REVIEW_EVALUATION.screenRoute}?idStudent=${idStudent}&idActivity=${evaluation.idApi}&idCourse=${idCourse}")
+                }
+                .padding(16.dp)
         ) {
-            Column {
-                Text(
-                    text = "Actividad: ${evaluation.activityId}",
-                    style = TextStyle(
-                        color = Color.DarkGray,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        // fontFamily = InterTight (uncomment if using custom font)
-                    )
-                )
-                Spacer(modifier = Modifier.height(5.dp))
-                Text(
-                    text = "Fecha de evaluación: ${evaluation.submissionDate}",
-                    style = TextStyle(
-                        color = Color.Gray,
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Bold,
-                        // fontFamily = InterTight (uncomment if using custom font)
-                    )
-                )
-
-                // Display grade if available
-                if (evaluation.grade > 0) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column {
                     Text(
-                        text = "Calificación: ${evaluation.grade}",
+                        text = "Actividad: ${evaluation.activityId}",
                         style = TextStyle(
-                            color = MaterialTheme.colors.primary,
-                            fontSize = 10.sp,
+                            color = Color.DarkGray,
+                            fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
                             // fontFamily = InterTight (uncomment if using custom font)
                         )
                     )
-                } else {
+                    Spacer(modifier = Modifier.height(5.dp))
                     Text(
-                        text = "Sin calificación",
+                        text = "Fecha de evaluación: ${evaluation.submissionDate}",
                         style = TextStyle(
                             color = Color.Gray,
                             fontSize = 10.sp,
@@ -103,42 +82,65 @@ fun EvaluationItem(
                             // fontFamily = InterTight (uncomment if using custom font)
                         )
                     )
-                }
-            }
 
-            // Optional Icon Buttons for editing or deleting (similar to CardActivity)
-            Row {
-                IconButton(onClick = {
-                    navController.navigate("${Destination.PROFESSOR_REVIEW_EVALUATION.screenRoute}?idStudent=${idStudent}&idActivity=${evaluation.idApi}&idCourse=${idCourse}")
-                }) {
-                    Icon(
-                        Icons.Default.Edit,
-                        contentDescription = "Edit Evaluation",
-                        tint = Color.Gray,
-                        modifier = Modifier.size(25.dp)
-                    )
+                    // Display grade if available
+                    if (evaluation.grade > 0) {
+                        Text(
+                            text = "Calificación: ${evaluation.grade}",
+                            style = TextStyle(
+                                color = MaterialTheme.colors.primary,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                // fontFamily = InterTight (uncomment if using custom font)
+                            )
+                        )
+                    } else {
+                        Text(
+                            text = "Sin calificación",
+                            style = TextStyle(
+                                color = Color.Gray,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                // fontFamily = InterTight (uncomment if using custom font)
+                            )
+                        )
+                    }
                 }
-                IconButton(onClick = {
-                    // Handle delete or additional actions
-                }) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_cancel),
-                        contentDescription = "Delete Evaluation",
-                        tint = Color.Gray,
-                        modifier = Modifier.size(25.dp)
-                    )
-                }
+
+                // Optional Icon Buttons for editing or deleting (similar to CardActivity)
+//                Row {
+//                    IconButton(onClick = {
+//                        navController.navigate("${Destination.PROFESSOR_REVIEW_EVALUATION.screenRoute}?idStudent=${idStudent}&idActivity=${evaluation.idApi}&idCourse=${idCourse}")
+//                    }) {
+//                        Icon(
+//                            Icons.Default.Edit,
+//                            contentDescription = "Edit Evaluation",
+//                            tint = Color.Gray,
+//                            modifier = Modifier.size(25.dp)
+//                        )
+//                    }
+//                    IconButton(onClick = {
+//                        // Handle delete or additional actions
+//                    }) {
+//                        Icon(
+//                            painter = painterResource(id = R.drawable.ic_cancel),
+//                            contentDescription = "Delete Evaluation",
+//                            tint = Color.Gray,
+//                            modifier = Modifier.size(25.dp)
+//                        )
+//                    }
+//                }
             }
         }
-        // Optional left bar for styling (if needed)
+// Optional left bar for styling (if needed)
 
-//        Box(
-//            modifier = Modifier
-//                .height(80.dp)
-//                .width(5.dp)
-//                .background(Azul2, shape)
-//                .align(Alignment.CenterStart)
-//        )
+        Box(
+            modifier = Modifier
+                .height(90.dp)
+                .width(5.dp)
+                .background(Azul2, shape)
+                .align(Alignment.CenterStart)
+        )
     }
 
 

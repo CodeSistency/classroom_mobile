@@ -19,6 +19,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.SendAndArchive
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -143,7 +144,7 @@ fun CardActivity(
                             isSendActivityOpen = true
                         }) {
                             Icon(
-                                Icons.Default.SendAndArchive,
+                                Icons.Default.Send,
                                 contentDescription = null,
                                 tint = Color.Gray,
                                 modifier = Modifier.size(35.dp)
@@ -163,13 +164,13 @@ fun CardActivity(
             .align(Alignment.CenterStart),)
     }
 
-    if (isSendActivityOpen){
-        SendActivityDialog(
-            action = { action() },
-            onDismissRequest = { isSendActivityOpen = false },
-        )
+//    if (isSendActivityOpen){
+//        SendActivityDialog(
+//            action = { action() },
+//            onDismissRequest = { isSendActivityOpen = false },
+//        )
 
-    }
+//    }
 
 }
 

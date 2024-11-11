@@ -12,7 +12,7 @@ class QuizzRepositoryImpl(
     private val apiService: ApiService,
     private val dao: AppDao
 ): QuizzRepository {
-    override fun getQuizzWithQuestions(courseId: Int, quizzId: Int): Flow<QuizzWithQuestions> {
+    override fun getQuizzWithQuestions(courseId: String, quizzId: Int): Flow<QuizzWithQuestions> {
         return dao.getQuizzWithQuestions(courseId, quizzId)
     }
 
@@ -24,7 +24,7 @@ class QuizzRepositoryImpl(
         dao.insertQuestion(question)
     }
 
-    override fun getQuestionsForCourse(courseId: Int): Flow<List<QuestionsEntity>> {
+    override fun getQuestionsForCourse(courseId: String): Flow<List<QuestionsEntity>> {
         return dao.getQuestionsForCourse(courseId)
     }
 }

@@ -44,6 +44,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.classroom.App
 import com.example.classroom.R
 import com.example.classroom.common.customTab.CustomTab
 import com.example.classroom.domain.model.entity.Gender
@@ -51,6 +52,7 @@ import com.example.classroom.presentation.screens.activity.ActivityViewmodel
 import com.example.classroom.presentation.screens.activity.addActivity.AddActivityViewModel
 import com.example.classroom.presentation.screens.course.AddCourse.AddCourseViewModel
 import com.example.classroom.presentation.screens.course.CourseViewmodel
+import com.example.classroom.presentation.screens.course.posts.ListPosts
 import com.example.classroom.presentation.screens.home.HomeViewmodel
 import com.example.classroom.presentation.screens.home.composables.ListCourses
 import com.example.classroom.presentation.screens.home.composables.ListMyCourses
@@ -72,7 +74,7 @@ fun CourseProfessorPresentation(
     id: String,
     navController: NavController
 ){
-    val tabTitles = listOf(SelectedOption.MY_STUDENTS.title, SelectedOption.ACTIVITIES.title)
+    val tabTitles = listOf(SelectedOption.MY_STUDENTS.title, SelectedOption.POSTS.title, SelectedOption.ACTIVITIES.title)
     val pagerState = rememberPagerState(pageCount = { tabTitles.size })
     val (selected, setSelected) = remember { mutableStateOf(0) }
 //    val userInfo = viewModel.userInfo.collectAsState(initial = emptyList())
@@ -154,25 +156,7 @@ fun CourseProfessorPresentation(
                             )
                         )
                     }
-//                    val icon = if (userInfo.value.let { it.isNotEmpty() }){
-//                        userInfo.value.let {
-//                            if (it[0].gender == Gender.Man){
-//                                painterResource(R.drawable.ic_male_avatar)
-//                            }else if (it[0].gender == Gender.Woman){
-//                                painterResource(R.drawable.ic_female_avatar)
-//                            }else{
-//                                painterResource(R.drawable.ic_male_avatar)
-//                            }
-//                        }
-//                    }else{
-//                        painterResource(R.drawable.ic_male_avatar)
-//                    }
-//                    Icon(
-//                        icon, contentDescription = null,
-//                        modifier = Modifier
-//                            .size(70.dp)
-//                            .background(Color.White, CircleShape)
-//                            .padding(horizontal = 5.dp))
+
                 }
                 Spacer(modifier = Modifier.height(10.dp))
 
@@ -236,6 +220,9 @@ fun CourseProfessorPresentation(
                             ListUsers(viewModel, courseViewmodel, scope, id, navController)
                         }
                         1 -> {
+                            ListPosts(viewModel = App.appModule.postViewModel, courseId = id)
+                        }
+                        2 -> {
                             ListActivities(viewModel, courseViewmodel,addActivityViewModel, scope, id, navController)
                         }
                     }
@@ -248,5 +235,6 @@ fun CourseProfessorPresentation(
 
 enum class SelectedOption(val title: String) {
     MY_STUDENTS("Alumnos"),
+    POSTS("Publicaciones"),
     ACTIVITIES("Actividades")
 }

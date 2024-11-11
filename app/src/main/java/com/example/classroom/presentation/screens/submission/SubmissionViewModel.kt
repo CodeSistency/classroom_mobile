@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import android.util.Log
 import android.widget.Toast
@@ -48,26 +49,37 @@ class SubmissionViewModel(
 
     private val _stateReviewActivity = mutableStateOf(ReviewActivityState())
     val stateReviewActivity: State<ReviewActivityState> = _stateReviewActivity
-    var currentSubmission: LocalActivitySubmission? = null
-        private set
+
+    // Make currentSubmission a mutable state
+    private val _currentSubmission = mutableStateOf<LocalActivitySubmission?>(null)
+    val currentSubmission: State<LocalActivitySubmission?> = _currentSubmission
 
     // Load submission data for the professor to review
     fun loadSubmission(activityId: String, studentId: String) {
         viewModelScope.launch {
-            currentSubmission = repositoryBundle.submissionsRepository
+            val submissions = repositoryBundle.submissionsRepository
                 .getSubmissionsForStudent(activityId, studentId)
-                .first().first()
+                .first() // Get the first list emitted from Flow
+
+            _currentSubmission.value = submissions.firstOrNull() // Safely get the first item or null if empty
+
+            if (_currentSubmission.value == null) {
+                Log.e("loadSubmission", "No submissions found for activityId: $activityId, studentId: $studentId")
+                // Handle the case where there are no submissions (e.g., set a default value or notify the UI)
+            } else {
+                Log.d("loadSubmission", "Loaded submission: ${_currentSubmission.value}")
+            }
         }
     }
 
     // Update the grade locally
     fun updateGrade(newGrade: Float) {
-        currentSubmission = currentSubmission?.copy(grade = newGrade)
+        _currentSubmission.value = _currentSubmission.value?.copy(grade = newGrade)
     }
 
     // Submit the updated grade to the repository
     fun submitGrade() {
-        currentSubmission?.let { submission ->
+        _currentSubmission.value?.let { submission ->
             viewModelScope.launch {
                 repositoryBundle.submissionsRepository.addOrUpdateSubmission(submission)
             }
@@ -180,7 +192,7 @@ class SubmissionViewModel(
             val downloadId = downloadManager.enqueue(request)
 
             // Register receiver to listen for download completion
-            context.registerReceiver(object : BroadcastReceiver() {
+            val receiver = object : BroadcastReceiver() {
                 override fun onReceive(ctxt: Context, intent: Intent) {
                     val id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
                     if (id == downloadId) {
@@ -188,7 +200,14 @@ class SubmissionViewModel(
                         openDownloadedFile(context, downloadId, downloadManager)
                     }
                 }
-            }, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
+            }
+
+            // Register the receiver with RECEIVER_NOT_EXPORTED flag
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                context.registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE), Context.RECEIVER_NOT_EXPORTED)
+            } else {
+                context.registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
+            }
         }
     }
 

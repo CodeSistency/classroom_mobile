@@ -172,7 +172,7 @@ interface AppDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrUpdateSubmission(submission: LocalActivitySubmission)
 
-    @Query("SELECT * FROM localActivitySubmission_table WHERE activity_id = :activityId AND student_id = :studentId")
+    @Query("SELECT * FROM localActivitySubmission_table WHERE idApi = :activityId AND student_id = :studentId")
     fun getSubmissionsForStudent(activityId: String, studentId: String): Flow<List<LocalActivitySubmission>> // Return as Flow
 
     @Query("SELECT * FROM localActivitySubmission_table WHERE student_id = :studentId AND course_id = :courseId")
@@ -194,10 +194,10 @@ interface AppDao {
 
     @Transaction
     @Query("SELECT * FROM quizz WHERE course_id = :courseId AND id = :quizzId")
-    fun getQuizzWithQuestions(courseId: Int, quizzId: Int): Flow<QuizzWithQuestions>
+    fun getQuizzWithQuestions(courseId: String, quizzId: Int): Flow<QuizzWithQuestions>
 
     @Query("SELECT * FROM questions WHERE course_id = :courseId")
-    fun getQuestionsForCourse(courseId: Int): Flow<List<QuestionsEntity>>
+    fun getQuestionsForCourse(courseId: String): Flow<List<QuestionsEntity>>
 
     //SEEDERS
 

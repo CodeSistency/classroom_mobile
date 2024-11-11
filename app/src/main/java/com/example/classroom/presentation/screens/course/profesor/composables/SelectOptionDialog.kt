@@ -63,7 +63,7 @@ fun SelectedOptionDialog(
     ) {
         val context = LocalContext.current
         var isSelectedOption by remember {
-            mutableStateOf(OptionsActivity.CREATE_ACTIVITY)
+            mutableStateOf(OptionsActivity.SELECT_OPTION)
         }
         var input by remember {
             mutableStateOf("")
@@ -80,7 +80,7 @@ fun SelectedOptionDialog(
             ) {
 
                 when(isSelectedOption){
-                    OptionsActivity.CREATE_ACTIVITY -> {
+                    OptionsActivity.SELECT_OPTION -> {
                         Text(text = "Selecciona una opcion",
                             style = TextStyle(
                                 fontWeight = FontWeight.Normal,
@@ -94,7 +94,7 @@ fun SelectedOptionDialog(
 
                         CustomButton(
                             onClick = {
-                                isSelectedOption = OptionsActivity.ADD_USER
+//                                isSelectedOption = OptionsActivity.ADD_USER
                             },
                             text = "Unirse a una clase",
                             style = NavigationButtonStyle.OutlineWithIconGradient,
@@ -116,52 +116,82 @@ fun SelectedOptionDialog(
                             color2 = AzulGradient,
                             icon = Icons.Default.ArrowForwardIos)
 
+                        Spacer(modifier = Modifier.height(5.dp))
+
+                        CustomButton(
+                            onClick = {
+                                navController.navigate(
+                                    Destination.ADD_POST_SCREEN.screenRoute + "?idCourse=${id}"
+                                )
+                            },
+                            text = "Crear publicación",
+                            style = NavigationButtonStyle.OutlineWithIconGradient,
+                            color1 = Azul,
+                            color2 = AzulGradient,
+                            icon = Icons.Default.ArrowForwardIos)
+
+
+                        Spacer(modifier = Modifier.height(5.dp))
+
+                        CustomButton(
+                            onClick = {
+                                navController.navigate(
+                                    Destination.ADD_QUIZZ.screenRoute + "?idCourse=${id}"
+                                )
+                            },
+                            text = "Crear quizz",
+                            style = NavigationButtonStyle.OutlineWithIconGradient,
+                            color1 = Azul,
+                            color2 = AzulGradient,
+                            icon = Icons.Default.ArrowForwardIos)
+
 
                     }
-                    OptionsActivity.ADD_USER -> {
-                        IconButton(
-                            modifier = position,
-                            onClick = { isSelectedOption = OptionsActivity.CREATE_ACTIVITY }) {
-                            Icon(Icons.Default.ArrowBack, contentDescription = null)
-                        }
-                        Text(text = "Únete",
-                            style = TextStyle(
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 22.sp,
-//                        fontFamily = InterTight,
-                                textAlign = TextAlign.Center
-                            ),
-                            modifier = Modifier.padding(horizontal = 5.dp,)
-                        )
-                        Spacer(modifier = Modifier.height(15.dp))
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            Arrangement.SpaceBetween,
-                            Alignment.CenterVertically
-                        ){
-                            ItemInputField(
-                                titulo = stringResource(id = R.string.join_user_text),
-                                darkTheme = false,
-                                valueField = input,
-                                fieldRestriction = {
-                                    val withoutWhiteSpace = it.removeSuffix(" ")
-                                    if (withoutWhiteSpace != "" || it.isEmpty()) {
-                                        withoutWhiteSpace
-                                    } else {
-                                        null
-                                    }
-                                },
-                                valueOnChange = {
-                                    input = it
-                                }
-                            ) {
-                            }
-                            Icon(Icons.Default.ArrowForwardIos, contentDescription = null,
-                                modifier = Modifier.clickable {
-
-                                })
-                        }
-                    }
+//                    OptionsActivity.ADD_USER -> {
+//                        IconButton(
+//                            modifier = position,
+//                            onClick = { isSelectedOption = OptionsActivity.CREATE_ACTIVITY }) {
+//                            Icon(Icons.Default.ArrowBack, contentDescription = null)
+//                        }
+//                        Text(text = "Únete",
+//                            style = TextStyle(
+//                                fontWeight = FontWeight.Bold,
+//                                fontSize = 22.sp,
+////                        fontFamily = InterTight,
+//                                textAlign = TextAlign.Center
+//                            ),
+//                            modifier = Modifier.padding(horizontal = 5.dp,)
+//                        )
+//                        Spacer(modifier = Modifier.height(15.dp))
+//                        Row(
+//                            modifier = Modifier.fillMaxWidth(),
+//                            Arrangement.SpaceBetween,
+//                            Alignment.CenterVertically
+//                        ){
+//                            ItemInputField(
+//                                titulo = stringResource(id = R.string.join_user_text),
+//                                darkTheme = false,
+//                                valueField = input,
+//                                fieldRestriction = {
+//                                    val withoutWhiteSpace = it.removeSuffix(" ")
+//                                    if (withoutWhiteSpace != "" || it.isEmpty()) {
+//                                        withoutWhiteSpace
+//                                    } else {
+//                                        null
+//                                    }
+//                                },
+//                                valueOnChange = {
+//                                    input = it
+//                                }
+//                            ) {
+//                            }
+//                            Icon(Icons.Default.ArrowForwardIos, contentDescription = null,
+//                                modifier = Modifier.clickable {
+//
+//                                })
+//                        }
+//                    }
+                    else -> {}
                 }
             }
         }
@@ -170,6 +200,8 @@ fun SelectedOptionDialog(
 
 
 enum class OptionsActivity {
-    CREATE_ACTIVITY,
-    ADD_USER
+    SELECT_OPTION,
+//    ADD_USER,
+    ADD_QUIZZ,
+    ADD_POST
 }

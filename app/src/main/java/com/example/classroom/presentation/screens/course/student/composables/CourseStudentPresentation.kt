@@ -2,6 +2,7 @@ package com.example.classroom.presentation.screens.course.student.composables
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Usb
 import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -43,11 +45,15 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.classroom.App
 import com.example.classroom.R
 import com.example.classroom.common.customTab.CustomTab
+import com.example.classroom.common.scrolleableTab.CustomScrollableTabRow
 import com.example.classroom.domain.model.entity.Gender
 import com.example.classroom.presentation.screens.activity.ActivityViewmodel
 import com.example.classroom.presentation.screens.course.CourseViewmodel
+import com.example.classroom.presentation.screens.course.posts.ListPosts
+import com.example.classroom.presentation.screens.course.profesor.composables.ListUsers
 import com.example.classroom.presentation.screens.home.HomeViewmodel
 import com.example.classroom.presentation.theme.Azul
 import com.example.classroom.presentation.theme.Azul2
@@ -60,7 +66,7 @@ import proyecto.person.appconsultapopular.common.shimmerEffects.ListShimmer
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CourseStudentPresentation(viewModel: ActivityViewmodel, courseViewmodel: CourseViewmodel, id: String, navController: NavController){
-    val tabTitles = listOf(SelectedOption.COURSES.title, SelectedOption.MY_COURSES.title)
+    val tabTitles = listOf(SelectedOption.ACTIVIDADES.title, SelectedOption.POSTS.title, SelectedOption.ENTREGADAS.title)
     val pagerState = rememberPagerState(pageCount = { tabTitles.size })
     val (selected, setSelected) = remember { mutableStateOf(0) }
     val userInfo = viewModel.userInfo.collectAsState(initial = null)
@@ -77,7 +83,6 @@ fun CourseStudentPresentation(viewModel: ActivityViewmodel, courseViewmodel: Cou
         Box(modifier = Modifier
             .fillMaxWidth()
             .background(
-
                 brush = Brush.verticalGradient(
                     colors = listOf(
                         Azul,
@@ -88,7 +93,7 @@ fun CourseStudentPresentation(viewModel: ActivityViewmodel, courseViewmodel: Cou
                     bottomStart = PaddingCustom.EXTRA_LARGE.size
                 )
             )
-        ){
+        ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -96,57 +101,94 @@ fun CourseStudentPresentation(viewModel: ActivityViewmodel, courseViewmodel: Cou
             ) {
                 Row(
                     Modifier.fillMaxWidth(),
-                    Arrangement.SpaceBetween,
-//                    Alignment.CenterVertically
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column {
-                        Text(text = courseInfo.value.let {
-                            if (it != null){
-                                it.title
-                            }else{
-                                "..."
-                            }
-                        },
+                        Text(
+                            text = courseInfo.value?.title ?: "Course Title",
                             style = TextStyle(
-                                Color.White,
+                                color = Color.White,
                                 fontSize = 26.sp,
-                                FontWeight.Bold
-                            ))
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
                         Spacer(modifier = Modifier.height(2.dp))
-                        Text(text = courseInfo.value.let {
-                            if (it != null){
-                                it.section
-                            }else{
-                                "..."
-                            }
-                        } ,
+                        Text(
+                            text = courseInfo.value?.section ?: "Section",
                             style = TextStyle(
-                                Color.White,
+                                color = Color.White,
                                 fontSize = 16.sp,
                             )
                         )
                     }
-//                    val icon = if (userInfo.value.let { it.isNotEmpty() }){
-//                        userInfo.value.let {
-//                            if (it[0].gender == Gender.Man){
-//                                painterResource(R.drawable.ic_male_avatar)
-//                            }else if (it[0].gender == Gender.Woman){
-//                                painterResource(R.drawable.ic_female_avatar)
-//                            }else{
-//                                painterResource(R.drawable.ic_male_avatar)
-//                            }
-//                        }
-//                    }else{
-//                        painterResource(R.drawable.ic_male_avatar)
-//                    }
-//                    Icon(
-//                        icon, contentDescription = null,
-//                        modifier = Modifier
-//                            .size(70.dp)
-//                            .background(Color.White, CircleShape)
-//                            .padding(horizontal = 5.dp))
+
+                    // Add edit icon like in the professor's presentation
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Edit Course",
+                        tint = Color.White,
+                        modifier = Modifier.clickable {
+                            // Action on click, if needed
+                        }
+                    )
                 }
                 Spacer(modifier = Modifier.height(10.dp))
+//        Box(modifier = Modifier
+//            .fillMaxWidth()
+//            .background(
+//
+//                brush = Brush.verticalGradient(
+//                    colors = listOf(
+//                        Azul,
+//                        AzulGradient
+//                    ),
+//                ),
+//                shape = RoundedCornerShape(
+//                    bottomStart = PaddingCustom.EXTRA_LARGE.size
+//                )
+//            )
+//        ){
+//            Column(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(10.dp)
+//            ) {
+//                Row(
+//                    Modifier.fillMaxWidth(),
+//                    Arrangement.SpaceBetween,
+////                    Alignment.CenterVertically
+//                ) {
+//                    Column {
+//                        Text(text = courseInfo.value.let {
+//                            if (it != null){
+//                                it.title
+//                            }else{
+//                                "..."
+//                            }
+//                        },
+//                            style = TextStyle(
+//                                Color.White,
+//                                fontSize = 26.sp,
+//                                FontWeight.Bold
+//                            ))
+//                        Spacer(modifier = Modifier.height(2.dp))
+//                        Text(text = courseInfo.value.let {
+//                            if (it != null){
+//                                it.section
+//                            }else{
+//                                "..."
+//                            }
+//                        } ,
+//                            style = TextStyle(
+//                                Color.White,
+//                                fontSize = 16.sp,
+//                            )
+//                        )
+//                    }
+//
+//                }
+//                Spacer(modifier = Modifier.height(10.dp))
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth(),
                     value = viewModel.activityInput.value,
@@ -174,28 +216,84 @@ fun CourseStudentPresentation(viewModel: ActivityViewmodel, courseViewmodel: Cou
             }
         }
 
-        Column(modifier = Modifier.fillMaxSize()
-            .padding(horizontal = 5.dp)
-            ) {
-//            Spacer(modifier = Modifier.height(5.dp))
 
-            if (viewModel.stateGetActivities.value.isLoading){
-                ListShimmer(quantity = 10)
-            }else{
-                userInfo.value.let {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 5.dp),
+            Arrangement.Center,
+            Alignment.CenterVertically
+        ) {
+            Box(modifier = Modifier.fillMaxWidth()){
+                CustomScrollableTabRow(
+                    tabs = tabTitles,
+                    selectedTabIndex = selected,
+                    onTabSelected = setSelected,
+                    scope = scope,
+                    pagerState = pagerState,
+                )
+            }
+
+//            CustomTab(
+//                items = tabTitles,
+//                selectedItemIndex = selected,
+//                onClick = setSelected,
+//                pagerState = pagerState,
+//                tabWidth = 150.dp,
+//                color = AzulGradient,
+//                scope = scope
+//            )
+
+        }
+        if (viewModel.stateGetActivities.value.isLoading){
+            ListShimmer(quantity = 10)
+        }else{
+            userInfo.value.let {
                     if (!it.isNullOrEmpty()){
-                        ListActivities(viewModel = viewModel, scope = scope, id = id, userId = it.first().idApi, navController = navController)
+                        HorizontalPager(
+                            state = pagerState,
+                        ) { page ->
+                            when(page){
+                                0 -> {
+                                    ListActivities(viewModel = viewModel, scope = scope, id = id, userId = it.first().idApi, navController = navController)
+                                }
+                                1 -> {
+                                    ListPosts(viewModel = App.appModule.postViewModel, courseId = id)
+                                }
+                                2-> {
+                                    ListActivities(viewModel = viewModel, scope = scope, id = id, userId = it.first().idApi, navController = navController)
+                                }
+                            }
+                        }
 
                     }
                 }
-            }
-           
         }
     }
+
+//        Column(modifier = Modifier.fillMaxSize()
+//            .padding(horizontal = 5.dp)
+//            ) {
+////            Spacer(modifier = Modifier.height(5.dp))
+//
+//            if (viewModel.stateGetActivities.value.isLoading){
+//                ListShimmer(quantity = 10)
+//            }else{
+//                userInfo.value.let {
+//                    if (!it.isNullOrEmpty()){
+//                        ListActivities(viewModel = viewModel, scope = scope, id = id, userId = it.first().idApi, navController = navController)
+//
+//                    }
+//                }
+//            }
+//
+//        }
+//    }
 }
 
 
 enum class SelectedOption(val title: String) {
-    MY_COURSES("Mis clases"),
-    COURSES("Clases")
+    POSTS("Posts"),
+    ENTREGADAS("Entregadas"),
+    ACTIVIDADES("Actividades")
 }

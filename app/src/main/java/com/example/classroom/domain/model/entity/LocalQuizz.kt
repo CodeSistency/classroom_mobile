@@ -10,15 +10,15 @@ import androidx.room.Relation
 @Entity(tableName = "quizz")
 data class QuizzEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    @ColumnInfo(name = "activity_id") val activityId: Int,
-    @ColumnInfo(name = "course_id") val courseId: Int
+    @ColumnInfo(name = "activity_id") val activityId: String,
+    @ColumnInfo(name = "course_id") val courseId: String
 )
 
 @Entity(tableName = "questions")
 data class QuestionsEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     @ColumnInfo(name = "quizz_id") val quizzId: Int,
-    @ColumnInfo(name = "course_id") val courseId: Int,
+    @ColumnInfo(name = "course_id") val courseId: String,
     @ColumnInfo(name = "text") val text: String,
     @ColumnInfo(name = "answer") val answer: Int
 )

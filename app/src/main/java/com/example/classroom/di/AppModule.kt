@@ -2,11 +2,16 @@ package com.example.classroom.di
 
 import android.content.Context
 import androidx.room.Room
+import com.example.classroom.App
+import com.example.classroom.common.validator.ActivityDataValidator
+import com.example.classroom.common.validator.CourseDataValidator
+import com.example.classroom.common.validator.UserDataValidator
 import com.example.classroom.data.remote.ApiService
 import com.example.classroom.data.remote.ApiServiceImpl
 import com.example.classroom.data.repository.ActivitiesRepositoryImpl
 import com.example.classroom.data.repository.CoursesRepositoryImpl
 import com.example.classroom.data.repository.LoginRepositoryImpl
+import com.example.classroom.data.repository.PostsRepositoryImpl
 import com.example.classroom.data.repository.QuizzRepositoryImpl
 import com.example.classroom.data.repository.RepositoryBundle
 import com.example.classroom.data.repository.StudentsRepositoryImpl
@@ -40,6 +45,18 @@ import com.example.classroom.domain.use_case.validators.cases.ValidateReapeatedP
 import com.example.classroom.domain.use_case.validators.courses.CoursesValidator
 import com.example.classroom.domain.use_case.validators.signIn.SignInValidator
 import com.example.classroom.domain.use_case.validators.signUp.SignUpValidator
+import com.example.classroom.presentation.screens.Quizz.QuizzViewModel
+import com.example.classroom.presentation.screens.activity.ActivityViewmodel
+import com.example.classroom.presentation.screens.activity.addActivity.AddActivityViewModel
+import com.example.classroom.presentation.screens.activity.studentEvaluations.StudentEvaluationsViewModel
+import com.example.classroom.presentation.screens.auth.AuthViewModel
+import com.example.classroom.presentation.screens.auth.signIn.SignInViewModel
+import com.example.classroom.presentation.screens.course.AddCourse.AddCourseViewModel
+import com.example.classroom.presentation.screens.course.CourseViewmodel
+import com.example.classroom.presentation.screens.course.posts.PostsViewModel
+import com.example.classroom.presentation.screens.course.posts.addPost.AddPostViewModel
+import com.example.classroom.presentation.screens.home.HomeViewmodel
+import com.example.classroom.presentation.screens.submission.SubmissionViewModel
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpTimeout
@@ -71,6 +88,20 @@ interface AppModule {
     val getActivitiesSubmitedByStudent: GetActivitiesSubmitedByStudent
     val professorReviewsActivityUseCase: ProfessorReviewsActivityUseCase
     val studentSendActivityUseCase: StudentSendActivityUseCase
+
+    val studentEvaluationsViewModel: StudentEvaluationsViewModel
+    val signInViewModel: SignInViewModel
+    val homeViewModel: HomeViewmodel
+    val addCourseViewModel: AddCourseViewModel
+    val activityViewModel: ActivityViewmodel
+    val submissionViewModel: SubmissionViewModel
+    val courseViewmodel: CourseViewmodel
+    val addActivityViewmodel: AddActivityViewModel
+    val authViewModel: AuthViewModel
+    val addPostViewModel: AddPostViewModel
+    val postViewModel: PostsViewModel
+    val quizzViewModel: QuizzViewModel
+
     val validatorBundle : ValidatorBundle
     val db: AppDatabase
 }
@@ -111,7 +142,9 @@ class AppModuleImpl(
             coursesRepository = CoursesRepositoryImpl(apiService, db.appDao),
             quizzRepository = QuizzRepositoryImpl(apiService, db.appDao),
             studentsRepository = StudentsRepositoryImpl(apiService, db.appDao),
-            submissionsRepository = SubmissionsRepositoryImpl(apiService, db.appDao)
+            submissionsRepository = SubmissionsRepositoryImpl(apiService, db.appDao),
+            postsRepositoryImpl = PostsRepositoryImpl(db.localPostDao, apiService)
+
         )
     }
     override val signInUseCase: SignInUseCase by lazy {
@@ -167,6 +200,100 @@ class AppModuleImpl(
     }
     override val studentSendActivityUseCase: StudentSendActivityUseCase by lazy {
         StudentSendActivityUseCase(repositoryBundle)
+    }
+    override val studentEvaluationsViewModel: StudentEvaluationsViewModel by lazy {
+        StudentEvaluationsViewModel(
+            repositoryBundle,
+            getActivitiesSubmitedByStudent,
+        )
+    }
+    override val signInViewModel: SignInViewModel by lazy {
+        SignInViewModel(
+            signInUseCase = signInUseCase,
+            loginRepositoryImp = LoginRepositoryImpl(apiService, db.appDao)
+        )
+    }
+
+    override val homeViewModel: HomeViewmodel by lazy {
+        HomeViewmodel(
+            repositoryBundle = repositoryBundle,
+            getCoursesUseCase = getCoursesUseCase,
+            joinCourseUseCase = joinCourseUseCase
+        )
+    }
+
+    override val addCourseViewModel: AddCourseViewModel by lazy {
+        AddCourseViewModel(
+            insertCourseUseCase = insertCourseUseCase,
+            updateCourseUseCase = updateCourseUseCase,
+            repositoryBundle = repositoryBundle
+        )
+    }
+
+    override val activityViewModel: ActivityViewmodel by lazy {
+        ActivityViewmodel(
+            activityDataValidator = ActivityDataValidator(),
+            insertActivityUseCase = insertActivityUseCase,
+            repositoryBundle = repositoryBundle,
+            updateActivityUseCase = updateActivityUseCase,
+            getActivitiesUseCase = getActivitiesUseCase,
+            activitiesValidator = validatorBundle.activitiesValidator,
+            getActivitiesByUserUseCase = getActivitiesByUserUseCase
+        )
+    }
+
+    override val submissionViewModel: SubmissionViewModel by lazy {
+        SubmissionViewModel(
+            repositoryBundle = repositoryBundle,
+            professorReviewsActivityUseCase = professorReviewsActivityUseCase,
+            studentSendActivityUseCase = studentSendActivityUseCase
+        )
+    }
+    override val courseViewmodel: CourseViewmodel by lazy {
+        CourseViewmodel(
+            repositoryBundle = repositoryBundle,
+            courseDataValidator = CourseDataValidator(),
+            getActivitiesUseCase = getActivitiesUseCase,
+            insertCourseUseCase = insertCourseUseCase,
+            updateCourseUseCase = updateCourseUseCase,
+            coursesValidator = validatorBundle.coursesValidator,
+            getCoursesByIdUseCase = getCoursesByIdUseCase,
+            joinUserToCourseUseCase = joinUserToCourseUseCase,
+            getUsersByCourseUseCase = getUsersByCourseUseCase,
+        )
+    }
+    override val addActivityViewmodel: AddActivityViewModel by lazy {
+      AddActivityViewModel(
+          updateActivityUseCase = updateActivityUseCase,
+          insertActivityUseCase = insertActivityUseCase,
+      )
+    }
+    override val authViewModel: AuthViewModel by lazy {
+        AuthViewModel(
+            loginRepositoryImp = LoginRepositoryImpl(
+                apiService,
+                dao = db.appDao
+            ),
+            signInUseCase = signInUseCase,
+            signInValidator = validatorBundle.signInValidator,
+            signUpUseCase = signUpUseCase,
+            signUpValidator = validatorBundle.signUpValidator,
+            userDataValidator = UserDataValidator(),
+        )
+    }
+    override val addPostViewModel: AddPostViewModel by lazy {
+        AddPostViewModel(
+        )
+    }
+    override val postViewModel: PostsViewModel by lazy {
+        PostsViewModel(
+           repository = repositoryBundle.postsRepositoryImpl
+        )
+    }
+    override val quizzViewModel: QuizzViewModel by lazy {
+        QuizzViewModel(
+            repositoryBundle = repositoryBundle
+        )
     }
 
     override val validatorBundle: ValidatorBundle by lazy {

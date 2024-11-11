@@ -1,28 +1,44 @@
 package com.example.classroom.presentation.screens.activity.studentEvaluations
 
+import android.annotation.SuppressLint
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBackIos
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.classroom.common.uiState.UiState
 import com.example.classroom.domain.model.entity.LocalActivitySubmission
 import com.example.classroom.domain.model.entity.LocalStudentEvaluation
 import com.example.classroom.presentation.screens.activity.studentEvaluations.composable.EvaluationItem
+import com.example.classroom.presentation.theme.Azul
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun StudentsEvaluationsScreen(
     viewModel: StudentEvaluationsViewModel,
@@ -31,61 +47,88 @@ fun StudentsEvaluationsScreen(
     navController: NavController
 ) {
     // Trigger data loading when the screen is first displayed
-    LaunchedEffect(Unit) {
-        viewModel.loadStudentEvaluations(courseId, studentId)
+    LaunchedEffect(true) {
+        Log.e("triggers", "triggers")
+
+        viewModel.observeLocalEvaluations(courseId, studentId)
+        viewModel.getActivitiesByStudent(courseId, studentId)
     }
 
-    // Observe the UI state from the ViewModel
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState = viewModel.stateStudentEvaluations.value
 
-    LaunchedEffect( true, block = {
-        Log.e("uistate", uiState.toString())
-        }
-    )
+    LaunchedEffect(uiState) {
+        Log.e("uiState", uiState.toString())
+    }
 
-    when (uiState) {
-        is UiState.Loading -> {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+    Scaffold(
+        topBar = {
+            Row(
+                modifier= Modifier.background(Azul).fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                CircularProgressIndicator()
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = null,
+                        tint = Color.White)
+                }
+                Spacer(modifier = Modifier.width(3.dp))
+                Text(text = "Actividades", color = Color.White, fontSize = 16.sp)
             }
         }
-        is UiState.Success -> {
-            val evaluations = (uiState as UiState.Success<List<LocalActivitySubmission>>).data
-            if (evaluations.isEmpty()) {
+    ){
+        when {
+            uiState.isLoading -> {
                 Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    Text("No hay evaluaciones disponibles", style = MaterialTheme.typography.subtitle1)
-                }
-            } else {
-                LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    contentAlignment = Alignment.Center
                 ) {
-                    items(evaluations) { evaluation ->
-                        EvaluationItem(
-                            evaluation = evaluation,
-                            navController = navController,
-                            idCourse = courseId,
-                            idStudent = studentId
+                    CircularProgressIndicator()
+                }
+            }
+//        uiState.error != null -> {
+//            val errorMessage = uiState.error.uiMessage ?: "An unknown error occurred"
+//            Box(
+//                modifier = Modifier.fillMaxSize(),
+//                contentAlignment = Alignment.Center
+//            ) {
+//                Text(
+//                    text = errorMessage,
+//                    color = MaterialTheme.colors.error
+//                )
+//            }
+//        }
+            uiState.info != null -> {
+                val evaluations = uiState.info.orEmpty()
+                if (evaluations.isEmpty()) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Text(
+                            "No hay evaluaciones disponibles",
+                            style = MaterialTheme.typography.subtitle1
                         )
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(evaluations) { evaluation ->
+                            EvaluationItem(
+                                evaluation = evaluation,
+                                navController = navController,
+                                idCourse = courseId,
+                                idStudent = studentId
+                            )
+                        }
                     }
                 }
             }
         }
-        is UiState.Error -> {
-            val errorMessage = (uiState as UiState.Error).message
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = errorMessage, color = MaterialTheme.colors.error)
-            }
-        }
+
     }
+
 }

@@ -23,8 +23,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.classroom.common.CustomButton.CustomButton
 import com.example.classroom.common.CustomButton.NavigationButtonStyle
+import com.example.classroom.common.CustomInput.CustomTextField
 import com.example.classroom.common.previewDocument.DocumentPreviewComponent
 import com.example.classroom.domain.model.entity.LocalActivitySubmission
+import com.example.classroom.presentation.theme.Azul
+import com.example.classroom.presentation.theme.Azul2
+import com.example.classroom.presentation.theme.AzulGradient
 
 @Composable
 fun ReviewSubmissionScreen(
@@ -69,21 +73,32 @@ fun ReviewSubmissionScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         // Grade input
-        Text(text = "Calificación (0-100):", style = MaterialTheme.typography.subtitle1)
-        OutlinedTextField(
-            value = grade.toString(),
+//        Text(text = "Calificación (0-100):", style = MaterialTheme.typography.subtitle1)
+//        OutlinedTextField(
+//            value = grade.toString(),
+//            onValueChange = { value ->
+//                val newGrade = value.toFloatOrNull()
+//                if (newGrade != null && newGrade in 0f..100f) {
+//                    grade = newGrade
+//                    onGradeChange(newGrade)
+//                }
+//            },
+//            modifier = Modifier.fillMaxWidth(),
+//            singleLine = true,
+//            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
+//        )
+
+
+        CustomTextField(value = grade.toString(),
             onValueChange = { value ->
                 val newGrade = value.toFloatOrNull()
                 if (newGrade != null && newGrade in 0f..100f) {
                     grade = newGrade
                     onGradeChange(newGrade)
                 }
-            },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
-        )
-
+            }, label = "Calificación (0-100)") {
+            
+        }
         Spacer(modifier = Modifier.height(16.dp))
 
         // Submit grade button
@@ -92,8 +107,8 @@ fun ReviewSubmissionScreen(
             modifier = Modifier.fillMaxWidth(),
             text = "Guardar calificacion",
             style = NavigationButtonStyle.SolidGradient,
-            color2 = Color.Black,
-            color1 = Color.Black
+            color2 = Azul,
+            color1 = AzulGradient
 
         )
     }

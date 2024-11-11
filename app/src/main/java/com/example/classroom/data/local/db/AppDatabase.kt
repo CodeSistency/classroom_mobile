@@ -4,6 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.classroom.data.local.db.AppDao
+import com.example.classroom.data.local.db.LocalPostDao
 import com.example.classroom.domain.model.entity.LocalActivities
 import com.example.classroom.domain.model.entity.LocalActivitySubmission
 import com.example.classroom.domain.model.entity.LocalCourses
@@ -32,6 +33,7 @@ import com.example.classroom.domain.model.typeConverter.UsersInCourseConverter
 
 abstract class AppDatabase: RoomDatabase() {
     abstract val appDao: AppDao
+    abstract val localPostDao: LocalPostDao
 
     companion object {
         const val DATABASE_NAME = "app_classroom"

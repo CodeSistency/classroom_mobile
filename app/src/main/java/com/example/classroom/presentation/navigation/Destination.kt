@@ -74,6 +74,16 @@ enum class Destination(val screenRoute: String, val title: String, val icon: Ico
         title = "PROFESSOR_REVIEW_EVALUATION",
         icon = Icon.Resource(R.drawable.ic_edit)
     ),
+    ADD_POST_SCREEN(
+        screenRoute = "ADD_POST_SCREEN",
+        title = "ADD_POST_SCREEN",
+        icon = Icon.Resource(R.drawable.ic_edit)
+    ),
+    ADD_QUIZZ(
+        screenRoute = "ADD_QUIZZ",
+        title = "ADD_QUIZZ",
+        icon = Icon.Resource(R.drawable.ic_edit)
+    ),
     ADD_USER_COURSE(
         screenRoute = "ADD_USER_COURSE",
         title = "ADD_USER_COURSE",

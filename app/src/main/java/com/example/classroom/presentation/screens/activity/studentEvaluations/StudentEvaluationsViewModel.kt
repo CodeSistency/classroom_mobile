@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
@@ -32,56 +33,63 @@ class StudentEvaluationsViewModel(
     private val _stateStudentEvaluations = mutableStateOf(StudentEvaluationsState())
     val stateStudentEvaluations: State<StudentEvaluationsState> = _stateStudentEvaluations
 
-    private val _uiState = MutableStateFlow<UiState<List<LocalActivitySubmission>>>(UiState.Loading)
-    val uiState: StateFlow<UiState<List<LocalActivitySubmission>>> = _uiState.asStateFlow()
-
-    // Load evaluations for a specific student in a course using Flow
-    fun loadStudentEvaluations(activityId: String, studentId: String) {
+    // Load evaluations from the local database only
+    fun observeLocalEvaluations(courseId: String, studentId: String) {
         viewModelScope.launch {
-            Log.e("students", "Loading evaluations for activityId: $activityId, studentId: $studentId")
-
-            // Set loading state at the beginning of the call
-            _uiState.value = UiState.Loading
-
             repositoryBundle.submissionsRepository
-                .getSubmissionsForStudentAndCourse(activityId, studentId)
-                .catch { e ->
-                    Log.e("students", "Error loading evaluations: ${e.message}")
-                    _uiState.value = UiState.Error("Failed to load evaluations: ${e.message}")
-                }
+                .getSubmissionsForStudentAndCourse(courseId, studentId)
+                .distinctUntilChanged() // Only emit new data if it's actually different
                 .collect { evaluations ->
-                    Log.e("students", "Success! Loaded evaluations: $evaluations")
-                    _uiState.value = UiState.Success(evaluations)
+                    Log.e("observeLocalEvaluations", "Received local data: $evaluations")
+
+                    if (!evaluations.isNullOrEmpty()) {
+                        // Only update if evaluations is non-null and non-empty
+                        _stateStudentEvaluations.value = _stateStudentEvaluations.value.copy(
+                            info = evaluations,
+                            isLoading = false,
+                            error = null
+                        )
+                    }
                 }
         }
     }
-
-    suspend fun getActivitiesByStudent(courseId: String, userId: String){
-        getActivitiesSubmitedByStudent(courseId, userId).onEach { result ->
-            when(result){
-                is Resource.Error -> {
-                    //Timber.tag("AUTH_VM").e("Error ${result.message?.uiMessage}")
-                    Log.e("HOME_VM:", "Error ${result.message?.uiMessage}")
-                    _stateStudentEvaluations.value = StudentEvaluationsState(error = result.message)
-                }
-                is Resource.Loading -> {
-                    Timber.tag("HOME_VM").e("is loading")
-                    _uiState.value = UiState.Loading
-                    _stateStudentEvaluations.value = StudentEvaluationsState(isLoading = true)
-                }
-                is Resource.Success -> {
-                    Timber.tag("HOME_VM").e("success")
-                    Log.e("HOME_VM:", "success")
-                    _stateStudentEvaluations.value = StudentEvaluationsState(info = result.data)
-                    Log.e("HOME_VM:", "${_stateStudentEvaluations.value.info}")
-                    _stateStudentEvaluations.value.info?.let {
-//                        repositoryBundle.activitiesRepository.insertAllActivities(it)
-//                        delay(1000)
+    // Fetch evaluations remotely and sync with the local database
+    fun getActivitiesByStudent(courseId: String, userId: String) {
+        viewModelScope.launch {
+            getActivitiesSubmitedByStudent(courseId, userId).collect { result ->
+                when (result) {
+                    is Resource.Error -> {
+                        Log.e("getActivitiesByStudent", "Error loading remote data")
+                        // Preserve `info` if it already has data to prevent UI from clearing
+                        _stateStudentEvaluations.value = _stateStudentEvaluations.value.copy(
+                            error = result.message,
+                            isLoading = false,
+                            info = _stateStudentEvaluations.value.info // Keep existing data
+                        )
+                    }
+                    is Resource.Loading -> {
+                        Log.e("getActivitiesByStudent", "Loading remote data")
+                        // Only set loading without resetting info
+                        _stateStudentEvaluations.value = _stateStudentEvaluations.value.copy(
+                            isLoading = true,
+                            info = _stateStudentEvaluations.value.info // Keep existing data
+                        )
+                    }
+                    is Resource.Success -> {
+                        Log.e("getActivitiesByStudent", "Successfully fetched remote data")
+                        result.data?.let { evaluations ->
+                            // Insert the data into the local database
+//                            repositoryBundle.submissionsRepository.insertAllSubmissions(evaluations)
+                        }
+                        // Reset `isLoading` and error without clearing `info`
+                        _stateStudentEvaluations.value = _stateStudentEvaluations.value.copy(
+                            isLoading = false,
+                            error = null
+                        )
                     }
                 }
             }
-
-        }.launchIn(viewModelScope)
+        }
     }
-
 }
+

@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 class AddQuizzViewModel(private val repositoryBundle: RepositoryBundle,
 ) : ViewModel() {
 
-    fun getQuizzWithQuestions(courseId: Int, quizzId: Int): Flow<QuizzWithQuestions> {
+    fun getQuizzWithQuestions(courseId: String, quizzId: Int): Flow<QuizzWithQuestions> {
         return repositoryBundle.quizzRepository.getQuizzWithQuestions(courseId, quizzId)
     }
 
@@ -30,7 +30,7 @@ class AddQuizzViewModel(private val repositoryBundle: RepositoryBundle,
         }
     }
 
-    fun getQuestionsForCourse(courseId: Int): Flow<List<QuestionsEntity>> {
+    fun getQuestionsForCourse(courseId: String): Flow<List<QuestionsEntity>> {
         return repositoryBundle.quizzRepository.getQuestionsForCourse(courseId)
     }
 }

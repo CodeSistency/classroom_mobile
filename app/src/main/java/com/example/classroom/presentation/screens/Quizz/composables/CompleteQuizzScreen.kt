@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.example.classroom.presentation.screens.Quizz.QuizzViewModel
 
 @Composable
-fun CompleteQuizzScreen(viewModel: QuizzViewModel, courseId: Int, quizzId: Int) {
+fun CompleteQuizzScreen(viewModel: QuizzViewModel, courseId: String, quizzId: Int) {
     val quizzWithQuestionsFlow = viewModel.getQuizzWithQuestions(courseId, quizzId).collectAsState(initial = null)
     var answers = remember { mutableStateMapOf<Int, String>() }
 

@@ -6,8 +6,8 @@ import com.example.classroom.domain.model.entity.QuizzWithQuestions
 import kotlinx.coroutines.flow.Flow
 
 interface QuizzRepository {
-    fun getQuizzWithQuestions(courseId: Int, quizzId: Int): Flow<QuizzWithQuestions>
+    fun getQuizzWithQuestions(courseId: String, quizzId: Int): Flow<QuizzWithQuestions>
     suspend fun insertQuizz(quizz: QuizzEntity)
     suspend fun insertQuestion(question: QuestionsEntity)
-    fun getQuestionsForCourse(courseId: Int): Flow<List<QuestionsEntity>>
+    fun getQuestionsForCourse(courseId: String): Flow<List<QuestionsEntity>>
 }

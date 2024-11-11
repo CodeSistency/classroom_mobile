@@ -48,7 +48,7 @@ fun CustomTextField(
     onValueChange: (String) -> Unit,
     label: String,
     modifier: Modifier = Modifier,
-    icon: ImageVector?,
+    icon: ImageVector? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     imeAction: ImeAction = ImeAction.Done,
     enabled: Boolean = true,

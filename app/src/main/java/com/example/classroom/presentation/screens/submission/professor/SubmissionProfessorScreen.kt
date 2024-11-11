@@ -1,9 +1,11 @@
 package com.example.classroom.presentation.screens.submission.professor
 
+import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -18,11 +20,15 @@ fun SubmissionProfessorScreen(
     courseId: String,
 ) {
     val context = LocalContext.current
-    val submission = viewModel.currentSubmission
+    val submission by viewModel.currentSubmission // Observe the state directly
 
     LaunchedEffect(Unit) {
         viewModel.loadSubmission(activityId, studentId)
     }
+
+    LaunchedEffect(key1 = submission, block = {
+        Log.e("submission Review", submission.toString())
+    })
 
     submission?.let { loadedSubmission ->
         ReviewSubmissionScreen(

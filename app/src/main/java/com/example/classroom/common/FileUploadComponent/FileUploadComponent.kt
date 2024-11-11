@@ -7,8 +7,10 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -26,6 +28,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.example.classroom.common.CustomButton.CustomButton
+import com.example.classroom.common.CustomButton.NavigationButtonStyle
+import com.example.classroom.presentation.theme.Azul
+import com.example.classroom.presentation.theme.AzulGradient
 
 @Composable
 fun FileUploadComponent(
@@ -59,7 +65,16 @@ fun FileUploadComponent(
         ) {
             if (selectedFileUri != null) {
                 // Display preview or file name
-                Text(text = "Archivo seleccionado: ${selectedFileUri?.lastPathSegment}")
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(4.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(text = "Archivo seleccionado: ${selectedFileUri?.lastPathSegment}")
+
+                }
             } else {
                 Text(text = "Toca para seleccionar un archivo")
             }
@@ -67,15 +82,24 @@ fun FileUploadComponent(
 
         // Clear file button
         if (selectedFileUri != null) {
-            Button(
+            CustomButton(
                 onClick = {
                     selectedFileUri = null
                     onFileCleared()
                 },
-                modifier = Modifier.padding(top = 8.dp)
-            ) {
-                Text("Eliminar archivo")
-            }
+                text = "Eliminar archivo",
+                style = NavigationButtonStyle.SolidGradient,
+                color1 = Azul,
+                color2 = AzulGradient)
+//            Button(
+//                onClick = {
+//                    selectedFileUri = null
+//                    onFileCleared()
+//                },
+//                modifier = Modifier.padding(top = 8.dp)
+//            ) {
+//                Text("Eliminar archivo")
+//            }
         }
     }
 }
