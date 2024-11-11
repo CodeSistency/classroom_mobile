@@ -22,6 +22,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.example.classroom.presentation.navigation.Destination
 import com.example.classroom.presentation.screens.activity.ActivityViewmodel
 import com.example.classroom.presentation.screens.course.CourseViewmodel
 import com.example.classroom.presentation.screens.home.HomeViewmodel
@@ -30,16 +32,19 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 @Composable
-fun ListUsers(viewModel: ActivityViewmodel, courseViewmodel: CourseViewmodel, scope: CoroutineScope, id: String) {
+fun ListUsers(viewModel: ActivityViewmodel, courseViewmodel: CourseViewmodel, scope: CoroutineScope, id: String, navController: NavController) {
 
-    val items by courseViewmodel.filteredListUsersByCourseFLow.collectAsState(initial = listOf())
+    val items by courseViewmodel.filteredListUsersByCourseFlow.collectAsState()
     LaunchedEffect(key1 = items, block = {
-        Log.e("Activities", items.toString())
+        Log.e("students ui", items.toString())
 
     })
+
+
     LaunchedEffect(key1 = true, block = {
         if (items.isEmpty() && id != null){
             viewModel.getActivitiesLocalByCourse(id)
+//            courseViewmodel.getUsersByCourseLocal(id)
         }
     })
 
@@ -55,7 +60,7 @@ fun ListUsers(viewModel: ActivityViewmodel, courseViewmodel: CourseViewmodel, sc
                     Spacer(modifier = Modifier.height(10.dp))
                     IconButton(onClick = {
                         scope.launch {
-                            courseViewmodel.getCourseByIdLocal(id)
+//                            courseViewmodel.getCourseByIdLocal(id)
                             courseViewmodel.getUsersByCourseRemote(id)
                             courseViewmodel.getUsersByCourseLocal(id)
                             viewModel.getActivitiesByCourse(id)
@@ -73,9 +78,10 @@ fun ListUsers(viewModel: ActivityViewmodel, courseViewmodel: CourseViewmodel, sc
                     Box(modifier = Modifier.padding(vertical = 6.dp, horizontal = 2.dp)){
                         CardStudent(student = it,
                             msgDelete = "¿Estás seguro de retirar este estudiante?",
-                            msgDeleteBtn = "Retirar") {
-
-                        }
+                            msgDeleteBtn = "Retirar",
+                            navController = navController,
+                            courseId = id,
+                            action = {})
                     }
                 }
             }

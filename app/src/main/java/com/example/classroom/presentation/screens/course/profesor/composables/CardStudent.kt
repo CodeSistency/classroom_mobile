@@ -1,6 +1,7 @@
 package com.example.classroom.presentation.screens.course.profesor.composables
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,19 +30,24 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.classroom.R
 import com.example.classroom.common.CustomDialog
 import com.example.classroom.domain.model.entity.LocalActivities
+import com.example.classroom.domain.model.entity.LocalStudents
 import com.example.classroom.domain.model.entity.LocalUser
+import com.example.classroom.presentation.navigation.Destination
 import com.example.classroom.presentation.theme.Azul2
 import com.example.classroom.presentation.theme.PaddingCustom
 
 @Composable
 fun CardStudent(
-    student: LocalUser,
+    student: LocalStudents,
     msgDelete: String,
     msgDeleteBtn: String,
-    action: () -> Unit
+    action: () -> Unit,
+    courseId: String,
+    navController: NavController,
 ){
     val shape = RoundedCornerShape(PaddingCustom.MEDIUM.size)
     var isDeleteOpen by remember { mutableStateOf(false) }
@@ -51,6 +57,11 @@ fun CardStudent(
                 .shadow(8.dp, shape)
                 .background(Color.White, shape)
                 .padding(16.dp)
+                .clickable {
+                    navController.navigate(
+                        "${Destination.STUDENT_EVALUATIONS.screenRoute}?idStudent=${student.idApi}&idCourse=${courseId}"
+                    )
+                }
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),

@@ -228,7 +228,7 @@ fun AddActivityScreen(
                                     ActivityRequestDto(
                                         description = state.description,
                                         title = state.title,
-                                        status = state.status,
+                                        statusId = state.status.id,
                                         startDate = currentDateFormatted,
                                         endDate = state.endDate,
                                         idCourse = idCourse,

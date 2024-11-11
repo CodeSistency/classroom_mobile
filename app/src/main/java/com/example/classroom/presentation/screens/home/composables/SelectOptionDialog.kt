@@ -47,10 +47,13 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import com.example.classroom.R
+import com.example.classroom.common.CustomButton.CustomButton
+import com.example.classroom.common.CustomButton.NavigationButtonStyle
 import com.example.classroom.presentation.navigation.Destination
 import com.example.classroom.presentation.screens.auth.composables.ItemInputField
 import com.example.classroom.presentation.screens.home.HomeViewmodel
 import com.example.classroom.presentation.theme.Azul
+import com.example.classroom.presentation.theme.AzulGradient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -97,43 +100,30 @@ fun SelectedOptionDialog(
                         )
                         Spacer(modifier = Modifier.height(10.dp))
 
-                        Button(
+                        CustomButton(
                             onClick = {
-                                isSelectedOption = Options.JOIN_CLASS
+                            isSelectedOption = Options.JOIN_CLASS
                             },
-                            colors = ButtonDefaults.buttonColors(
-                                backgroundColor = Azul
-                            ),
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                Arrangement.SpaceBetween,
-                                Alignment.CenterVertically
-                            ) {
-                                Text(text = "Unirse a una clase", modifier = Modifier.weight(1f))
-                                Icon(Icons.Default.ArrowForwardIos, contentDescription = null)
-                            }
+                            text = "Unirse a una clase",
+                            style = NavigationButtonStyle.OutlineWithIconGradient,
+                            color1 = Azul,
+                            color2 = AzulGradient,
+                            icon = Icons.Default.ArrowForwardIos)
 
-                        }
+
                         Spacer(modifier = Modifier.height(5.dp))
-                        Button(
+
+                        CustomButton(
                             onClick = {
                                 navController.navigate(Destination.REGISTRO_COURSE.screenRoute)
                             },
-                            colors = ButtonDefaults.buttonColors(
-                                backgroundColor = Azul
-                            ),
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                Arrangement.SpaceBetween,
-                                Alignment.CenterVertically
-                            ) {
-                                Text(text = "Crear una clase", modifier = Modifier.weight(1f))
-                                Icon(Icons.Default.ArrowForwardIos, contentDescription = null)
-                            }
+                            text = "Crear a una clase",
+                            style = NavigationButtonStyle.OutlineWithIconGradient,
+                            color1 = Azul,
+                            color2 = AzulGradient,
+                            icon = Icons.Default.ArrowForwardIos)
 
-                        }
+
                     }
                     Options.JOIN_CLASS -> {
                         IconButton(
@@ -142,7 +132,7 @@ fun SelectedOptionDialog(
                             Icon(Icons.Default.ArrowBack, contentDescription = null)
                         }
                         if (state.isLoading){
-                            Box(modifier = Modifier.fillMaxSize()){
+                            Box(modifier = Modifier){
                                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                             }
                         }
@@ -161,6 +151,7 @@ fun SelectedOptionDialog(
                             Arrangement.SpaceBetween,
                             Alignment.CenterVertically
                         ){
+
                             ItemInputField(
                                 titulo = stringResource(id = R.string.join_class_text),
                                 darkTheme = false,

@@ -28,7 +28,7 @@ class SignUpUseCase(
                 repositoryBundle.loginRepository.logout()
                 data.responseData!!.toLoginLocal()
             }else{
-                throw catchError(data.statusCode.value, null, message = data.messageError)
+                throw catchError(data.statusCode.value, null, message = data.messageError?.message)
             }
         }
     }

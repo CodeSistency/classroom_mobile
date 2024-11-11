@@ -20,21 +20,24 @@ data class LocalCourses(
     @ColumnInfo("subject") val subject: String,
     @ColumnInfo("token") val token: String,
     @ColumnInfo("area") val area: Area?,
-//    @ColumnInfo("users", defaultValue = "") var users: List<CourseResponseDto.Data.Users>,
-//    @TypeConverters(UsersInCourseConverter::class)
-//    @ColumnInfo("users", defaultValue = "") var users: List<LocalUser>?,
+
 
     )
 
-enum class Area {
-    SCIENCE,
-    MATH,
-    LANGUAGE,
-    BIOLOGY,
-    NATURE,
-    CODING,
-    OTHER,
-    NO_SELECTED
+
+enum class Area(val id: Int, val displayName: String) {
+    SCIENCE(1, "Science"),
+    MATH(2, "Math"),
+    LANGUAGE(3, "Language"),
+    BIOLOGY(4, "Biology"),
+    NATURE(5, "Nature"),
+    CODING(6, "Coding"),
+    OTHER(7, "Other"),
+    NO_SELECTED(0, "No Selected");
+
+    companion object {
+        fun fromId(id: Int): Area = values().find { it.id == id } ?: NO_SELECTED
+    }
 }
 
 fun areatoInt(area: Area): Int {

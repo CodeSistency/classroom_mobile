@@ -42,6 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.classroom.R
 import com.example.classroom.common.customTab.CustomTab
 import com.example.classroom.domain.model.entity.Gender
@@ -58,11 +59,11 @@ import proyecto.person.appconsultapopular.common.shimmerEffects.ListShimmer
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CourseStudentPresentation(viewModel: ActivityViewmodel, courseViewmodel: CourseViewmodel, id: String){
+fun CourseStudentPresentation(viewModel: ActivityViewmodel, courseViewmodel: CourseViewmodel, id: String, navController: NavController){
     val tabTitles = listOf(SelectedOption.COURSES.title, SelectedOption.MY_COURSES.title)
     val pagerState = rememberPagerState(pageCount = { tabTitles.size })
     val (selected, setSelected) = remember { mutableStateOf(0) }
-    val userInfo = viewModel.userInfo.collectAsState(initial = emptyList())
+    val userInfo = viewModel.userInfo.collectAsState(initial = null)
     val courseInfo = courseViewmodel.courseFlow.collectAsState(initial = null)
     var scope = rememberCoroutineScope()
     LaunchedEffect(key1 = true, block = {
@@ -181,7 +182,12 @@ fun CourseStudentPresentation(viewModel: ActivityViewmodel, courseViewmodel: Cou
             if (viewModel.stateGetActivities.value.isLoading){
                 ListShimmer(quantity = 10)
             }else{
-              ListActivities(viewModel = viewModel, scope = scope, id = id)
+                userInfo.value.let {
+                    if (!it.isNullOrEmpty()){
+                        ListActivities(viewModel = viewModel, scope = scope, id = id, userId = it.first().idApi, navController = navController)
+
+                    }
+                }
             }
            
         }

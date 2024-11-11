@@ -24,7 +24,6 @@ interface LoginRepository{
     /** get info user*/
     suspend fun getUserInfo(): List<LocalUser>
 
-    suspend fun getUserLogged(): Flow<LocalUser?>
 
     fun getUserInfoWithFlow(): Flow<List<LocalUser>>
 

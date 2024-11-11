@@ -11,6 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.navigation.NavController
 import com.example.classroom.presentation.screens.activity.ActivityViewmodel
+import com.example.classroom.presentation.screens.activity.addActivity.AddActivityViewModel
+import com.example.classroom.presentation.screens.course.AddCourse.AddCourseViewModel
 import com.example.classroom.presentation.screens.course.profesor.CourseProfesorScreen
 import com.example.classroom.presentation.screens.course.student.CourseStudentScreen
 
@@ -21,7 +23,9 @@ fun CourseScreen(
     isOwner: Boolean,
     viewModel: CourseViewmodel,
     activityViewmodel: ActivityViewmodel,
+    addActivityViewModel: AddActivityViewModel,
     navController: NavController,
+    addCourseViewModel: AddCourseViewModel,
     focusManager : FocusManager
 ){
 
@@ -30,7 +34,7 @@ fun CourseScreen(
     })
 
     if (isOwner){
-        CourseProfesorScreen(viewModel = activityViewmodel, courseViewmodel = viewModel, id = id, email = email, navController)
+        CourseProfesorScreen(viewModel = activityViewmodel, courseViewmodel = viewModel, id = id, email = email, addActivityViewModel = addActivityViewModel, navController =  navController, addCourseViewModel = addCourseViewModel)
     }else{
         CourseStudentScreen(activityViewmodel = activityViewmodel, courseViewmodel = viewModel, id = id, navController)
     }

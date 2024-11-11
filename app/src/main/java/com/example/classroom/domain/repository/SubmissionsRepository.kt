@@ -1,0 +1,45 @@
+package com.example.classroom.domain.repository
+
+import com.example.classroom.common.ResponseGenericAPi
+import com.example.classroom.data.remote.dto.evaluations.evaluationsSent.EvaluationsSentResponseDto
+import com.example.classroom.data.remote.dto.evaluations.reviewEvaluationDto.ReviewEvaluationRequestDto
+import com.example.classroom.data.remote.dto.evaluations.reviewEvaluationDto.ReviewEvaluationsResponseDto
+import com.example.classroom.data.remote.dto.evaluations.sendEvaluationRequestDto.SendEvaluationRequestDto
+import com.example.classroom.data.remote.dto.evaluations.sendEvaluationRequestDto.SendEvaluationResponseDto
+import com.example.classroom.domain.model.entity.LocalActivitySubmission
+import com.example.classroom.domain.model.entity.LocalStudentEvaluation
+import io.ktor.client.statement.HttpResponse
+import kotlinx.coroutines.flow.Flow
+import okhttp3.Response
+import java.io.File
+
+interface SubmissionsRepository {
+
+    suspend fun addOrUpdateSubmission(submission: LocalActivitySubmission)
+
+    suspend fun getSubmissionsForStudent(activityId: String, studentId: String): Flow<List<LocalActivitySubmission>> // Return as Flow
+
+    suspend fun getSubmissionsForStudentAndCourse(courseId: String, studentId: String): Flow<List<LocalActivitySubmission>> // Return as Flow
+
+    suspend fun getAllSubmissionsForActivity(activityId: String): Flow<List<LocalActivitySubmission>> // Return as Flow
+
+
+    suspend fun addOrUpdateEvaluation(evaluation: LocalStudentEvaluation)
+
+    suspend fun getEvaluationsForStudent(activityId: String, studentId: String): Flow<List<LocalStudentEvaluation>> // Return as Flow
+
+    suspend fun getAllEvaluationsForCourse(courseId: String): Flow<List<LocalStudentEvaluation>> // Return as Flow
+
+    //REMOTE
+
+    suspend fun getActivitiesSubmited(courseId: String, userId: String): ResponseGenericAPi<EvaluationsSentResponseDto>
+
+    suspend fun submitActivityToServerAndSync(submission: SendEvaluationRequestDto): ResponseGenericAPi<SendEvaluationResponseDto>
+
+    suspend fun reviewActivityToServerAndSync(review: ReviewEvaluationRequestDto): ResponseGenericAPi<ReviewEvaluationsResponseDto>
+
+    suspend fun uploadFile(file: File): HttpResponse
+
+
+
+}

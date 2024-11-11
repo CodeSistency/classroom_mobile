@@ -82,7 +82,5 @@ class CoursesRepositoryImpl(
         return dao.getUsersByCourseIdWithFlow(id)
     }
 
-    override suspend fun updateUsersInCourse(users: List<LocalUser>, newCourseId: String) {
-        return dao.updateUsersExcludingLoggedIn(users, newCourseId)
-    }
+
 }

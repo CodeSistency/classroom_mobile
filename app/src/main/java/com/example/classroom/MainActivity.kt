@@ -36,7 +36,7 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        Seeders(lifecycle).addActivities(App.appModule.db)
+        Seeders(lifecycle).seedDatabase(App.appModule.db.appDao)
         setContent {
             val systemUiController = rememberSystemUiController()
 //            systemUiController.setStatusBarColor(
@@ -59,12 +59,10 @@ class MainActivity : ComponentActivity() {
 //                )
 //            })
 
-//            val isUserLogged by produceState<List<LocalUser?>?>(initialValue = null, producer = {
-//                value = App.appModule.db.appDao.getUserInfo()
-//            })
-            val isUserLogged by produceState<LocalUser?>(initialValue = null, producer = {
-                value = App.appModule.db.appDao.getLoggedInUser().first()
+            val isUserLogged by produceState<List<LocalUser?>?>(initialValue = null, producer = {
+                value = App.appModule.db.appDao.getUserInfo()
             })
+
 
             ClassroomTheme {
                 // A surface container using the 'background' color from the theme
@@ -74,35 +72,17 @@ class MainActivity : ComponentActivity() {
                 ) {
 
 
-                    isUserLogged.let {
-                        val isLogged = if (isUserLogged != null){
-                            isUserLogged?.let {
-                                it.isLogged
-                            }
-                        }else{
-                            false
-                        }
-                        if (isLogged != null) {
-                            Navigation(
 
-                                isUserLogged = isLogged,
-                                darkTheme = true,
 
-                                ){
-                            }
+                    isUserLogged?.let {user ->
+                        Navigation(
+
+                            isUserLogged = user.isNotEmpty(),
+                            darkTheme = true,
+
+                        ){
                         }
                     }
-
-
-//                    isUserLogged?.let {user ->
-//                        Navigation(
-//
-//                            isUserLogged = user.isNotEmpty(),
-//                            darkTheme = true,
-//
-//                        ){
-//                        }
-//                    }
                 }
             }
         }

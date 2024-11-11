@@ -19,29 +19,33 @@ data class LocalActivities(
     @ColumnInfo("end_date") val endDate: String,
     @ColumnInfo("status") val status: Status,
     )
-enum class Status{
-    LATE,
-    OPEN,
-    FINISHED
-}
 
-fun statusToInt(status: Status): Int{
-    return when(status){
-        Status.LATE -> 1
-        Status.OPEN -> 1
-        Status.FINISHED -> 1
+enum class Status(val id: Int, val displayName: String) {
+    NO_SELECTED(0, "No seleccionado"),
+    OPEN(1, "Abierta"),
+    LATE(2, "Retrasado"),
+    FINISHED(3, "Finalizado");
+    companion object {
+        fun fromId(id: Int): Status = Status.values().find { it.id == id } ?: Status.NO_SELECTED
     }
 }
-
-fun intToStatus(id: Int): Status{
-    return when(id){
-        1 -> Status.LATE
-        2 -> Status.OPEN
-        3 -> Status.FINISHED
-
-        else -> {Status.OPEN}
-    }
-}
+//fun statusToInt(status: Status): Int{
+//    return when(status){
+//        Status.LATE -> 1
+//        Status.OPEN -> 1
+//        Status.FINISHED -> 1
+//    }
+//}
+//
+//fun intToStatus(id: Int): Status{
+//    return when(id){
+//        1 -> Status.LATE
+//        2 -> Status.OPEN
+//        3 -> Status.FINISHED
+//
+//        else -> {Status.OPEN}
+//    }
+//}
 
 fun ActivityResponseDto.toLocal(): LocalActivities {
     return LocalActivities(
@@ -52,7 +56,7 @@ fun ActivityResponseDto.toLocal(): LocalActivities {
         grade = data.grade,
         idCourse = data.idCourse.toString(),
         startDate = data.startDate ?: "",
-        status = intToStatus(data.status)
+        status = Status.fromId(data.status)
 
     )
 }
@@ -62,7 +66,7 @@ fun GetActivitiesResponseDto.toLocal() : List<LocalActivities>{
         LocalActivities(
             idApi = it.idApi.toString(),
             description = it.description,
-            status = intToStatus(it.status),
+            status = Status.fromId(it.status),
             startDate = it.startDate,
             title = it.title,
             endDate = it.endDate,

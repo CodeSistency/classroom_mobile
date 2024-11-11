@@ -29,7 +29,6 @@ interface CoursesRepository {
     suspend fun deleteCourse(id: String)
     suspend fun getCourses() : List<LocalCourses>
     suspend fun getCoursesWithFlow() : Flow<List<LocalCourses>>
-    suspend fun updateUsersInCourse(users: List<LocalUser>, newCourseId: String)
     suspend fun getCoursesWithFlowById(id: String) : Flow<LocalCourses?>
     suspend fun getUsersByCourseWithFlow(id: String) : Flow<List<LocalUser>>
 

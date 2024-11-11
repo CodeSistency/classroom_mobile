@@ -37,6 +37,7 @@ import com.example.classroom.common.CustomDialog
 import com.example.classroom.domain.model.entity.LocalActivities
 import com.example.classroom.domain.model.entity.Status
 import com.example.classroom.presentation.navigation.Destination
+import com.example.classroom.presentation.screens.activity.addActivity.AddActivityViewModel
 import com.example.classroom.presentation.theme.Azul2
 import com.example.classroom.presentation.theme.PaddingCustom
 
@@ -46,6 +47,7 @@ fun CardActivity(
     msgDelete: String,
     msgDeleteBtn: String,
     action: () -> Unit,
+    viewModel: AddActivityViewModel,
     navController: NavController
 ){
     val shape = RoundedCornerShape(PaddingCustom.MEDIUM.size)
@@ -120,11 +122,14 @@ fun CardActivity(
                                 )
                             )
                         }
+
+                        else -> {}
                     }
                 }
 
                 Row() {
                     IconButton(onClick = {
+                        viewModel.fillForm(activity)
                         navController.navigate(Destination.REGISTRO_ACTIVITY.screenRoute + "id=${activity.idApi}")
                     }) {
                         Icon(

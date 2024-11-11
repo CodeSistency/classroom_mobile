@@ -15,6 +15,14 @@ import com.example.classroom.domain.model.entity.LocalCourses
 import kotlinx.coroutines.flow.Flow
 import com.example.classroom.common.ResponseGenericAPi
 import com.example.classroom.data.remote.dto.courses.GetUsersByCourseResponse
+import com.example.classroom.data.remote.dto.evaluations.evaluationsSent.EvaluationsSentResponseDto
+import com.example.classroom.data.remote.dto.evaluations.reviewEvaluationDto.ReviewEvaluationRequestDto
+import com.example.classroom.data.remote.dto.evaluations.reviewEvaluationDto.ReviewEvaluationsResponseDto
+import com.example.classroom.data.remote.dto.evaluations.sendEvaluationRequestDto.SendEvaluationRequestDto
+import com.example.classroom.data.remote.dto.evaluations.sendEvaluationRequestDto.SendEvaluationResponseDto
+import io.ktor.client.statement.HttpResponse
+import okhttp3.Response
+import java.io.File
 
 interface ApiService {
 
@@ -41,5 +49,15 @@ interface ApiService {
     suspend fun getActivitiesByCourseRemote(id: String) : ResponseGenericAPi<GetActivitiesResponseDto>
     suspend fun getActivitiesByUserRemote(id: String) : ResponseGenericAPi<GetActivitiesResponseDto>
     suspend fun getActivitiesWithFlowRemote() : Flow<List<LocalActivities>>
+
+
+
+    //EVALUATIONS
+    suspend fun getActivitiesSentByStudent(courseId: String, userId: String): ResponseGenericAPi<EvaluationsSentResponseDto>
+    suspend fun studentSendsEvaluation(body: SendEvaluationRequestDto): ResponseGenericAPi<SendEvaluationResponseDto>
+    suspend fun professorReviewsEvaluation(body: ReviewEvaluationRequestDto): ResponseGenericAPi<ReviewEvaluationsResponseDto>
+
+    //CLOUD
+    suspend fun uploadFile(file: File): HttpResponse
 
 }

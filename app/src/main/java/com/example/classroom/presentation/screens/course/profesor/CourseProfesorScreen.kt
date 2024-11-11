@@ -21,6 +21,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.classroom.presentation.screens.activity.ActivityViewmodel
+import com.example.classroom.presentation.screens.activity.addActivity.AddActivityViewModel
+import com.example.classroom.presentation.screens.course.AddCourse.AddCourseViewModel
 import com.example.classroom.presentation.screens.course.CourseViewmodel
 import com.example.classroom.presentation.screens.course.profesor.composables.CourseProfessorPresentation
 import com.example.classroom.presentation.screens.course.profesor.composables.TopBarProfessor
@@ -32,6 +34,8 @@ import com.example.classroom.presentation.theme.Azul
 fun CourseProfesorScreen(
     viewModel: ActivityViewmodel,
     courseViewmodel: CourseViewmodel,
+    addCourseViewModel: AddCourseViewModel,
+    addActivityViewModel: AddActivityViewModel,
     id: String,
     email: String,
     navController: NavController
@@ -41,7 +45,7 @@ fun CourseProfesorScreen(
             TopBarProfessor(navController = navController)
         }
     ) {
-        CourseProfessorPresentation(viewModel = viewModel, courseViewmodel = courseViewmodel, id = id, navController)
+        CourseProfessorPresentation(viewModel = viewModel, courseViewmodel = courseViewmodel, addActivityViewModel, id = id, addCourseViewModel = addCourseViewModel, navController =  navController)
         var isDialogOpen by remember { mutableStateOf(false) }
         Box(
             modifier = Modifier.fillMaxSize(),

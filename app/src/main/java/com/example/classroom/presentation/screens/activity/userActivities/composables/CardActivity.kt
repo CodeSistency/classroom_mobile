@@ -120,6 +120,8 @@ fun CardActivity(
                                 )
                             )
                         }
+
+                        else -> {}
                     }
                 }
 

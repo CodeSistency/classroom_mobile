@@ -10,6 +10,7 @@ import com.example.classroom.data.repository.LoginRepositoryImpl
 import com.example.classroom.data.repository.QuizzRepositoryImpl
 import com.example.classroom.data.repository.RepositoryBundle
 import com.example.classroom.data.repository.StudentsRepositoryImpl
+import com.example.classroom.data.repository.SubmissionsRepositoryImpl
 import com.example.classroom.domain.use_case.activities.GetActivitiesByUserUseCase
 import com.example.classroom.domain.use_case.activities.GetActivitiesUseCase
 import com.example.classroom.domain.use_case.activities.InsertActivityUseCase
@@ -21,6 +22,9 @@ import com.example.classroom.domain.use_case.courses.InsertCourseUseCase
 import com.example.classroom.domain.use_case.courses.JoinCourseUseCase
 import com.example.classroom.domain.use_case.courses.JoinUserToCourseUseCase
 import com.example.classroom.domain.use_case.courses.UpdateCourseUseCase
+import com.example.classroom.domain.use_case.evaluations.getActivitiesSubmittedByStudent.GetActivitiesSubmitedByStudent
+import com.example.classroom.domain.use_case.evaluations.professorReviewsActivityUseCase.ProfessorReviewsActivityUseCase
+import com.example.classroom.domain.use_case.evaluations.studentSendActivityUseCase.StudentSendActivityUseCase
 import com.example.classroom.domain.use_case.signIn.SignInUseCase
 import com.example.classroom.domain.use_case.signUp.SignUpUseCase
 import com.example.classroom.domain.use_case.validators.ValidatorBundle
@@ -64,6 +68,9 @@ interface AppModule {
     val joinUserToCourseUseCase: JoinUserToCourseUseCase
     val joinCourseUseCase: JoinCourseUseCase
     val getUsersByCourseUseCase: GetUsersByCourseUseCase
+    val getActivitiesSubmitedByStudent: GetActivitiesSubmitedByStudent
+    val professorReviewsActivityUseCase: ProfessorReviewsActivityUseCase
+    val studentSendActivityUseCase: StudentSendActivityUseCase
     val validatorBundle : ValidatorBundle
     val db: AppDatabase
 }
@@ -103,7 +110,8 @@ class AppModuleImpl(
             activitiesRepository = ActivitiesRepositoryImpl(apiService, db.appDao),
             coursesRepository = CoursesRepositoryImpl(apiService, db.appDao),
             quizzRepository = QuizzRepositoryImpl(apiService, db.appDao),
-            studentsRepository = StudentsRepositoryImpl(apiService, db.appDao)
+            studentsRepository = StudentsRepositoryImpl(apiService, db.appDao),
+            submissionsRepository = SubmissionsRepositoryImpl(apiService, db.appDao)
         )
     }
     override val signInUseCase: SignInUseCase by lazy {
@@ -150,6 +158,15 @@ class AppModuleImpl(
     }
     override val getUsersByCourseUseCase: GetUsersByCourseUseCase by lazy {
         GetUsersByCourseUseCase(repositoryBundle)
+    }
+    override val getActivitiesSubmitedByStudent: GetActivitiesSubmitedByStudent by lazy {
+        GetActivitiesSubmitedByStudent(repositoryBundle)
+    }
+    override val professorReviewsActivityUseCase: ProfessorReviewsActivityUseCase by lazy {
+        ProfessorReviewsActivityUseCase(repositoryBundle)
+    }
+    override val studentSendActivityUseCase: StudentSendActivityUseCase by lazy {
+        StudentSendActivityUseCase(repositoryBundle)
     }
 
     override val validatorBundle: ValidatorBundle by lazy {

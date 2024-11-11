@@ -19,8 +19,8 @@ data class ActivityResponseDto(
         val idApi: Int,
         @SerialName("course_id")
         val idCourse: Int,
-        @SerialName("course_name")
-        val nameCourse: String,
+        @SerialName("email")
+        val email: String,
         @SerialName("title")
         val title: String,
         @SerialName("description")
@@ -33,7 +33,7 @@ data class ActivityResponseDto(
         val endDate: String?,
         @SerialName("status_id")
         val status: Int,
-        @SerialName("status_name")
-        val statusName: Status
+        @SerialName("digital")
+        val isDigital: Boolean
     )
 }

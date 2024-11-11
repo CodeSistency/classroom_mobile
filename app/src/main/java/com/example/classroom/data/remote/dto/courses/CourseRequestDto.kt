@@ -6,22 +6,45 @@ import com.example.classroom.domain.model.entity.LocalUser
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+//@Serializable
+//data class CourseRequestDto(
+//    @SerialName("title")
+//    val title: String,
+//    @SerialName("description")
+//    val description: String?,
+//    @SerialName("owner")
+//    val owner: String,
+//    @SerialName("owner_name")
+//    val ownerName: String,
+//    @SerialName("section")
+//    val section: String,
+//    @SerialName("subject")
+//    val subject: String,
+//    @SerialName("area")
+//    val area: Area,
+//
+//)
+
+
+
 @Serializable
 data class CourseRequestDto(
+    @SerialName("token")
+    val token: String,
     @SerialName("title")
     val title: String,
     @SerialName("description")
     val description: String?,
-    @SerialName("owner")
-    val owner: String,
+    @SerialName("ownerId")
+    val ownerId: Int,
     @SerialName("owner_name")
     val ownerName: String,
     @SerialName("section")
     val section: String,
     @SerialName("subject")
     val subject: String,
-    @SerialName("area")
-    val area: Area,
-
+    @SerialName("areaId")
+    val areaId: Int,
 )
+
 

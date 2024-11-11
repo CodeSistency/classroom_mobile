@@ -18,6 +18,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,6 +39,7 @@ import com.example.classroom.R
 import com.example.classroom.common.CustomDialog
 import com.example.classroom.domain.model.entity.LocalCourses
 import com.example.classroom.presentation.navigation.Destination
+import com.example.classroom.presentation.screens.course.AddCourse.AddCourseViewModel
 import com.example.classroom.presentation.theme.Azul2
 import com.example.classroom.presentation.theme.PaddingCustom
 
@@ -48,6 +51,7 @@ fun CardCourses(
     msgDelete: String,
     msgDeleteBtn: String,
     action: () -> Unit,
+    viewModel: AddCourseViewModel,
     navController: NavController
 ){
     val shape = RoundedCornerShape(PaddingCustom.MEDIUM.size)
@@ -59,8 +63,7 @@ fun CardCourses(
                 .background(Color.White, shape)
                 .padding(16.dp)
                 .clickable {
-
-                        navController.navigate("${Destination.COURSES.screenRoute}?id=${course.idApi}&email=${email}&isOwner=${isOwner.toString()}")
+                    navController.navigate("${Destination.COURSES.screenRoute}?id=${course.idApi}&email=${email}&isOwner=${isOwner.toString()}")
 
 
                 }
@@ -90,15 +93,35 @@ fun CardCourses(
                         )
                     )
                 }
-                IconButton(onClick = {
-                    isDeleteOpen = true
-                }) {
-                    Icon(painterResource(id = R.drawable.ic_cancel),
-                        contentDescription = null,
-                        tint = Color.Gray,
-                        modifier = Modifier.size(35.dp)
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+//                    horizontalArrangement = Arrangement.Center
+                ) {
+                    IconButton(onClick = {
+                        viewModel.fillForm(course)
+                        navController.navigate("${Destination.REGISTRO_COURSE.screenRoute}?id=${course.idApi}")
+
+                    }) {
+                        Icon(
+                            Icons.Default.Edit,
+                            contentDescription = null,
+                            tint = Color.Gray,
+                            modifier = Modifier.size(35.dp)
                         )
+                    }
+                    Spacer(modifier = Modifier.width(3.dp))
+                    IconButton(onClick = {
+                        isDeleteOpen = true
+                    }) {
+                        Icon(painterResource(id = R.drawable.ic_cancel),
+                            contentDescription = null,
+                            tint = Color.Gray,
+                            modifier = Modifier.size(35.dp)
+                        )
+                    }
                 }
+
             }
         }
         Box(modifier = Modifier

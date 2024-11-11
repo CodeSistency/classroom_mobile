@@ -30,7 +30,7 @@ class SignInUseCase  (
                 }else{
                     Timber.tag("dataaaLoginError").e(data.responseData.toString())
 
-                    throw catchError(data.statusCode.value, null, message = data.messageError)
+                    throw catchError(data.statusCode.value, null, message = data.messageError?.message)
                 }
             }
         }

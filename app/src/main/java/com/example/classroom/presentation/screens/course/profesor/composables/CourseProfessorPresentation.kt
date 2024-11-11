@@ -1,5 +1,6 @@
 package com.example.classroom.presentation.screens.course.profesor.composables
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -47,6 +48,8 @@ import com.example.classroom.R
 import com.example.classroom.common.customTab.CustomTab
 import com.example.classroom.domain.model.entity.Gender
 import com.example.classroom.presentation.screens.activity.ActivityViewmodel
+import com.example.classroom.presentation.screens.activity.addActivity.AddActivityViewModel
+import com.example.classroom.presentation.screens.course.AddCourse.AddCourseViewModel
 import com.example.classroom.presentation.screens.course.CourseViewmodel
 import com.example.classroom.presentation.screens.home.HomeViewmodel
 import com.example.classroom.presentation.screens.home.composables.ListCourses
@@ -64,6 +67,8 @@ import proyecto.person.appconsultapopular.common.shimmerEffects.ListShimmer
 fun CourseProfessorPresentation(
     viewModel: ActivityViewmodel,
     courseViewmodel: CourseViewmodel,
+    addActivityViewModel: AddActivityViewModel,
+    addCourseViewModel: AddCourseViewModel,
     id: String,
     navController: NavController
 ){
@@ -72,13 +77,28 @@ fun CourseProfessorPresentation(
     val (selected, setSelected) = remember { mutableStateOf(0) }
 //    val userInfo = viewModel.userInfo.collectAsState(initial = emptyList())
     val courseInfo = courseViewmodel.courseFlow.collectAsState(initial = null)
-    val scope = rememberCoroutineScope()
-    LaunchedEffect(key1 = true, block = {
-        courseViewmodel.getCourseByIdLocal(id)
-        courseViewmodel.getUsersByCourseRemote(id)
-        courseViewmodel.getUsersByCourseLocal(id)
-        viewModel.getActivitiesByCourse(id)
+//    val students by courseViewmodel.filteredListUsersByCourseFlow.collectAsState(initial = null)
+
+    LaunchedEffect(key1 = courseInfo.value, block = {
+        Log.e("courseInfo", courseInfo.value.toString())
     })
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(key1 = courseInfo.value, block = {
+        if (courseInfo.value == null) courseViewmodel.getCourseByIdLocal(id)
+    })
+
+    LaunchedEffect(key1 = true, block = {
+         courseViewmodel.getUsersByCourseLocal(id)
+    })
+//    LaunchedEffect(key1 = true, block = {
+//        courseViewmodel.getCourseByIdLocal(id)
+//
+//        //have to make a method that involves the two
+////        courseViewmodel.getUsersByCourseRemote(id)
+////        courseViewmodel.getUsersByCourseLocal(id)
+//        viewModel.getActivitiesByCourse(id)
+//    })
     Column(
         modifier = Modifier.background(Azul3)
     ) {
@@ -213,10 +233,10 @@ fun CourseProfessorPresentation(
                 ) { page ->
                     when(page){
                         0 -> {
-                            ListUsers(viewModel, courseViewmodel, scope, id)
+                            ListUsers(viewModel, courseViewmodel, scope, id, navController)
                         }
                         1 -> {
-                            ListActivities(viewModel, courseViewmodel, scope, id, navController)
+                            ListActivities(viewModel, courseViewmodel,addActivityViewModel, scope, id, navController)
                         }
                     }
                 }

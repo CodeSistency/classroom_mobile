@@ -11,13 +11,14 @@ import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
 import com.example.classroom.common.bottomNav.ScaffoldBottomNav
 import com.example.classroom.presentation.navigation.Destination
+import com.example.classroom.presentation.screens.course.AddCourse.AddCourseViewModel
 import com.example.classroom.presentation.screens.home.composables.HomePresentation
 import com.example.classroom.presentation.screens.home.composables.SelectedOptionDialog
 import com.example.classroom.presentation.screens.home.composables.TopBarHome
 import proyecto.person.appconsultapopular.common.SnackbarDelegate
 
 @Composable
-fun HomeScreen(navController: NavController, viewmodel: HomeViewmodel){
+fun HomeScreen(navController: NavController, viewmodel: HomeViewmodel, addCourseViewModel: AddCourseViewModel){
         val items = listOf(
         Destination.HOME,
         Destination.ACTIVITIES
@@ -41,7 +42,7 @@ fun HomeScreen(navController: NavController, viewmodel: HomeViewmodel){
         navController = navController,
         topBar = { TopBarHome(viewmodel, navController, scope) },
         content = {
-                    HomePresentation(viewmodel, navController)
+                    HomePresentation(viewmodel, navController, addCourseViewModel)
                   },
         items = items,
         isFloatingAction = true,

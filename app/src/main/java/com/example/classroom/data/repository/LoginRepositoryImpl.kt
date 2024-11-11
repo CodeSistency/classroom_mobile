@@ -39,9 +39,7 @@ class LoginRepositoryImpl(
         return dao.getUserInfo()
     }
 
-    override suspend fun getUserLogged(): Flow<LocalUser?> {
-        return dao.getLoggedInUser()
-    }
+
 
     override fun getUserInfoWithFlow(): Flow<List<LocalUser>> {
         return dao.getUserInfoWithFlow()

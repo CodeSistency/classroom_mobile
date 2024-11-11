@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.classroom.presentation.screens.activity.ActivityViewmodel
+import com.example.classroom.presentation.screens.activity.addActivity.AddActivityViewModel
 import com.example.classroom.presentation.screens.course.CourseViewmodel
 import com.example.classroom.presentation.screens.home.HomeViewmodel
 import kotlinx.coroutines.CoroutineScope
@@ -31,9 +32,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 @Composable
-fun ListActivities(viewModel: ActivityViewmodel, courseViewmodel: CourseViewmodel, scope: CoroutineScope, id: String, navController: NavController) {
+fun ListActivities(viewModel: ActivityViewmodel, courseViewmodel: CourseViewmodel, addActivityViewModel: AddActivityViewModel, scope: CoroutineScope, id: String, navController: NavController) {
 
-    val items by viewModel.filteredListActivitiesByCourseFLow.collectAsState(initial = listOf())
+    val items by viewModel.filteredListActivitiesByCourseFlow.collectAsState(initial = listOf())
     LaunchedEffect(key1 = items, block = {
         Log.e("Activities", items.toString())
 
@@ -56,7 +57,7 @@ fun ListActivities(viewModel: ActivityViewmodel, courseViewmodel: CourseViewmode
                     Spacer(modifier = Modifier.height(10.dp))
                     IconButton(onClick = {
                         scope.launch {
-                            courseViewmodel.getCourseByIdLocal(id)
+//                            courseViewmodel.getCourseByIdLocal(id)
                             courseViewmodel.getUsersByCourseRemote(id)
                             courseViewmodel.getUsersByCourseLocal(id)
                             viewModel.getActivitiesByCourse(id)
@@ -77,7 +78,8 @@ fun ListActivities(viewModel: ActivityViewmodel, courseViewmodel: CourseViewmode
                             navController = navController,
                             action = {
 
-                            }
+                            },
+                            viewModel = addActivityViewModel
                         )
                     }
                 }

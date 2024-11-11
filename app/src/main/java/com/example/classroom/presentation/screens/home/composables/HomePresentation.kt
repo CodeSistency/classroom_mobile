@@ -41,10 +41,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.classroom.R
 import com.example.classroom.common.customTab.CustomTab
 import com.example.classroom.domain.model.entity.Gender
+import com.example.classroom.presentation.screens.course.AddCourse.AddCourseViewModel
 import com.example.classroom.presentation.screens.home.HomeViewmodel
 import com.example.classroom.presentation.theme.Azul
 import com.example.classroom.presentation.theme.Azul2
@@ -56,11 +58,11 @@ import proyecto.person.appconsultapopular.common.shimmerEffects.ListShimmer
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun HomePresentation(viewModel: HomeViewmodel, navController: NavController){
+fun HomePresentation(viewModel: HomeViewmodel, navController: NavController, addCourseViewModel: AddCourseViewModel){
     val tabTitles = listOf(SelectedOption.COURSES.title, SelectedOption.MY_COURSES.title)
     val pagerState = rememberPagerState(pageCount = { tabTitles.size })
     val (selected, setSelected) = remember { mutableStateOf(0) }
-    val userInfo = viewModel.userInfo.collectAsState(initial = null)
+    val userInfo = viewModel.userInfo.collectAsStateWithLifecycle(initialValue = null)
     var scope = rememberCoroutineScope()
     LaunchedEffect(key1 = true, block = {
         userInfo.value.let {
@@ -69,9 +71,9 @@ fun HomePresentation(viewModel: HomeViewmodel, navController: NavController){
             }
 
         }
-
-        viewModel.getCoursesLocal()
-        viewModel.getMyCoursesLocal()
+//
+//        viewModel.getCoursesLocal()
+//        viewModel.getMyCoursesLocal()
     })
     Column(
         modifier = Modifier.background(Azul3)
@@ -214,10 +216,10 @@ fun HomePresentation(viewModel: HomeViewmodel, navController: NavController){
                     ) { page ->
                         when(page){
                             0 -> {
-                                ListCourses(viewModel, scope, navController, email = userInfo.value!!.email)
+                                ListCourses(viewModel, addCourseViewModel, scope, navController, email = userInfo.value!!.email)
                             }
                             1 -> {
-                                ListMyCourses(viewModel, scope, navController, email = userInfo.value!!.email)
+                                ListMyCourses(viewModel= viewModel, scope =  scope, navController = navController, addCourseViewModel = addCourseViewModel, email = userInfo.value!!.email)
                             }
                         }
                     }

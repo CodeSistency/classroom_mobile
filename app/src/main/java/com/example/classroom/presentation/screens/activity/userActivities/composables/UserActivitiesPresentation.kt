@@ -58,10 +58,10 @@ fun UserActivitiesPresentation(
 //    val pagerState = rememberPagerState(pageCount = { tabTitles.size })
 //    val (selected, setSelected) = remember { mutableStateOf(0) }
 //    val userInfo = viewModel.userInfo.collectAsState(initial = emptyList())
-    val courseInfo = courseViewmodel.courseFlow.collectAsState(initial = null)
+//    val courseInfo = courseViewmodel.courseFlow.collectAsState(initial = null)
     val scope = rememberCoroutineScope()
     LaunchedEffect(key1 = true, block = {
-        courseViewmodel.getCourseByIdLocal(id)
+//        courseViewmodel.getCourseByIdLocal(id)
         courseViewmodel.getUsersByCourseRemote(id)
         courseViewmodel.getUsersByCourseLocal(id)
         viewModel.getActivitiesByCourse(id)

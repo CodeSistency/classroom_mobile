@@ -28,20 +28,34 @@ import com.example.classroom.common.validator.UserDataValidator
 import com.example.classroom.data.repository.ActivitiesRepositoryImpl
 import com.example.classroom.data.repository.LoginRepositoryImpl
 import com.example.classroom.data.repository.RepositoryBundle
+import com.example.classroom.domain.use_case.courses.InsertCourseUseCase
+import com.example.classroom.domain.use_case.courses.UpdateCourseUseCase
 import com.example.classroom.domain.use_case.signIn.SignInUseCase
 import com.example.classroom.domain.use_case.signUp.SignUpUseCase
 import com.example.classroom.presentation.SplashScreen
 import com.example.classroom.presentation.screens.activity.ActivityViewmodel
 import com.example.classroom.presentation.screens.activity.addActivity.AddActivityScreen
+import com.example.classroom.presentation.screens.activity.addActivity.AddActivityScreenNew
+import com.example.classroom.presentation.screens.activity.addActivity.AddActivityViewModel
+import com.example.classroom.presentation.screens.activity.studentEvaluations.StudentEvaluationsViewModel
+import com.example.classroom.presentation.screens.activity.studentEvaluations.StudentsEvaluationsScreen
 import com.example.classroom.presentation.screens.activity.userActivities.UserActivitiesScreen
 import com.example.classroom.presentation.screens.auth.AuthViewModel
 import com.example.classroom.presentation.screens.auth.signIn.SignInScreen
+import com.example.classroom.presentation.screens.auth.signIn.SignInScreenNew
+import com.example.classroom.presentation.screens.auth.signIn.SignInViewModel
 import com.example.classroom.presentation.screens.auth.signUp.SignUpScreen
+import com.example.classroom.presentation.screens.auth.signUp.SignUpScreenNew
 import com.example.classroom.presentation.screens.course.AddCourse.AddCourseScreen
+import com.example.classroom.presentation.screens.course.AddCourse.AddCourseScreenNew
+import com.example.classroom.presentation.screens.course.AddCourse.AddCourseViewModel
 import com.example.classroom.presentation.screens.course.CourseScreen
 import com.example.classroom.presentation.screens.course.CourseViewmodel
 import com.example.classroom.presentation.screens.home.HomeScreen
 import com.example.classroom.presentation.screens.home.HomeViewmodel
+import com.example.classroom.presentation.screens.submission.SubmissionViewModel
+import com.example.classroom.presentation.screens.submission.professor.SubmissionProfessorScreen
+import com.example.classroom.presentation.screens.submission.student.SubmissionStudentScreen
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -77,19 +91,27 @@ fun Navigation(
             composable(
                 route = Destination.LOGIN.screenRoute
             ){
-                SignInScreen(
-                    viewModel = AuthViewModel(
-                        signUpValidator = App.appModule.validatorBundle.signUpValidator,
-                        signInValidator = App.appModule.validatorBundle.signInValidator,
-                        userDataValidator = UserDataValidator(),
-                        signUpUseCase = SignUpUseCase(App.appModule.repositoryBundle),
+                SignInScreenNew(
+                    viewModel = SignInViewModel(
                         signInUseCase = SignInUseCase(App.appModule.repositoryBundle),
                         loginRepositoryImp = LoginRepositoryImpl(App.appModule.apiService, App.appModule.db.appDao),
-
-                    ),
+                        ),
                     focusManager = focusManager,
                     navController = navController,
                     darkTheme = false)
+//                SignInScreen(
+//                    viewModel = AuthViewModel(
+//                        signUpValidator = App.appModule.validatorBundle.signUpValidator,
+//                        signInValidator = App.appModule.validatorBundle.signInValidator,
+//                        userDataValidator = UserDataValidator(),
+//                        signUpUseCase = SignUpUseCase(App.appModule.repositoryBundle),
+//                        signInUseCase = SignInUseCase(App.appModule.repositoryBundle),
+//                        loginRepositoryImp = LoginRepositoryImpl(App.appModule.apiService, App.appModule.db.appDao),
+//
+//                    ),
+//                    focusManager = focusManager,
+//                    navController = navController,
+//                    darkTheme = false)
             }
             /** Configuracion de vista de Home*/
             composable(
@@ -102,6 +124,11 @@ fun Navigation(
                             repositoryBundle = App.appModule.repositoryBundle,
                             getCoursesUseCase = App.appModule.getCoursesUseCase,
                             joinCourseUseCase = App.appModule.joinCourseUseCase,
+                        ),
+                        addCourseViewModel = AddCourseViewModel(
+                            insertCourseUseCase = InsertCourseUseCase(App.appModule.repositoryBundle),
+                            updateCourseUseCase = UpdateCourseUseCase(App.appModule.repositoryBundle),
+                            repositoryBundle =  App.appModule.repositoryBundle
                         )
                     )
                 }
@@ -110,7 +137,7 @@ fun Navigation(
             composable(
                 route = Destination.REGISTRO.screenRoute
             ){
-                SignUpScreen(
+                SignUpScreenNew(
                     viewModel = AuthViewModel(
                         signUpValidator = App.appModule.validatorBundle.signUpValidator,
                         signInValidator = App.appModule.validatorBundle.signInValidator,
@@ -122,6 +149,18 @@ fun Navigation(
                     focusManager = focusManager,
                     navController = navController,
                     darkTheme = false)
+//                SignUpScreen(
+//                    viewModel = AuthViewModel(
+//                        signUpValidator = App.appModule.validatorBundle.signUpValidator,
+//                        signInValidator = App.appModule.validatorBundle.signInValidator,
+//                        userDataValidator = UserDataValidator(),
+//                        signUpUseCase = SignUpUseCase(App.appModule.repositoryBundle),
+//                        signInUseCase = SignInUseCase(App.appModule.repositoryBundle),
+//                        loginRepositoryImp = LoginRepositoryImpl(App.appModule.apiService, App.appModule.db.appDao),
+//                    ),
+//                    focusManager = focusManager,
+//                    navController = navController,
+//                    darkTheme = false)
             }
 
             composable(
@@ -136,23 +175,39 @@ fun Navigation(
                 val email = backStackEntry.arguments?.getString("email")
 
                 if (idCourse != null && email != null) {
-                    AddActivityScreen(
+                    AddActivityScreenNew(
                         idCourse,
                         email = email,
                         id = id,
-                        viewModel = ActivityViewmodel(
-                            activityDataValidator = ActivityDataValidator(),
+                        viewModel = AddActivityViewModel(
                             insertActivityUseCase = App.appModule.insertActivityUseCase,
-                            repositoryBundle = App.appModule.repositoryBundle,
                             updateActivityUseCase = App.appModule.updateActivityUseCase,
-                            getActivitiesUseCase = App.appModule.getActivitiesUseCase,
-                            activitiesValidator = App.appModule.validatorBundle.activitiesValidator,
-                            getActivitiesByUserUseCase = App.appModule.getActivitiesByUserUseCase
+
                         ), // Assuming you have a RegisterViewModel
+
                         navController = navController,
                         focusManager = focusManager
                     )
                 }
+
+//                if (idCourse != null && email != null) {
+//                    AddActivityScreen(
+//                        idCourse,
+//                        email = email,
+//                        id = id,
+//                        viewModel = ActivityViewmodel(
+//                            activityDataValidator = ActivityDataValidator(),
+//                            insertActivityUseCase = App.appModule.insertActivityUseCase,
+//                            repositoryBundle = App.appModule.repositoryBundle,
+//                            updateActivityUseCase = App.appModule.updateActivityUseCase,
+//                            getActivitiesUseCase = App.appModule.getActivitiesUseCase,
+//                            activitiesValidator = App.appModule.validatorBundle.activitiesValidator,
+//                            getActivitiesByUserUseCase = App.appModule.getActivitiesByUserUseCase
+//                        ), // Assuming you have a RegisterViewModel
+//                        navController = navController,
+//                        focusManager = focusManager
+//                    )
+//                }
             }
 
             composable(
@@ -164,22 +219,45 @@ fun Navigation(
             ) { backStackEntry ->
                 val id = backStackEntry.arguments?.getString("id")
 
-                    AddCourseScreen(
-                        id = id,
-                        viewModel = CourseViewmodel(
-                            repositoryBundle = App.appModule.repositoryBundle,
-                            courseDataValidator = CourseDataValidator(),
-                            getActivitiesUseCase = App.appModule.getActivitiesUseCase,
-                            insertCourseUseCase = App.appModule.insertCourseUseCase,
-                            updateCourseUseCase = App.appModule.updateCourseUseCase,
-                            coursesValidator = App.appModule.validatorBundle.coursesValidator,
-                            getCoursesByIdUseCase = App.appModule.getCoursesByIdUseCase,
-                            joinUserToCourseUseCase = App.appModule.joinUserToCourseUseCase,
-                            getUsersByCourseUseCase = App.appModule.getUsersByCourseUseCase,
-                            ), // Assuming you have a RegisterViewModel
-                        navController = navController,
-                        focusManager = focusManager
-                    )
+                AddCourseScreenNew(
+                    id = id,
+                    viewModel = AddCourseViewModel(
+                        repositoryBundle = App.appModule.repositoryBundle,
+                        insertCourseUseCase = App.appModule.insertCourseUseCase,
+                        updateCourseUseCase = App.appModule.updateCourseUseCase,
+
+                    ), // Assuming you have a RegisterViewModel
+                    navController = navController,
+                    focusManager = focusManager,
+                    coursesViewModel = CourseViewmodel(
+                        repositoryBundle = App.appModule.repositoryBundle,
+                        courseDataValidator = CourseDataValidator(),
+                        getActivitiesUseCase = App.appModule.getActivitiesUseCase,
+                        insertCourseUseCase = App.appModule.insertCourseUseCase,
+                        updateCourseUseCase = App.appModule.updateCourseUseCase,
+                        coursesValidator = App.appModule.validatorBundle.coursesValidator,
+                        getCoursesByIdUseCase = App.appModule.getCoursesByIdUseCase,
+                        joinUserToCourseUseCase = App.appModule.joinUserToCourseUseCase,
+                        getUsersByCourseUseCase = App.appModule.getUsersByCourseUseCase,
+                    ), // Assum
+                )
+
+//                    AddCourseScreen(
+//                        id = id,
+//                        viewModel = CourseViewmodel(
+//                            repositoryBundle = App.appModule.repositoryBundle,
+//                            courseDataValidator = CourseDataValidator(),
+//                            getActivitiesUseCase = App.appModule.getActivitiesUseCase,
+//                            insertCourseUseCase = App.appModule.insertCourseUseCase,
+//                            updateCourseUseCase = App.appModule.updateCourseUseCase,
+//                            coursesValidator = App.appModule.validatorBundle.coursesValidator,
+//                            getCoursesByIdUseCase = App.appModule.getCoursesByIdUseCase,
+//                            joinUserToCourseUseCase = App.appModule.joinUserToCourseUseCase,
+//                            getUsersByCourseUseCase = App.appModule.getUsersByCourseUseCase,
+//                            ), // Assuming you have a RegisterViewModel
+//                        navController = navController,
+//                        focusManager = focusManager
+//                    )
 
             }
             composable(
@@ -217,9 +295,20 @@ fun Navigation(
                             activitiesValidator = App.appModule.validatorBundle.activitiesValidator,
                             getActivitiesByUserUseCase = App.appModule.getActivitiesByUserUseCase
                         ),
+                        addActivityViewModel = AddActivityViewModel(
+                            insertActivityUseCase = App.appModule.insertActivityUseCase,
+                            updateActivityUseCase = App.appModule.updateActivityUseCase,
+
+                            ),
                         navController = navController,
                         focusManager = focusManager,
-                        isOwner = isOwner
+                        isOwner = isOwner,
+                        addCourseViewModel = AddCourseViewModel(
+                            repositoryBundle = App.appModule.repositoryBundle,
+                            insertCourseUseCase = App.appModule.insertCourseUseCase,
+                            updateCourseUseCase = App.appModule.updateCourseUseCase,
+
+                            )
                     )
                 }
             }
@@ -260,6 +349,84 @@ fun Navigation(
                             getActivitiesByUserUseCase = App.appModule.getActivitiesByUserUseCase
                         ),
                         navController = navController,
+                    )
+                }
+            }
+
+            composable(
+                route = "${Destination.STUDENT_EVALUATIONS.screenRoute}?idStudent={idStudent}&idCourse={idCourse}",
+                arguments = listOf(
+                    navArgument("idStudent") { type = NavType.StringType; nullable = false },
+                    navArgument("idCourse") { type = NavType.StringType; nullable = false },
+                )
+            ) { backStackEntry ->
+                val idStudent = backStackEntry.arguments?.getString("idStudent")
+                val idCourse = backStackEntry.arguments?.getString("idCourse")
+                if (idStudent != null && idCourse != null ) {
+
+                    StudentsEvaluationsScreen(
+                        viewModel = StudentEvaluationsViewModel(
+                            repositoryBundle = App.appModule.repositoryBundle,
+                            getActivitiesSubmitedByStudent = App.appModule.getActivitiesSubmitedByStudent
+                            ),
+                        courseId = idCourse,
+                        studentId = idStudent,
+                        navController = navController,
+                    )
+                }
+            }
+
+
+
+            composable(
+                route = "${Destination.STUDENT_UPLOAD_EVALUATION.screenRoute}?idStudent={idStudent}&idActivity={idActivity}&idCourse={idCourse}",
+                arguments = listOf(
+                    navArgument("idStudent") { type = NavType.StringType; nullable = false },
+                    navArgument("idActivity") { type = NavType.StringType; nullable = false },
+                )
+            ) { backStackEntry ->
+                val idStudent = backStackEntry.arguments?.getString("idStudent")
+                val idActivity = backStackEntry.arguments?.getString("idActivity")
+                val idCourse = backStackEntry.arguments?.getString("idCourse")
+                if (idStudent != null && idActivity != null && idCourse != null  ) {
+
+                    SubmissionStudentScreen(
+                        viewModel = SubmissionViewModel(
+                            repositoryBundle = App.appModule.repositoryBundle,
+                            professorReviewsActivityUseCase = App.appModule.professorReviewsActivityUseCase,
+                            studentSendActivityUseCase = App.appModule.studentSendActivityUseCase,
+                            ),
+                        activityId = idActivity,
+                        studentId = idStudent,
+                        courseId = idCourse,
+//                        navController = navController,
+                    )
+                }
+            }
+
+            composable(
+                route = "${Destination.PROFESSOR_REVIEW_EVALUATION.screenRoute}?idStudent={idStudent}&idActivity={idActivity}&idCourse={idCourse}",
+                arguments = listOf(
+                    navArgument("idStudent") { type = NavType.StringType; nullable = false },
+                    navArgument("idActivity") { type = NavType.StringType; nullable = false },
+                )
+            ) { backStackEntry ->
+                val idStudent = backStackEntry.arguments?.getString("idStudent")
+                val idActivity = backStackEntry.arguments?.getString("idActivity")
+                val idCourse = backStackEntry.arguments?.getString("idCourse")
+
+                if (idStudent != null && idActivity != null && idCourse != null ) {
+
+                    SubmissionProfessorScreen(
+                        viewModel = SubmissionViewModel(
+                            repositoryBundle = App.appModule.repositoryBundle,
+                            professorReviewsActivityUseCase = App.appModule.professorReviewsActivityUseCase,
+                            studentSendActivityUseCase = App.appModule.studentSendActivityUseCase,
+                            ),
+                        activityId = idActivity,
+                        studentId = idStudent,
+                        courseId = idCourse
+//                        navController = navController,
                     )
                 }
             }

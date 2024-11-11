@@ -9,7 +9,11 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import com.example.classroom.domain.model.entity.LocalActivities
+import com.example.classroom.domain.model.entity.LocalActivitySubmission
 import com.example.classroom.domain.model.entity.LocalCourses
+import com.example.classroom.domain.model.entity.LocalPost
+import com.example.classroom.domain.model.entity.LocalStudentEvaluation
+import com.example.classroom.domain.model.entity.LocalStudents
 import com.example.classroom.domain.model.entity.LocalUser
 import com.example.classroom.domain.model.entity.QuestionsEntity
 import com.example.classroom.domain.model.entity.QuizzEntity
@@ -49,8 +53,7 @@ interface AppDao {
         deleteLocalCourses()
         deleteLocalActivities()
     }
-    @Query("SELECT * FROM localUser_table WHERE isLogged = 1 LIMIT 1")
-    fun getLoggedInUser(): Flow<LocalUser?>
+
 
     // New method to get users by course ID
     @Query("SELECT * FROM localUser_table")
@@ -65,26 +68,7 @@ interface AppDao {
             }
     }
 
-    @Transaction
-    suspend fun updateUsersExcludingLoggedIn(users: List<LocalUser>, newCourseId: String) {
-        // Fetch the logged-in user
-        val loggedInUser = getLoggedInUser().firstOrNull()
 
-        // Filter out the logged-in user from the list of users to be updated
-        val usersToUpdate = users.filter { it.id != loggedInUser?.id }
-
-        // Update the coursesId for each user in the list if the course ID is not already present
-        val updatedUsers = usersToUpdate.map { user ->
-            if (!user.coursesId.contains(newCourseId.toInt())) {
-                user.copy(coursesId = user.coursesId + newCourseId.toInt())
-            } else {
-                user
-            }
-        }
-
-        // Insert or replace the filtered and updated users
-        insertAllLocalUsers(updatedUsers)
-    }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAllLocalUsers(users: List<LocalUser>)
@@ -147,6 +131,58 @@ interface AppDao {
     fun getActivityById(activityId: String): Flow<LocalActivities>
 
     //Students
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrUpdateStudent(student: LocalStudents)
+
+    @Transaction
+    suspend fun addStudentsToCourse(courseId: String, students: List<LocalStudents>) {
+        students.forEach { student ->
+            val existingStudent = getStudentByApiIdAndCourse(student.idApi, courseId)
+            if (existingStudent == null) {
+                insertOrUpdateStudent(student.copy(courseId = courseId))
+            }
+        }
+    }
+
+    @Query("SELECT * FROM localStudents_table WHERE idApi = :idApi AND courseId = :courseId")
+    suspend fun getStudentByApiIdAndCourse(idApi: String, courseId: String): LocalStudents?
+
+    @Query("SELECT * FROM localStudents_table WHERE courseId = :courseId")
+    fun getStudentsByCourseId(courseId: String): Flow<List<LocalStudents>> // Return as Flow
+
+    @Delete
+    suspend fun deleteStudent(student: LocalStudents)
+
+    // STUDENTS EVALUATIONS
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrUpdateEvaluation(evaluation: LocalStudentEvaluation)
+
+    @Query("SELECT * FROM localStudentEvaluation_table WHERE student_id = :studentId AND activity_id = :activityId")
+    fun getEvaluationsForStudent(activityId: String, studentId: String): Flow<List<LocalStudentEvaluation>> // Return as Flow
+
+    @Query("SELECT * FROM localStudentEvaluation_table WHERE student_id = :courseId")
+    fun getAllEvaluationsForCourse(courseId: String): Flow<List<LocalStudentEvaluation>> // Return as Flow
+
+    @Delete
+    suspend fun deleteEvaluation(evaluation: LocalStudentEvaluation)
+
+    // SUBMISSIONS
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrUpdateSubmission(submission: LocalActivitySubmission)
+
+    @Query("SELECT * FROM localActivitySubmission_table WHERE activity_id = :activityId AND student_id = :studentId")
+    fun getSubmissionsForStudent(activityId: String, studentId: String): Flow<List<LocalActivitySubmission>> // Return as Flow
+
+    @Query("SELECT * FROM localActivitySubmission_table WHERE student_id = :studentId AND course_id = :courseId")
+    fun getSubmissionsForStudentAndCourse(studentId: String, courseId: String): Flow<List<LocalActivitySubmission>> // Return as Flow
+
+    @Query("SELECT * FROM localActivitySubmission_table WHERE activity_id = :activityId")
+    fun getAllSubmissionsForActivity(activityId: String): Flow<List<LocalActivitySubmission>> // Return as Flow
+
+    @Delete
+    suspend fun deleteSubmission(submission: LocalActivitySubmission)
 
     //Quizzes
 
@@ -162,5 +198,40 @@ interface AppDao {
 
     @Query("SELECT * FROM questions WHERE course_id = :courseId")
     fun getQuestionsForCourse(courseId: Int): Flow<List<QuestionsEntity>>
+
+    //SEEDERS
+
+    // COURSES
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrUpdateCourse(course: LocalCourses)
+
+    // USERS
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrUpdateUser(user: LocalUser)
+
+
+
+    // ACTIVITIES
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrUpdateActivity(activity: LocalActivities)
+
+    // POSTS
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrUpdatePost(post: LocalPost)
+
+    // QUIZZES
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrUpdateQuiz(quiz: QuizzEntity)
+
+    // QUESTIONS
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrUpdateQuestion(question: QuestionsEntity)
+
 
 }

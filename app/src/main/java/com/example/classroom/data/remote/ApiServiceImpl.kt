@@ -29,21 +29,33 @@ import io.ktor.util.InternalAPI
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
+import kotlinx.serialization.json.*
+import kotlinx.serialization.json.JsonPrimitive
 import proyecto.person.appconsultapopular.common.Constants
 import proyecto.person.appconsultapopular.common.HttpRoutes
 import com.example.classroom.common.ResponseGenericAPi
 import com.example.classroom.common.json
 import com.example.classroom.common.parseResponseToGenericObject
 import com.example.classroom.data.remote.dto.courses.GetUsersByCourseResponse
+import com.example.classroom.data.remote.dto.evaluations.evaluationsSent.EvaluationsSentResponseDto
+import com.example.classroom.data.remote.dto.evaluations.reviewEvaluationDto.ReviewEvaluationRequestDto
+import com.example.classroom.data.remote.dto.evaluations.reviewEvaluationDto.ReviewEvaluationsResponseDto
+import com.example.classroom.data.remote.dto.evaluations.sendEvaluationRequestDto.SendEvaluationRequestDto
+import com.example.classroom.data.remote.dto.evaluations.sendEvaluationRequestDto.SendEvaluationResponseDto
 import com.example.classroom.domain.model.entity.areatoInt
-import com.example.classroom.domain.model.entity.statusToInt
 import io.ktor.client.request.delete
+import io.ktor.client.request.forms.formData
+import io.ktor.client.request.forms.submitFormWithBinaryData
 import io.ktor.client.request.get
+import io.ktor.client.request.setBody
+import io.ktor.http.Headers
+import io.ktor.http.HttpHeaders
+import okhttp3.Response
+import java.io.File
 import java.util.UUID
 
 class ApiServiceImpl(private val client: HttpClient): ApiService {
@@ -80,20 +92,20 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
     @OptIn(InternalAPI::class)
     private suspend fun signUpUserInner(signUpRequestDto: SignUpRequestDto): HttpResponse {
         val randomUsername = "${signUpRequestDto.name}_${UUID.randomUUID()}"
-        val json = buildJsonObject {
-            put("name", signUpRequestDto.name)
-            put("user_name", randomUsername)
-            put("last_name", signUpRequestDto.lastname)
-            put("email", signUpRequestDto.email)
-            put("phone", signUpRequestDto.phone)
-            put("genderId", gendertoInt(signUpRequestDto.gender))
-            put("password", signUpRequestDto.password)
-        }
+//        val json = buildJsonObject {
+//            put("name", signUpRequestDto.name)
+//            put("user_name", randomUsername)
+//            put("last_name", signUpRequestDto.lastname)
+//            put("email", signUpRequestDto.email)
+//            put("phone", signUpRequestDto.phone)
+//            put("genderId", gendertoInt(signUpRequestDto.gender))
+//            put("password", signUpRequestDto.password)
+//        }
         Log.e("RUTA:", "${Constants.BASE_URL}${HttpRoutes.SIGNUP_ENDPOINT}")
         val response = client.post{
             url("${Constants.BASE_URL}${HttpRoutes.SIGNUP_ENDPOINT}")
             contentType(ContentType.Application.Json)
-            body = json.toString()
+            setBody(signUpRequestDto)
         }
 
         return response
@@ -110,7 +122,7 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
         val json = buildJsonObject {
             put("title", courseRequestDto.title)
             put("description", courseRequestDto.description ?: "")
-            put("ownerId", courseRequestDto.owner.toInt())
+            put("ownerId", courseRequestDto.ownerId)
             put("section", courseRequestDto.section)
             put("subject", courseRequestDto.subject)
             put("areaId", 1)
@@ -235,21 +247,21 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
     @OptIn(InternalAPI::class)
     override suspend fun insertActivityRemote(activity: ActivityRequestDto): ResponseGenericAPi<ActivityResponseDto> = withContext(
         Dispatchers.IO)  {
-        val json = buildJsonObject {
-            put("course_id", activity.idCourse.toInt())
-            put("title", activity.title)
-            put("description", activity.description)
-            put("grade", activity.grade)
-            put("email", activity.email)
-            put("end_date", activity.endDate)
-            put("start_date", activity.startDate)
-            put("status_id", statusToInt(activity.status))
-        }
+//        val json = buildJsonObject {
+//            put("course_id", activity.idCourse.toInt())
+//            put("title", activity.title)
+//            put("description", activity.description)
+//            put("grade", activity.grade)
+//            put("email", activity.email)
+//            put("end_date", activity.endDate)
+//            put("start_date", activity.startDate)
+//            put("status_id", activity.status.id)
+//        }
         Log.e("RUTA:", "${Constants.BASE_URL}${HttpRoutes.ACTIVITIES_ENDPOINT}/new")
         val response = client.post{
             url("${Constants.BASE_URL}${HttpRoutes.ACTIVITIES_ENDPOINT}/new")
             contentType(ContentType.Application.Json)
-            body = json.toString()
+            setBody(activity)
         }
         return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
     }
@@ -318,6 +330,58 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
 
     override suspend fun getActivitiesWithFlowRemote(): Flow<List<LocalActivities>> {
         TODO("Not yet implemented")
+    }
+
+    override suspend fun getActivitiesSentByStudent(
+        courseId: String,
+        userId: String
+    ): ResponseGenericAPi<EvaluationsSentResponseDto> = withContext(
+        Dispatchers.IO)  {
+        val response = client.get{
+            url("${Constants.BASE_URL}${HttpRoutes.ACTIVITIES_ENDPOINT}/send/course/user/${userId}/${courseId}")
+            contentType(ContentType.Application.Json)
+        }
+        return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
+
+    }
+
+
+    override suspend fun studentSendsEvaluation(body: SendEvaluationRequestDto): ResponseGenericAPi<SendEvaluationResponseDto> = withContext(
+        Dispatchers.IO)  {
+        val response = client.post{
+            url("${Constants.BASE_URL}${HttpRoutes.STUDENT_SEND_ACTIVITY}")
+            contentType(ContentType.Application.Json)
+            setBody(body) // Ensure proper serialization of body
+
+        }
+        return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
+
+    }
+
+    override suspend fun professorReviewsEvaluation(body: ReviewEvaluationRequestDto): ResponseGenericAPi<ReviewEvaluationsResponseDto> = withContext(
+        Dispatchers.IO)  {
+        val response = client.post{
+            url("${Constants.BASE_URL}${HttpRoutes.ACTIVITIES_ENDPOINT}/sen")
+            contentType(ContentType.Application.Json)
+            setBody(body) // Ensure proper serialization of body
+
+
+        }
+        return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
+
+    }
+
+    override suspend fun uploadFile(file: File): HttpResponse = withContext(Dispatchers.IO) {
+        val response = client.submitFormWithBinaryData(
+            url = "${Constants.BASE_URL}${HttpRoutes.UPLOAD_FILE}",
+            formData = formData {
+                append("file", file.readBytes(), Headers.build {
+                    append(HttpHeaders.ContentDisposition, "filename=\"${file.name}\"")
+                    append(HttpHeaders.ContentType, ContentType.Application.OctetStream.toString())
+                })
+            }
+        )
+        return@withContext response
     }
 
 

@@ -62,13 +62,13 @@ fun AddCourseScreen(
     navController: NavHostController,
 ){
     val scope = rememberCoroutineScope()
-    val courseInfoState = viewModel.stateCourse.value
+    val courseInfoState = viewModel.stateCourse.collectAsState()
     var dialogState: SetupCustomDialogState by remember {
         mutableStateOf(SetupCustomDialogState.Default())
     }
     var userInfo = viewModel.userInfo.collectAsState(initial = null)
 
-    var state = viewModel.stateCourseForm
+    var state = viewModel.stateCourseForm.collectAsState()
     var isPasswordOpen by remember { mutableStateOf(false) }
 
     val snackbarHost = remember { SnackbarHostState() }
@@ -109,8 +109,8 @@ fun AddCourseScreen(
                         ItemInputField(
                             titulo = stringResource(id = R.string.register_course_title_text),
                             darkTheme = false,
-                            errorMsg = state.titleError,
-                            valueField = state.title,
+                            errorMsg = state.value.titleError,
+                            valueField = state.value.title,
                             fieldRestriction = {
                                                it
 //                                val withoutWhiteSpace = it.removeSuffix(" ")
@@ -132,8 +132,8 @@ fun AddCourseScreen(
                         ItemInputField(
                             titulo = stringResource(id = R.string.register_course_descripcion_text),
                             darkTheme = false,
-                            errorMsg = state.descriptionError,
-                            valueField = state.description,
+                            errorMsg = state.value.descriptionError,
+                            valueField = state.value.description,
                             fieldRestriction = {
                                                it
 //                                val withoutWhiteSpace = it.removeSuffix(" ")
@@ -156,8 +156,8 @@ fun AddCourseScreen(
                         ItemInputField(
                             titulo = stringResource(id = R.string.register_course_seccion_text),
                             darkTheme = false,
-                            errorMsg = state.sectionError,
-                            valueField = state.section,
+                            errorMsg = state.value.sectionError,
+                            valueField = state.value.section,
                             fieldRestriction = {
                                                it
 //                                val withoutWhiteSpace = it.removeSuffix(" ")
@@ -179,8 +179,8 @@ fun AddCourseScreen(
                         ItemInputField(
                             titulo = stringResource(id = R.string.register_course_subject_text),
                             darkTheme = false,
-                            errorMsg = state.subjectError,
-                            valueField = state.subject,
+                            errorMsg = state.value.subjectError,
+                            valueField = state.value.subject,
                             fieldRestriction = {
                                                it
 //                                val withoutWhiteSpace = it.removeSuffix(" ")
@@ -208,18 +208,18 @@ fun AddCourseScreen(
                         Button(
                             onClick = {
                                 scope.launch {
-                                    viewModel.onCourseEvent(CourseFormEvent.Submit(
-                                        id,
-                                        CourseRequestDto(
-                                            area = state.area,
-                                            description = state.description,
-                                            owner = userInfo.value.let { it!!.idApi },
-                                            ownerName = userInfo.value.let { it!!.name },
-                                            section = state.section,
-                                            subject = state.subject,
-                                            title = state.title,
-                                        )
-                                    ))
+//                                    viewModel.onCourseEvent(CourseFormEvent.Submit(
+//                                        id,
+//                                        CourseRequestDto(
+//                                            area = state.area,
+//                                            description = state.description,
+//                                             = userInfo.value.let { it!!.idApi },
+//                                            ownerName = userInfo.value.let { it!!.name },
+//                                            section = state.section,
+//                                            subject = state.subject,
+//                                            title = state.title,
+//                                        )
+//                                    ))
 
                                 }
                             },
@@ -230,7 +230,7 @@ fun AddCourseScreen(
                                 backgroundColor = Azul
                             ),
                             shape = RoundedCornerShape(12.dp),
-                            enabled = !courseInfoState.isLoading
+                            enabled = !courseInfoState.value.isLoading
                         ) {
                             Text(
                                 text = stringResource(id = R.string.register_course_boton_text), style = TextStyle(
@@ -248,15 +248,15 @@ fun AddCourseScreen(
     }
     LaunchedEffect(key1 = courseInfoState, block = {
         when{
-            courseInfoState.isLoading -> {
+            courseInfoState.value.isLoading -> {
                 dialogState = SetupCustomDialogState.Loading()
             }
-            courseInfoState.error != null -> {
-                dialogState = SetupCustomDialogState.Error(courseInfoState.error.uiMessage)
+            courseInfoState.value.error != null -> {
+                dialogState = SetupCustomDialogState.Error(courseInfoState.value.error!!.uiMessage)
             }
 
             else -> {
-                if (courseInfoState.info != null){
+                if (courseInfoState.value.info != null){
                     dialogState = SetupCustomDialogState.Success(message = "El curso ha sido creado exitosamente")
                     delay(1000)
                     if (id != null){

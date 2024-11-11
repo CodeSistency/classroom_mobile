@@ -19,7 +19,7 @@ class GetCoursesUseCase(
             if (data.statusCode == HttpStatusCode.OK){
                 data.responseData!!
             }else{
-                throw catchError(data.statusCode.value, null, message = data.messageError)
+                throw catchError(data.statusCode.value, null, message = data.messageError?.message)
             }
         }
     }

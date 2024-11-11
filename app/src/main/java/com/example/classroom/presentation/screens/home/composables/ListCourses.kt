@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.classroom.presentation.screens.course.AddCourse.AddCourseViewModel
 import com.example.classroom.presentation.screens.home.HomeViewmodel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
@@ -30,12 +31,13 @@ import kotlinx.coroutines.launch
 @Composable
 fun ListCourses(
     viewModel: HomeViewmodel,
+    addCourseViewModel: AddCourseViewModel,
     scope: CoroutineScope,
     navController: NavController,
     email: String,
 ) {
 
-    val items = viewModel.filteredListCoursesFLow.collectAsState(initial = listOf())
+    val items = viewModel.filteredListCoursesFlow.collectAsState(initial = listOf())
 
     Box(modifier = Modifier){
         if (items.value.isEmpty()){
@@ -69,7 +71,9 @@ fun ListCourses(
                             msgDelete = "¿Estás seguro de eliminar tu clase?",
                             msgDeleteBtn = "Eliminar", isOwner = false, action = {},
                             navController = navController,
-                            email= email,)
+                            email= email,
+                            viewModel = addCourseViewModel
+                            )
                     }
 
                 }

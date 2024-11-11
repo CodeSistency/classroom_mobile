@@ -23,13 +23,24 @@ data class LocalUser(
 )
 
 enum class Gender(
-    name: String,
-    id: Int
+    val displayName: String,
+    val id: Int
 ) {
     Man("Hombre", 1),
     Woman("Mujer", 2),
     Other("Otro", 3)
 }
+
+enum class Role(val id: Int, val displayName: String) {
+    ADMIN(1, "Administrador"),
+    TEACHER(2, "Profesor"),
+    STUDENT(3, "Estudiante"),
+    GUEST(4, "Invitado")
+}
+
+
+
+
 
 fun gendertoInt(id: Int): Gender {
     return when(id){
@@ -76,18 +87,21 @@ fun SignUpResponseDto.toLoginLocal(): LocalUser {
     )
 }
 
-fun GetUsersByCourseResponse.toLocal(): List<LocalUser> {
+fun GetUsersByCourseResponse.toLocal(): List<LocalStudents> {
     return data.users.map {
-        LocalUser(
+        LocalStudents(
             idApi = it.userId.toString(),
             name = it.user.name,
             lastname = it.user.lastName,
             email = it.user.email,
             phone = it.user.phone,
-//        birthdate = data.birthdate,
-            gender = gendertoInt(it.user.genderId),
+            courseId = it.courseId.toString(),
+            id = it.id,
+            gender = Gender.Man,
             birthdate = "",
-            isLogged = false
+//        birthdate = data.birthdate,
+//            gender = gendertoInt(it.user.genderId),
+//            birthdate = "",
         )
     }
 }

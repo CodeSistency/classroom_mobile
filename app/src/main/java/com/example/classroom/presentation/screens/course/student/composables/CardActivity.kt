@@ -1,6 +1,7 @@
 package com.example.classroom.presentation.screens.course.student.composables
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,15 +36,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.navigation.NavController
 import com.example.classroom.R
 import com.example.classroom.domain.model.entity.LocalActivities
 import com.example.classroom.domain.model.entity.Status
+import com.example.classroom.presentation.navigation.Destination
 import com.example.classroom.presentation.theme.Azul2
 import com.example.classroom.presentation.theme.PaddingCustom
 
 @Composable
 fun CardActivity(
     activity: LocalActivities,
+    userId: String,
+    courseId: String,
+    navController: NavController,
 //    msgDelete: String,
 //    msgDeleteBtn: String,
     action: () -> Unit
@@ -56,6 +62,12 @@ fun CardActivity(
                 .shadow(8.dp, shape)
                 .background(Color.White, shape)
                 .padding(16.dp)
+                .clickable {
+
+                    navController.navigate(
+                        "${Destination.STUDENT_UPLOAD_EVALUATION.screenRoute}?idStudent=${userId}&idActivity=${activity.idApi}&idCourse=${courseId}"
+                    )
+                }
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -120,6 +132,8 @@ fun CardActivity(
                                 )
                             )
                         }
+
+                        else -> {}
                     }
                 }
                 when(activity.status){
@@ -138,6 +152,7 @@ fun CardActivity(
 
                     }
                     Status.FINISHED -> TODO()
+                    else -> {}
                 }
             }
         }

@@ -68,6 +68,8 @@ data class SignUpResponseDto(
         val creation: String,
         @SerialName("genderId")
         val gender: Int,
+        @SerialName("roleId")
+        val role: Int,
         @SerialName("phone")
         val phone: String,
         @SerialName("name")

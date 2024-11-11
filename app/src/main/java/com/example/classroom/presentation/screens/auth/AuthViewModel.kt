@@ -14,6 +14,7 @@ import com.example.classroom.data.remote.dto.login.signUp.SignUpRequestDto
 import com.example.classroom.data.repository.LoginRepositoryImpl
 import com.example.classroom.domain.model.entity.Gender
 import com.example.classroom.domain.model.entity.LocalUser
+import com.example.classroom.domain.model.entity.Role
 import com.example.classroom.domain.use_case.signIn.SignInUseCase
 import com.example.classroom.domain.use_case.signUp.SignUpUseCase
 import com.example.classroom.domain.use_case.validators.signIn.SignInValidator
@@ -128,8 +129,10 @@ class AuthViewModel(
             name = stateRegisterForm.name,
             phone = stateRegisterForm.phone,
             lastname = stateRegisterForm.lastname,
-            gender = stateRegisterForm.gender,
-            birthdate = stateRegisterForm.birthdate
+            genderId = 1,
+            birthdate = stateRegisterForm.birthdate,
+            roleId = 0,
+            username = ""
         )
         Log.e("user", "$user")
         signUpUseCase(user).onEach { result ->
@@ -155,6 +158,46 @@ class AuthViewModel(
         }.launchIn(viewModelScope)
 
     }
+
+    suspend fun executeSignUpNew(){
+        Log.e("final3", "final3")
+
+        val user = SignUpRequestDto(
+            password = password.value,
+            email = email.value,
+            name = name.value,
+            username = username.value,
+            phone = phone.value,
+            lastname = lastname.value,
+            genderId = gender.value.id,
+            birthdate = birthdate.value,
+            roleId = role.value.id,
+        )
+        Log.e("user", "$user")
+        signUpUseCase(user).onEach { result ->
+            when(result){
+                is Resource.Error -> {
+                    //Timber.tag("AUTH_VM").e("Error ${result.message?.uiMessage}")
+                    Log.e("AUTH_VM:", "Error ${result.message?.uiMessage}")
+                    _stateRegisterUser.value = SignUpState(error = result.message)
+                }
+                is Resource.Loading -> {
+                    Timber.tag("AUTH_VM").e("is loading")
+                    _stateRegisterUser.value = SignUpState(isLoading = true)
+                }
+                is Resource.Success -> {
+                    Timber.tag("AUTH_VM").e("success")
+                    Log.e("AUTH_VM:", "success")
+                    _stateRegisterUser.value = SignUpState(info = result.data)
+                    Log.e("AUTH_VM:", "${_stateRegisterUser.value.info}")
+
+                }
+                else -> {}
+            }
+        }.launchIn(viewModelScope)
+
+    }
+
 
     fun onSignInEvent(event: SignInFormEvent) {
         when(event) {
@@ -223,262 +266,76 @@ class AuthViewModel(
         }.launchIn(viewModelScope)
 
     }
-//    fun onInputRegisterChange(field: String, newValue: String) {
-//        _stateRegisterForm.value = when (field) {
-//            "name" -> _stateRegisterForm.value.copy(name = newValue)
-//            "lastname" -> _stateRegisterForm.value.copy(lastname = newValue)
-//            "email" -> _stateRegisterForm.value.copy(email = newValue)
-//            "birthdate" -> _stateRegisterForm.value.copy(birthdate = newValue)
-//            "phone" -> _stateRegisterForm.value.copy(phone = newValue)
-//            "password" -> _stateRegisterForm.value.copy(password = newValue)
-//            else -> _stateRegisterForm.value
-//        }
-//    }
 
-//    suspend fun onSignInClick(user: SignInRequestDto, navController: NavController) {
-//        val isValid = mutableStateOf(false)
-//        isValid.value = false
-//
-//        when (val result = userDataValidator.validateEmail(user.email)) {
-//            is com.example.classroom.common.validator.Result.Error -> {
-//                when (result.error) {
-//                    UserDataValidator.EmailError.REPEATED -> {
-//                        stateLoginForm.value.emailError = "Email está repetido"
-//                        isValid.value = false
-//                    }
-//                    UserDataValidator.EmailError.INVALIDATE -> {
-//                        stateLoginForm.value.emailError = "Email es invalido"
-//                        isValid.value = false
-//                    }
-//                }
-//            }
-//
-//            is com.example.classroom.common.validator.Result.Success -> {
-//                stateLoginForm.value.emailError = null
-//                isValid.value = true
-//            }
-//
-//        }
-//
-//
-//        when (val result = userDataValidator.validatePassword(user.password)) {
-//            is com.example.classroom.common.validator.Result.Error -> {
-//                when (result.error) {
-//                    UserDataValidator.PasswordError.TOO_SHORT -> {
-//                        stateLoginForm.value.passwordError = "Contraseña es muy corta"
-//                        isValid.value = false
-//                    }
-//                    UserDataValidator.PasswordError.NO_UPPERCASE -> {
-//                        stateLoginForm.value.passwordError = "Contraseña no tiene mayusculas"
-//                        isValid.value = false
-//                    }
-//                    UserDataValidator.PasswordError.NO_DIGIT -> {
-//                        stateLoginForm.value.passwordError = "Contraseña no tienes caracter numerico"
-//                        isValid.value = false
-//                    }
-//                }
-//            }
-//
-//            is com.example.classroom.common.validator.Result.Success -> {
-//                stateLoginForm.value.passwordError = null
-//                isValid.value = true
-//            }
-//
-//        }
-//
-//        if (isValid.value){
-//            signInUseCase(user).onEach { result ->
-//                when(result){
-//                    is Resource.Error -> {
-//                        //Timber.tag("AUTH_VM").e("Error ${result.message?.uiMessage}")
-//                        Log.e("AUTH_VM:", "Error ${result.message?.uiMessage}")
-//                        _stateLoginUser.value = SignInState(error = result.message)
-//                    }
-//                    is Resource.Loading -> {
-//                        Timber.tag("AUTH_VM").e("is loading")
-//                        _stateLoginUser.value = SignInState(isLoading = true)
-//                    }
-//                    is Resource.Success -> {
-//                        Timber.tag("AUTH_VM").e("success")
-//                        Log.e("AUTH_VM:", "success")
-//                        _stateLoginUser.value = SignInState(info = result.data)
-//                        Log.e("AUTH_VM:", "${stateLoginUser.value.info}")
-//                        _stateLoginUser.value.info?.let {
-//                            insertUserDb(it)
-//                            delay(300)
-//                            navController.navigate(Destination.HOME.screenRoute)
-//
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
+    //SIGN UP FORM(VALIDATION)
 
-//    suspend fun onSignUpClick(user: SignUpRequestDto, navController: NavController) {
-//        val isValid = mutableStateOf(false)
-//        isValid.value = false
-//        when (val result = userDataValidator.validateName(user.name)) {
-//            is com.example.classroom.common.validator.Result.Error -> {
-//                when (result.error) {
-//                    UserDataValidator.NameError.HAS_DIGIT -> {
-//                        stateRegisterForm.value.nameError = "El nombre tiene un numero"
-//                        isValid.value = false
-//                    }
-//                    UserDataValidator.NameError.TOO_SHORT -> {
-//                        stateRegisterForm.value.nameError = "El nombre es muy corto"
-//                        isValid.value = false
-//                    }
-//                }
-//            }
-//
-//            is com.example.classroom.common.validator.Result.Success -> {
-//                stateRegisterForm.value.nameError = null
-//                isValid.value = true
-//            }
-//
-//        }
-//
-//        when (val result = userDataValidator.validateName(user.lastname)) {
-//            is com.example.classroom.common.validator.Result.Error -> {
-//                when (result.error) {
-//                    UserDataValidator.NameError.HAS_DIGIT -> {
-//                        stateRegisterForm.value.lastnameError = "El apellido tiene numero"
-//                        isValid.value = false
-//                    }
-//                    UserDataValidator.NameError.TOO_SHORT -> {
-//                        stateRegisterForm.value.lastnameError = "El apellido es muy corto"
-//                        isValid.value = false
-//                    }
-//                }
-//            }
-//
-//            is com.example.classroom.common.validator.Result.Success -> {
-//                stateRegisterForm.value.lastnameError = null
-//                isValid.value = true
-//            }
-//
-//        }
-//
-//        when (val result = userDataValidator.validateEmail(user.email)) {
-//            is com.example.classroom.common.validator.Result.Error -> {
-//                when (result.error) {
-//                    UserDataValidator.EmailError.REPEATED -> {
-//                        stateRegisterForm.value.emailError = "El email esta repetido"
-//                        isValid.value = false
-//                    }
-//                    UserDataValidator.EmailError.INVALIDATE -> {
-//                        stateRegisterForm.value.emailError = "El email es invalido"
-//                        isValid.value = false
-//                    }
-//                }
-//            }
-//
-//            is com.example.classroom.common.validator.Result.Success -> {
-//                stateRegisterForm.value.emailError = null
-//                isValid.value = true
-//            }
-//
-//        }
-//
-//        when (val result = userDataValidator.validateBirthdate(user.birthdate)) {
-//            is com.example.classroom.common.validator.Result.Error -> {
-//                when (result.error) {
-//                    UserDataValidator.BirthdateError.TOO_OLD -> {
-//                        stateRegisterForm.value.birthdateError = "La persona excede los limites de edad"
-//                        isValid.value = false
-//                    }
-//                    UserDataValidator.BirthdateError.TOO_YOUNG -> {
-//                        stateRegisterForm.value.birthdateError = "La persona es muy joven"
-//                        isValid.value = false
-//                    }
-//                    UserDataValidator.BirthdateError.INVALIDATE -> {
-//                        stateRegisterForm.value.birthdateError = "La fecha es invalida"
-//                        isValid.value = false
-//                    }
-//                }
-//            }
-//
-//            is com.example.classroom.common.validator.Result.Success -> {
-//                stateRegisterForm.value.birthdateError = null
-//                isValid.value = true
-//            }
-//
-//        }
-//
-//        when (val result = userDataValidator.validatePhone(user.phone)) {
-//            is com.example.classroom.common.validator.Result.Error -> {
-//                when (result.error) {
-//                    UserDataValidator.PhoneError.REPEATED -> {
-//                        stateRegisterForm.value.phoneError = "El telefono esta repetido"
-//                        isValid.value = false
-//                    }
-//                    UserDataValidator.PhoneError.INVALIDATE -> {
-//                        stateRegisterForm.value.phoneError = "El telefono es ivalido"
-//                        isValid.value = false
-//                    }
-//                }
-//            }
-//
-//            is com.example.classroom.common.validator.Result.Success -> {
-//                stateRegisterForm.value.phoneError = null
-//                isValid.value = true
-//            }
-//
-//        }
-//
-//        when (val result = userDataValidator.validatePassword(user.password)) {
-//            is com.example.classroom.common.validator.Result.Error -> {
-//                when (result.error) {
-//                    UserDataValidator.PasswordError.TOO_SHORT -> {
-//                        stateRegisterForm.value.passwordError = "Contraseña es muy corta"
-//                        isValid.value = false
-//                    }
-//                    UserDataValidator.PasswordError.NO_UPPERCASE -> {
-//                        stateRegisterForm.value.passwordError = "Contraseña no tiene mayusculas"
-//                        isValid.value = false
-//                    }
-//                    UserDataValidator.PasswordError.NO_DIGIT -> {
-//                        stateRegisterForm.value.passwordError = "Contraseña no tienes caracter numerico"
-//                        isValid.value = false
-//                    }
-//                }
-//            }
-//
-//            is com.example.classroom.common.validator.Result.Success -> {
-//                stateRegisterForm.value.passwordError = null
-//                isValid.value = true
-//            }
-//
-//        }
-//
-//        if (isValid.value){
-//            signUpUseCase(user).onEach { result ->
-//                when(result){
-//                    is Resource.Error -> {
-//                        //Timber.tag("AUTH_VM").e("Error ${result.message?.uiMessage}")
-//                        Log.e("AUTH_VM:", "Error ${result.message?.uiMessage}")
-//                        _stateRegisterUser.value = SignUpState(error = result.message)
-//                    }
-//                    is Resource.Loading -> {
-//                        Timber.tag("AUTH_VM").e("is loading")
-//                        _stateRegisterUser.value = SignUpState(isLoading = true)
-//                    }
-//                    is Resource.Success -> {
-//                        Timber.tag("AUTH_VM").e("success")
-//                        Log.e("AUTH_VM:", "success")
-//                        _stateRegisterUser.value = SignUpState(isLoading = false)
-//                        Log.e("AUTH_VM:", "${stateLoginUser.value.info}")
-//                        _stateRegisterUser.value.info?.let {
-//                            _stateRegisterUser.value = SignUpState(isLoading = false, info = "Success")
-//
-//                        }
-//                    }
-//                    else -> {}
-//                }
-//            }.launchIn(viewModelScope)
-//        }
-//    }
+    var name = mutableStateOf("")
+    var lastname = mutableStateOf("")
+    var username = mutableStateOf("")
+    var password = mutableStateOf("")
+    var email = mutableStateOf("")
+    var birthdate = mutableStateOf("")
+    var phone = mutableStateOf("")
+    var gender = mutableStateOf(Gender.Man)
+    var role = mutableStateOf(Role.STUDENT) // Default role, e.g., "Student"
+
+
+    // Validation States
+    var nameError = mutableStateOf<String?>(null)
+    var lastnameError = mutableStateOf<String?>(null)
+    var usernameError = mutableStateOf<String?>(null)
+    var passwordError = mutableStateOf<String?>(null)
+    var emailError = mutableStateOf<String?>(null)
+    var birthdateError = mutableStateOf<String?>(null)
+    var phoneError = mutableStateOf<String?>(null)
+
+    // Check if form is valid
+    val isFormValid: Boolean
+        get() = nameError.value == null &&
+                lastnameError.value == null &&
+                usernameError.value == null &&
+                passwordError.value == null &&
+                emailError.value == null &&
+                birthdateError.value == null &&
+                phoneError.value == null &&
+                name.value.isNotBlank() &&
+                lastname.value.isNotBlank() &&
+                username.value.isNotBlank() &&
+                password.value.isNotBlank() &&
+                email.value.isNotBlank() &&
+                birthdate.value.isNotBlank() &&
+                phone.value.isNotBlank()
+
+    // Validation Logic
+    fun validateName() {
+        nameError.value = if (name.value.isBlank()) "El nombre es obligatorio" else null
+    }
+
+    fun validateLastname() {
+        lastnameError.value = if (lastname.value.isBlank()) "El apellido es obligatorio" else null
+    }
+    fun validateUsername() {
+        usernameError.value = if (username.value.isBlank()) "username es obligatorio" else null
+    }
+    fun validatePassword() {
+        passwordError.value = if (password.value.length < 6) "La contraseña debe tener al menos 6 caracteres" else null
+    }
+
+    fun validateEmail() {
+        emailError.value = if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email.value).matches()) {
+            "El correo electrónico no es válido"
+        } else null
+    }
+
+    fun validateBirthdate() {
+        birthdateError.value = if (birthdate.value.isBlank()) "La fecha de nacimiento es obligatoria" else null
+    }
+
+    fun validatePhone() {
+        phoneError.value = if (!phone.value.matches(Regex("^\\+?[0-9]{10,13}\$"))) {
+            "El teléfono no es válido"
+        } else null
+    }
 
     suspend fun insertUserDb(user: LocalUser){
         loginRepositoryImp.insertLocalUser(user)

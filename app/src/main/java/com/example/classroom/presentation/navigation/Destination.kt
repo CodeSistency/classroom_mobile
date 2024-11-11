@@ -59,6 +59,21 @@ enum class Destination(val screenRoute: String, val title: String, val icon: Ico
         title = "COURSES",
         icon = Icon.Resource(R.drawable.ic_edit)
     ),
+    STUDENT_EVALUATIONS(
+        screenRoute = "STUDENT_EVALUATIONS",
+        title = "STUDENT_EVALUATIONS",
+        icon = Icon.Resource(R.drawable.ic_edit)
+    ),
+    STUDENT_UPLOAD_EVALUATION(
+        screenRoute = "STUDENT_UPLOAD_EVALUATION",
+        title = "STUDENT_UPLOAD_EVALUATION",
+        icon = Icon.Resource(R.drawable.ic_edit)
+    ),
+    PROFESSOR_REVIEW_EVALUATION(
+        screenRoute = "PROFESSOR_REVIEW_EVALUATION",
+        title = "PROFESSOR_REVIEW_EVALUATION",
+        icon = Icon.Resource(R.drawable.ic_edit)
+    ),
     ADD_USER_COURSE(
         screenRoute = "ADD_USER_COURSE",
         title = "ADD_USER_COURSE",

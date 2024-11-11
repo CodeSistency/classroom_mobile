@@ -33,7 +33,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ListActivities(viewModel: ActivityViewmodel, courseViewmodel: CourseViewmodel, scope: CoroutineScope, id: String, navController: NavController) {
 
-    val items by viewModel.filteredListActivitiesByCourseFLow.collectAsState(initial = listOf())
+    val items by viewModel.filteredListActivitiesByCourseFlow.collectAsState(initial = listOf())
     LaunchedEffect(key1 = items, block = {
         Log.e("Activities", items.toString())
 
@@ -56,7 +56,7 @@ fun ListActivities(viewModel: ActivityViewmodel, courseViewmodel: CourseViewmode
                     Spacer(modifier = Modifier.height(10.dp))
                     IconButton(onClick = {
                         scope.launch {
-                            courseViewmodel.getCourseByIdLocal(id)
+//                            courseViewmodel.getCourseByIdLocal(id)
                             courseViewmodel.getUsersByCourseRemote(id)
                             courseViewmodel.getUsersByCourseLocal(id)
                             viewModel.getActivitiesByCourse(id)

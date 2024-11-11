@@ -18,7 +18,7 @@ fun CourseStudentScreen(activityViewmodel: ActivityViewmodel, courseViewmodel: C
         }
     ) {
 
-        CourseStudentPresentation(viewModel = activityViewmodel, courseViewmodel = courseViewmodel, id)
+        CourseStudentPresentation(viewModel = activityViewmodel, courseViewmodel = courseViewmodel, id, navController)
     }
 
 }
