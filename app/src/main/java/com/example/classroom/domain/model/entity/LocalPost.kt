@@ -3,6 +3,9 @@ package com.example.classroom.domain.model.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.classroom.data.remote.dto.courses.GetUsersByCourseResponse
+import com.example.classroom.data.remote.dto.posts.GetPostsResponseDto
+import com.example.classroom.data.remote.dto.posts.PostResponseDto
 
 
 @Entity("localPost_table")
@@ -17,3 +20,28 @@ data class LocalPost(
     @ColumnInfo("author_id") val authorId: String
 )
 
+fun PostResponseDto.toLocal(): LocalPost {
+    return  LocalPost(
+        idApi = data.id.toString(),
+        id = 0,
+        courseId = data.courseId.toString(),
+        content = data.title,
+        title = data.title,
+        authorId = data.authorId.toString(),
+        createdAt = data.creation,
+    )
+}
+
+fun GetPostsResponseDto.toLocal(): List<LocalPost> {
+    return data.map {
+        LocalPost(
+            idApi = it.data.id.toString(),
+            id = 0,
+            courseId = it.data.courseId.toString(),
+            content = it.data.title,
+            title = it.data.title,
+            authorId = it.data.authorId.toString(),
+            createdAt = it.data.creation,
+        )
+    }
+}

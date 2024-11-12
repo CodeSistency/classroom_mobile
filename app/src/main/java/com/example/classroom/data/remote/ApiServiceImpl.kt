@@ -40,12 +40,16 @@ import proyecto.person.appconsultapopular.common.HttpRoutes
 import com.example.classroom.common.ResponseGenericAPi
 import com.example.classroom.common.json
 import com.example.classroom.common.parseResponseToGenericObject
+import com.example.classroom.data.remote.dto.cloud.CloudResposeDto
 import com.example.classroom.data.remote.dto.courses.GetUsersByCourseResponse
 import com.example.classroom.data.remote.dto.evaluations.evaluationsSent.EvaluationsSentResponseDto
 import com.example.classroom.data.remote.dto.evaluations.reviewEvaluationDto.ReviewEvaluationRequestDto
 import com.example.classroom.data.remote.dto.evaluations.reviewEvaluationDto.ReviewEvaluationsResponseDto
 import com.example.classroom.data.remote.dto.evaluations.sendEvaluationRequestDto.SendEvaluationRequestDto
 import com.example.classroom.data.remote.dto.evaluations.sendEvaluationRequestDto.SendEvaluationResponseDto
+import com.example.classroom.data.remote.dto.posts.GetPostsResponseDto
+import com.example.classroom.data.remote.dto.posts.PostRequestDto
+import com.example.classroom.data.remote.dto.posts.PostResponseDto
 import com.example.classroom.domain.model.entity.areatoInt
 import io.ktor.client.request.delete
 import io.ktor.client.request.forms.formData
@@ -371,7 +375,7 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
 
     }
 
-    override suspend fun uploadFile(file: File): HttpResponse = withContext(Dispatchers.IO) {
+    override suspend fun uploadFile(file: File): ResponseGenericAPi<CloudResposeDto> = withContext(Dispatchers.IO) {
         val response = client.submitFormWithBinaryData(
             url = "${Constants.BASE_URL}${HttpRoutes.UPLOAD_FILE}",
             formData = formData {
@@ -381,7 +385,59 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
                 })
             }
         )
-        return@withContext response
+        return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
+
+    }
+
+    override suspend fun getPostByCourseRemote(id: String): ResponseGenericAPi<GetPostsResponseDto> = withContext(
+    Dispatchers.IO)  {
+        val response = client.get{
+            url("${Constants.BASE_URL}${HttpRoutes.POSTS_ENDPOINT}/${id}")
+            contentType(ContentType.Application.Json)
+
+
+
+        }
+        return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
+
+    }
+
+    override suspend fun createPostRemote(body: PostRequestDto): ResponseGenericAPi<PostResponseDto> = withContext(
+        Dispatchers.IO)  {
+        val response = client.post{
+            url("${Constants.BASE_URL}${HttpRoutes.POSTS_ENDPOINT}")
+            contentType(ContentType.Application.Json)
+            setBody(body)
+
+
+        }
+        return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
+
+    }
+
+    override suspend fun updatePostRemote(body: PostRequestDto): ResponseGenericAPi<PostResponseDto> = withContext(
+        Dispatchers.IO)  {
+        val response = client.put{
+            url("${Constants.BASE_URL}${HttpRoutes.POSTS_ENDPOINT}")
+            contentType(ContentType.Application.Json)
+            setBody(body)
+
+
+        }
+        return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
+
+    }
+
+    override suspend fun deletePostRemote(id: String): ResponseGenericAPi<Boolean>  = withContext(
+        Dispatchers.IO)  {
+        val response = client.delete{
+            url("${Constants.BASE_URL}${HttpRoutes.POSTS_ENDPOINT}/${id}")
+            contentType(ContentType.Application.Json)
+
+
+        }
+        return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
+
     }
 
 

@@ -94,27 +94,17 @@ fun SelectedOptionDialog(
 
                         CustomButton(
                             onClick = {
-//                                isSelectedOption = OptionsActivity.ADD_USER
-                            },
-                            text = "Unirse a una clase",
-                            style = NavigationButtonStyle.OutlineWithIconGradient,
-                            color1 = Azul,
-                            color2 = AzulGradient,
-                            icon = Icons.Default.ArrowForwardIos)
-
-                        Spacer(modifier = Modifier.height(5.dp))
-
-                        CustomButton(
-                            onClick = {
                                 navController.navigate(
                                     Destination.REGISTRO_ACTIVITY.screenRoute + "?idCourse=${id}&email=${email}"
                                 )
                             },
-                            text = "Unirse a una clase",
+                            text = "Crear actividad",
                             style = NavigationButtonStyle.OutlineWithIconGradient,
                             color1 = Azul,
                             color2 = AzulGradient,
-                            icon = Icons.Default.ArrowForwardIos)
+                            icon = Icons.Default.ArrowForwardIos,
+                            modifier = Modifier.fillMaxWidth()
+                            )
 
                         Spacer(modifier = Modifier.height(5.dp))
 
@@ -128,7 +118,9 @@ fun SelectedOptionDialog(
                             style = NavigationButtonStyle.OutlineWithIconGradient,
                             color1 = Azul,
                             color2 = AzulGradient,
-                            icon = Icons.Default.ArrowForwardIos)
+                            icon = Icons.Default.ArrowForwardIos,
+                            modifier = Modifier.fillMaxWidth()
+                        )
 
 
                         Spacer(modifier = Modifier.height(5.dp))
@@ -143,7 +135,9 @@ fun SelectedOptionDialog(
                             style = NavigationButtonStyle.OutlineWithIconGradient,
                             color1 = Azul,
                             color2 = AzulGradient,
-                            icon = Icons.Default.ArrowForwardIos)
+                            icon = Icons.Default.ArrowForwardIos,
+                            modifier = Modifier.fillMaxWidth()
+                        )
 
 
                     }

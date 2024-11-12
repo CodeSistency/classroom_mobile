@@ -22,7 +22,9 @@ import com.example.classroom.domain.use_case.courses.GetUsersByCourseUseCase
 import com.example.classroom.domain.use_case.courses.InsertCourseUseCase
 import com.example.classroom.domain.use_case.courses.JoinUserToCourseUseCase
 import com.example.classroom.domain.use_case.courses.UpdateCourseUseCase
+import com.example.classroom.domain.use_case.evaluations.getActivitiesSubmittedByStudent.GetActivitiesSubmitedByStudent
 import com.example.classroom.domain.use_case.validators.courses.CoursesValidator
+import com.example.classroom.presentation.screens.activity.studentEvaluations.states.StudentEvaluationsState
 import com.example.classroom.presentation.screens.course.AddCourse.states.AddCourseState
 import com.example.classroom.presentation.screens.course.AddCourse.CourseFormEvent
 import com.example.classroom.presentation.screens.course.AddCourse.states.CourseFormState
@@ -36,6 +38,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
@@ -57,6 +60,7 @@ class CourseViewmodel(
     private val getCoursesByIdUseCase: GetCoursesByIdUseCase,
     private val joinUserToCourseUseCase: JoinUserToCourseUseCase,
     private val getUsersByCourseUseCase: GetUsersByCourseUseCase,
+    private val getActivitiesSubmitedByStudent: GetActivitiesSubmitedByStudent,
     private val repositoryBundle: RepositoryBundle
 ) : ViewModel() {
 
@@ -268,6 +272,70 @@ class CourseViewmodel(
 
     sealed class ValidationEvent {
         object Success : ValidationEvent()
+    }
+
+
+    private val _stateStudentEvaluations = mutableStateOf(StudentEvaluationsState())
+    val stateStudentEvaluations: State<StudentEvaluationsState> = _stateStudentEvaluations
+
+    // Load evaluations from the local database only
+    fun observeLocalEvaluations(courseId: String, studentId: String) {
+        Log.e("submitted", "courseid ${courseId} studentId ${studentId}")
+        viewModelScope.launch {
+            repositoryBundle.submissionsRepository
+                .getSubmissionsForStudentAndCourse(courseId, studentId)
+                .distinctUntilChanged() // Only emit new data if it's actually different
+                .collect { evaluations ->
+                    Log.e("observeLocalEvaluations", "Received local data: $evaluations")
+
+                    if (!evaluations.isNullOrEmpty()) {
+                        // Only update if evaluations is non-null and non-empty
+                        _stateStudentEvaluations.value = _stateStudentEvaluations.value.copy(
+                            info = evaluations,
+                            isLoading = false,
+                            error = null
+                        )
+                    }
+                }
+        }
+    }
+    // Fetch evaluations remotely and sync with the local database
+    fun getActivitiesByStudent(courseId: String, userId: String) {
+        viewModelScope.launch {
+            getActivitiesSubmitedByStudent(courseId, userId).collect { result ->
+                when (result) {
+                    is Resource.Error -> {
+                        Log.e("getActivitiesByStudent", "Error loading remote data")
+                        // Preserve `info` if it already has data to prevent UI from clearing
+                        _stateStudentEvaluations.value = _stateStudentEvaluations.value.copy(
+                            error = result.message,
+                            isLoading = false,
+                            info = _stateStudentEvaluations.value.info // Keep existing data
+                        )
+                    }
+                    is Resource.Loading -> {
+                        Log.e("getActivitiesByStudent", "Loading remote data")
+                        // Only set loading without resetting info
+                        _stateStudentEvaluations.value = _stateStudentEvaluations.value.copy(
+                            isLoading = true,
+                            info = _stateStudentEvaluations.value.info // Keep existing data
+                        )
+                    }
+                    is Resource.Success -> {
+                        Log.e("getActivitiesByStudent", "Successfully fetched remote data")
+                        result.data?.let { evaluations ->
+                            // Insert the data into the local database
+//                            repositoryBundle.submissionsRepository.insertAllSubmissions(evaluations)
+                        }
+                        // Reset `isLoading` and error without clearing `info`
+                        _stateStudentEvaluations.value = _stateStudentEvaluations.value.copy(
+                            isLoading = false,
+                            error = null
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 

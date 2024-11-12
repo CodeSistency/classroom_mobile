@@ -9,6 +9,7 @@ import com.example.classroom.common.validator.UserDataValidator
 import com.example.classroom.data.remote.ApiService
 import com.example.classroom.data.remote.ApiServiceImpl
 import com.example.classroom.data.repository.ActivitiesRepositoryImpl
+import com.example.classroom.data.repository.CloudRepositoryImpl
 import com.example.classroom.data.repository.CoursesRepositoryImpl
 import com.example.classroom.data.repository.LoginRepositoryImpl
 import com.example.classroom.data.repository.PostsRepositoryImpl
@@ -143,7 +144,8 @@ class AppModuleImpl(
             quizzRepository = QuizzRepositoryImpl(apiService, db.appDao),
             studentsRepository = StudentsRepositoryImpl(apiService, db.appDao),
             submissionsRepository = SubmissionsRepositoryImpl(apiService, db.appDao),
-            postsRepositoryImpl = PostsRepositoryImpl(db.localPostDao, apiService)
+            postsRepositoryImpl = PostsRepositoryImpl(db.localPostDao, apiService),
+            cloudRepository = CloudRepositoryImpl(apiService, db.appDao)
 
         )
     }
@@ -260,6 +262,7 @@ class AppModuleImpl(
             getCoursesByIdUseCase = getCoursesByIdUseCase,
             joinUserToCourseUseCase = joinUserToCourseUseCase,
             getUsersByCourseUseCase = getUsersByCourseUseCase,
+            getActivitiesSubmitedByStudent = getActivitiesSubmitedByStudent
         )
     }
     override val addActivityViewmodel: AddActivityViewModel by lazy {
@@ -283,11 +286,14 @@ class AppModuleImpl(
     }
     override val addPostViewModel: AddPostViewModel by lazy {
         AddPostViewModel(
+            repositoryBundle = repositoryBundle,
         )
     }
     override val postViewModel: PostsViewModel by lazy {
         PostsViewModel(
-           repository = repositoryBundle.postsRepositoryImpl
+           repository = repositoryBundle.postsRepositoryImpl,
+            getPostsUseCase = ,
+            deletePostUseCase = ,
         )
     }
     override val quizzViewModel: QuizzViewModel by lazy {

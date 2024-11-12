@@ -14,12 +14,16 @@ import com.example.classroom.domain.model.entity.LocalActivities
 import com.example.classroom.domain.model.entity.LocalCourses
 import kotlinx.coroutines.flow.Flow
 import com.example.classroom.common.ResponseGenericAPi
+import com.example.classroom.data.remote.dto.cloud.CloudResposeDto
 import com.example.classroom.data.remote.dto.courses.GetUsersByCourseResponse
 import com.example.classroom.data.remote.dto.evaluations.evaluationsSent.EvaluationsSentResponseDto
 import com.example.classroom.data.remote.dto.evaluations.reviewEvaluationDto.ReviewEvaluationRequestDto
 import com.example.classroom.data.remote.dto.evaluations.reviewEvaluationDto.ReviewEvaluationsResponseDto
 import com.example.classroom.data.remote.dto.evaluations.sendEvaluationRequestDto.SendEvaluationRequestDto
 import com.example.classroom.data.remote.dto.evaluations.sendEvaluationRequestDto.SendEvaluationResponseDto
+import com.example.classroom.data.remote.dto.posts.GetPostsResponseDto
+import com.example.classroom.data.remote.dto.posts.PostRequestDto
+import com.example.classroom.data.remote.dto.posts.PostResponseDto
 import io.ktor.client.statement.HttpResponse
 import okhttp3.Response
 import java.io.File
@@ -58,6 +62,17 @@ interface ApiService {
     suspend fun professorReviewsEvaluation(body: ReviewEvaluationRequestDto): ResponseGenericAPi<ReviewEvaluationsResponseDto>
 
     //CLOUD
-    suspend fun uploadFile(file: File): HttpResponse
+    suspend fun uploadFile(file: File): ResponseGenericAPi<CloudResposeDto>
+
+    //POSTS
+    suspend fun getPostByCourseRemote(id: String): ResponseGenericAPi<GetPostsResponseDto>
+
+    suspend fun createPostRemote(body: PostRequestDto): ResponseGenericAPi<PostResponseDto>
+
+    suspend fun updatePostRemote(body: PostRequestDto): ResponseGenericAPi<PostResponseDto>
+
+    suspend fun deletePostRemote(id: String): ResponseGenericAPi<Boolean>
+
+
 
 }

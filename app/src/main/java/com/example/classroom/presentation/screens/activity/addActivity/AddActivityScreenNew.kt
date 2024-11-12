@@ -6,6 +6,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -28,6 +29,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,6 +55,7 @@ import com.example.classroom.common.CustomButton.NavigationButtonStyle
 import com.example.classroom.common.CustomDatePicker.CustomDatePicker
 import com.example.classroom.common.CustomInput.CustomTextField
 import com.example.classroom.common.CustomInput.ValidationRegex
+import com.example.classroom.common.composables.customDialogs.SetupCustomDialog
 import com.example.classroom.common.composables.customDialogs.SetupCustomDialogState
 import com.example.classroom.common.customSelect.CustomSelect
 import com.example.classroom.common.datePicker.DatePickerWithDialog
@@ -66,6 +69,7 @@ import com.example.classroom.presentation.screens.auth.signUp.SignUpFormEvent
 import com.example.classroom.presentation.screens.course.CourseViewmodel
 import com.example.classroom.presentation.theme.Azul
 import com.example.classroom.presentation.theme.PaddingCustom
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import proyecto.person.appconsultapopular.common.SnackbarDelegate
 import java.time.LocalDate
@@ -84,7 +88,7 @@ fun AddActivityScreenNew(
     navController: NavHostController,
 ){
     val scope = rememberCoroutineScope()
-    val activityInfoState = viewModel.stateAddActivity.value
+    val activityInfoState = viewModel.stateAddActivity.collectAsState()
     var dialogState: SetupCustomDialogState by remember {
         mutableStateOf(SetupCustomDialogState.Default())
     }
@@ -120,7 +124,7 @@ fun AddActivityScreenNew(
 
                 }
 
-                LazyColumn() {
+                LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     item {
                         // Campo de Título
                         CustomTextField(
@@ -229,6 +233,27 @@ fun AddActivityScreenNew(
         }
     }
 
+    LaunchedEffect(key1 = activityInfoState, block = {
+        when{
+            activityInfoState.value.isLoading -> {
+                dialogState = SetupCustomDialogState.Loading()
+            }
+            activityInfoState.value.error != null -> {
+                dialogState = SetupCustomDialogState.Error(activityInfoState.value.error?.uiMessage)
+            }
+
+            else -> {
+                if (activityInfoState.value.info != null){
+                    dialogState = SetupCustomDialogState.Success(message = "Se ha creado la actividad exitosamente")
+                    delay(1000)
+                }
+            }
+        }
+    })
+
+    SetupCustomDialog(setupCustomDialogState = dialogState, showDialog = dialogState != SetupCustomDialogState.Default()) {
+        dialogState = SetupCustomDialogState.Default()
+    }
 }
 
 // Function to get current date in DD-MM-AA format

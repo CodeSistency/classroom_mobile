@@ -2,6 +2,7 @@ package com.example.classroom.presentation.screens.course.AddCourse
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -111,7 +112,9 @@ fun AddCourseScreenNew(
 
                 }
 
-                LazyColumn() {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
                     item {
                         //Title input
                         // Campo de Token

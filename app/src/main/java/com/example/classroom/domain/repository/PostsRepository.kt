@@ -1,5 +1,10 @@
 package com.example.classroom.domain.repository
 
+import com.example.classroom.common.ResponseGenericAPi
+import com.example.classroom.data.remote.dto.courses.GetCoursesResponseDto
+import com.example.classroom.data.remote.dto.posts.GetPostsResponseDto
+import com.example.classroom.data.remote.dto.posts.PostRequestDto
+import com.example.classroom.data.remote.dto.posts.PostResponseDto
 import com.example.classroom.domain.model.entity.LocalPost
 import kotlinx.coroutines.flow.Flow
 
@@ -14,4 +19,14 @@ interface PostsRepository {
     fun getPostsByCourse(courseId: String): Flow<List<LocalPost>>
 
     suspend fun getPostById(postId: Int): LocalPost?
+
+    //Remote
+
+    suspend fun getPostByCourseRemote(id: String): ResponseGenericAPi<GetPostsResponseDto>
+
+    suspend fun createPostRemote(body: PostRequestDto): ResponseGenericAPi<PostResponseDto>
+
+    suspend fun updatePostRemote(body: PostRequestDto): ResponseGenericAPi<PostResponseDto>
+
+    suspend fun deletePostRemote(id: String): ResponseGenericAPi<Boolean>
 }

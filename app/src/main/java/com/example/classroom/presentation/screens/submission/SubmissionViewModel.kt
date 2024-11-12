@@ -18,14 +18,20 @@ import com.example.classroom.common.uiState.UiState
 import com.example.classroom.data.remote.dto.evaluations.reviewEvaluationDto.ReviewEvaluationRequestDto
 import com.example.classroom.data.remote.dto.evaluations.sendEvaluationRequestDto.SendEvaluationRequestDto
 import com.example.classroom.data.repository.RepositoryBundle
+import com.example.classroom.domain.model.entity.Area
 import com.example.classroom.domain.model.entity.LocalActivitySubmission
 import com.example.classroom.domain.model.entity.Status
+import com.example.classroom.domain.model.entity.toCoursesLocal
+import com.example.classroom.domain.use_case.cloud.UploadFileUseCase
 import com.example.classroom.domain.use_case.evaluations.professorReviewsActivityUseCase.ProfessorReviewsActivityUseCase
 import com.example.classroom.domain.use_case.evaluations.studentSendActivityUseCase.StudentSendActivityUseCase
 import com.example.classroom.presentation.screens.activity.studentEvaluations.states.StudentEvaluationsState
+import com.example.classroom.presentation.screens.home.states.CourseState
 import com.example.classroom.presentation.screens.submission.states.ReviewActivityState
 import com.example.classroom.presentation.screens.submission.states.SendActivityState
 import io.ktor.client.statement.bodyAsText
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -41,14 +47,23 @@ import java.util.Date
 class SubmissionViewModel(
     val repositoryBundle: RepositoryBundle,
     val professorReviewsActivityUseCase: ProfessorReviewsActivityUseCase,
-    val studentSendActivityUseCase: StudentSendActivityUseCase
+    val studentSendActivityUseCase: StudentSendActivityUseCase,
+    val uploadFileUseCase: UploadFileUseCase,
 ) : ViewModel() {
 
-    private val _stateSendActivity = mutableStateOf(SendActivityState())
-    val stateSendActivity: State<SendActivityState> = _stateSendActivity
+    var message = mutableStateOf("")
+    var grade = mutableStateOf(0f)
 
-    private val _stateReviewActivity = mutableStateOf(ReviewActivityState())
-    val stateReviewActivity: State<ReviewActivityState> = _stateReviewActivity
+
+    // Estados de validación
+    var messageError = mutableStateOf<String?>(null)
+    var gradeError = mutableStateOf<String?>(null)
+
+    private val _stateSendActivity = MutableStateFlow(SendActivityState())
+    val stateSendActivity: StateFlow<SendActivityState> = _stateSendActivity
+
+    private val _stateReviewActivity = MutableStateFlow(ReviewActivityState())
+    val stateReviewActivity: StateFlow<ReviewActivityState> = _stateReviewActivity
 
     // Make currentSubmission a mutable state
     private val _currentSubmission = mutableStateOf<LocalActivitySubmission?>(null)
@@ -86,9 +101,37 @@ class SubmissionViewModel(
         }
     }
 
+    suspend fun uploadFile(
+        fileUri: Uri,
+        context: Context
+    ) {
+        val file = getFileFromUri(context, fileUri)
+
+        if (file!= null){
+            uploadFileUseCase(file).onEach { result ->
+                when (result) {
+                    is Resource.Error -> {
+                        Log.e("HOME_VM:", "Error ${result.message?.uiMessage}")
+//                    _stateCourse.value = CourseState(error = result.message)
+                    }
+                    is Resource.Loading -> {
+//                    _stateCourse.value = CourseState(isLoading = true)
+                    }
+                    is Resource.Success -> {
+//                    _stateCourse.value = CourseState(info = result.data?.toCoursesLocal())
+//                    _stateCourse.value.info?.let {
+//                        repositoryBundle.coursesRepository.insertAllCourses(it)
+//                    }
+                    }
+                }
+            }.launchIn(viewModelScope)
+        }
+    }
+
     fun submitStudentResponse(
         context: Context,
         activityId: String,
+        userId: String,
         fileUri: Uri,
         message: String,
         onSubmissionSuccess: () -> Unit,
@@ -96,51 +139,65 @@ class SubmissionViewModel(
     ) {
         viewModelScope.launch {
             try {
-                // Convert URI to File and upload to server
+                // Step 1: Convert URI to File
                 val file = getFileFromUri(context, fileUri)
-                val uploadResponse = file?.let {
-                    repositoryBundle.submissionsRepository.uploadFile(
-                        it
-                    )
+                if (file == null) {
+                    onSubmissionFailure("Error: Failed to process file URI.")
+                    return@launch
                 }
 
-                if (uploadResponse != null) {
-                    if (uploadResponse.status.value < 300) {
-                        val fileUrl = uploadResponse.bodyAsText()
-                        Log.e("fileurl", fileUrl.toString())
-                        if (fileUrl != null) {
-
-                            // Create submission in the local database
-            //                        val submission = LocalActivitySubmission(
-            //                            activityId = activityId,
-            //                            studentId = "", // Replace with actual student ID retrieval
-            //                            submissionDate = getCurrentDate(),
-            //                            comment = message,
-            //
-            //                            documentUrl = fileUrl,
-            //                            grade = 0f // Initial grade; professors will update this
-            //                        )
-            //                        repositoryBundle.submissionsRepository.addOrUpdateSubmission(submission)
-
-
-                            val submission = SendEvaluationRequestDto(
-                                userId = 0,
-                                activityId = 0,
-                                message = "",
-                                document = "",
-
-                            )
-                            sendActivity(submission)
-                            onSubmissionSuccess()
-                        } else {
-                            onSubmissionFailure("Error: Unable to retrieve uploaded file URL.")
+                // Step 2: Upload File and Retrieve URL
+                var fileUrl: String? = null
+                uploadFileUseCase(file).collect { result ->
+                    when (result) {
+                        is Resource.Error -> {
+                            onSubmissionFailure("File upload error: ${result.message?.uiMessage}")
+                            Log.e("submitStudentResponse", "File upload error: ${result.message?.uiMessage}")
+                            return@collect
                         }
-                    } else {
-                        onSubmissionFailure("Error: File upload failed.")
+                        is Resource.Loading -> {
+                            // Handle optional loading state here if needed
+                        }
+                        is Resource.Success -> {
+                            result.data.let {
+                                fileUrl =
+                                    result.data?.data?.fullPath // Assuming data contains the file URL
+
+                            }
+                            Log.d("submitStudentResponse", "File uploaded successfully: $fileUrl")
+                        }
                     }
                 }
 
-//                onSubmissionFailure("Error")
+                if (fileUrl.isNullOrEmpty()) {
+                    onSubmissionFailure("Error: Unable to retrieve uploaded file URL.")
+                    return@launch
+                }
+
+                // Step 3: Prepare Submission Request
+                val submission = SendEvaluationRequestDto(
+                    userId = userId.toInt(),  // Replace with actual user ID retrieval
+                    activityId = activityId.toInt(),
+                    message = message,
+                    document = fileUrl!!
+                )
+
+                // Step 4: Send Activity Submission
+                studentSendActivityUseCase(submission).onEach { result ->
+                    when (result) {
+                        is Resource.Success -> {
+                            onSubmissionSuccess()
+                            Log.d("submitStudentResponse", "Activity submitted successfully.")
+                        }
+                        is Resource.Error -> {
+                            onSubmissionFailure("Submission error: ${result.message?.uiMessage}")
+                            Log.e("submitStudentResponse", "Submission error: ${result.message?.uiMessage}")
+                        }
+                        is Resource.Loading -> {
+                            // Optional loading state handling if needed
+                        }
+                    }
+                }.launchIn(viewModelScope)
 
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -148,6 +205,8 @@ class SubmissionViewModel(
             }
         }
     }
+
+
 
     fun getFileFromUri(context: Context, uri: Uri): File? {
         return try {

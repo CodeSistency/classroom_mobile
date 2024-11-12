@@ -14,11 +14,14 @@ import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.classroom.presentation.theme.Azul
+import com.example.classroom.presentation.theme.AzulGradient
 import java.util.*
 
 @Composable
@@ -26,7 +29,9 @@ fun CustomDatePicker(
     label: String,
     selectedDate: String,
     onDateSelected: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    color1: Color = Azul,
+    color2: Color = AzulGradient
 ) {
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
@@ -53,7 +58,7 @@ fun CustomDatePicker(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .background(Color.Transparent, shape = RoundedCornerShape(16.dp))
+            .background(Brush.linearGradient(listOf(color1, color2)), shape = RoundedCornerShape(16.dp))
             .clickable { isDialogOpen = true }
             .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {

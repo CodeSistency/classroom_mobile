@@ -1,7 +1,12 @@
 package com.example.classroom.data.repository
 
+import com.example.classroom.common.ResponseGenericAPi
 import com.example.classroom.data.local.db.LocalPostDao
 import com.example.classroom.data.remote.ApiService
+import com.example.classroom.data.remote.dto.courses.GetCoursesResponseDto
+import com.example.classroom.data.remote.dto.posts.GetPostsResponseDto
+import com.example.classroom.data.remote.dto.posts.PostRequestDto
+import com.example.classroom.data.remote.dto.posts.PostResponseDto
 import com.example.classroom.domain.model.entity.LocalPost
 import com.example.classroom.domain.repository.PostsRepository
 import kotlinx.coroutines.flow.Flow
@@ -10,15 +15,15 @@ class PostsRepositoryImpl(private val localPostDao: LocalPostDao, private val ap
 ): PostsRepository {
 
     override suspend fun insertPost(post: LocalPost) {
-        localPostDao.insertPost(post)
+        return localPostDao.insertPost(post)
     }
 
     override suspend fun updatePost(post: LocalPost) {
-        localPostDao.updatePost(post)
+        return localPostDao.updatePost(post)
     }
 
     override suspend fun deletePost(post: LocalPost) {
-        localPostDao.deletePost(post)
+        return localPostDao.deletePost(post)
     }
 
     override fun getPostsByCourse(courseId: String): Flow<List<LocalPost>> {
@@ -27,5 +32,21 @@ class PostsRepositoryImpl(private val localPostDao: LocalPostDao, private val ap
 
     override suspend fun getPostById(postId: Int): LocalPost? {
         return localPostDao.getPostById(postId)
+    }
+
+    override suspend fun getPostByCourseRemote(id: String): ResponseGenericAPi<GetPostsResponseDto> {
+        return apiService.getPostByCourseRemote(id)
+    }
+
+    override suspend fun createPostRemote(body: PostRequestDto): ResponseGenericAPi<PostResponseDto> {
+        return apiService.createPostRemote(body)
+    }
+
+    override suspend fun updatePostRemote(body: PostRequestDto): ResponseGenericAPi<PostResponseDto> {
+        return apiService.updatePostRemote(body)
+    }
+
+    override suspend fun deletePostRemote(id: String): ResponseGenericAPi<Boolean> {
+       return apiService.deletePostRemote(id)
     }
 }

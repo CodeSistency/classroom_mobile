@@ -9,9 +9,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.classroom.presentation.theme.Azul
+import com.example.classroom.presentation.theme.AzulGradient
 
 @Composable
 fun <T> CustomSelect(
@@ -21,7 +24,9 @@ fun <T> CustomSelect(
     onOptionSelected: (List<T>) -> Unit,
     multiple: Boolean = false,
     optionDisplay: (T) -> String, // Lambda to define how options are displayed
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    color1: Color = Azul,
+    color2: Color = AzulGradient
 ) {
     var expanded by remember { mutableStateOf(false) }
     val selectedText = if (multiple) {
@@ -38,7 +43,7 @@ fun <T> CustomSelect(
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)
                 .clip(RoundedCornerShape(16.dp))
-                .background(Color.Transparent)
+                .background(Brush.linearGradient(listOf(color1, color2)), RoundedCornerShape(16.dp))
                 .clickable { expanded = true }
                 .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {

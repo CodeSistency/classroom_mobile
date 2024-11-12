@@ -38,7 +38,7 @@ interface SubmissionsRepository {
 
     suspend fun reviewActivityToServerAndSync(review: ReviewEvaluationRequestDto): ResponseGenericAPi<ReviewEvaluationsResponseDto>
 
-    suspend fun uploadFile(file: File): HttpResponse
+
 
 
 

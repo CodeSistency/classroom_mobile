@@ -1,5 +1,6 @@
 package com.example.classroom.presentation.screens.course.student.composables
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -72,10 +73,14 @@ fun CourseStudentPresentation(viewModel: ActivityViewmodel, courseViewmodel: Cou
     val userInfo = viewModel.userInfo.collectAsState(initial = null)
     val courseInfo = courseViewmodel.courseFlow.collectAsState(initial = null)
     var scope = rememberCoroutineScope()
+
+
     LaunchedEffect(key1 = true, block = {
         courseViewmodel.getCourseByIdLocal(id)
         viewModel.getActivitiesByCourse(id)
         viewModel.getActivitiesLocalByCourse(id)
+
+
     })
     Column(
         modifier = Modifier.background(Azul3)
@@ -123,15 +128,7 @@ fun CourseStudentPresentation(viewModel: ActivityViewmodel, courseViewmodel: Cou
                         )
                     }
 
-                    // Add edit icon like in the professor's presentation
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = "Edit Course",
-                        tint = Color.White,
-                        modifier = Modifier.clickable {
-                            // Action on click, if needed
-                        }
-                    )
+
                 }
                 Spacer(modifier = Modifier.height(10.dp))
 //        Box(modifier = Modifier
@@ -261,7 +258,7 @@ fun CourseStudentPresentation(viewModel: ActivityViewmodel, courseViewmodel: Cou
                                     ListPosts(viewModel = App.appModule.postViewModel, courseId = id)
                                 }
                                 2-> {
-                                    ListActivities(viewModel = viewModel, scope = scope, id = id, userId = it.first().idApi, navController = navController)
+                                    ListActivitiesSubmitted(viewModel = courseViewmodel, courseId = id, studentId = it.first().idApi, navController = navController)
                                 }
                             }
                         }

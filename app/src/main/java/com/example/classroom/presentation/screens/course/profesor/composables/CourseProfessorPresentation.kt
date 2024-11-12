@@ -47,6 +47,7 @@ import androidx.navigation.NavController
 import com.example.classroom.App
 import com.example.classroom.R
 import com.example.classroom.common.customTab.CustomTab
+import com.example.classroom.common.scrolleableTab.CustomScrollableTabRow
 import com.example.classroom.domain.model.entity.Gender
 import com.example.classroom.presentation.screens.activity.ActivityViewmodel
 import com.example.classroom.presentation.screens.activity.addActivity.AddActivityViewModel
@@ -198,15 +199,22 @@ fun CourseProfessorPresentation(
                 Arrangement.Center,
                 Alignment.CenterVertically
             ) {
-                CustomTab(
-                    items = tabTitles,
-                    selectedItemIndex = selected,
-                    onClick = setSelected,
+                CustomScrollableTabRow(
+                    tabs = tabTitles,
+                    selectedTabIndex = selected,
+                    onTabSelected = setSelected,
+                    scope = scope,
                     pagerState = pagerState,
-                    tabWidth = 150.dp,
-                    color = AzulGradient,
-                    scope = scope
                 )
+//                CustomTab(
+//                    items = tabTitles,
+//                    selectedItemIndex = selected,
+//                    onClick = setSelected,
+//                    pagerState = pagerState,
+//                    tabWidth = 150.dp,
+//                    color = AzulGradient,
+//                    scope = scope
+//                )
 
             }
             if (viewModel.stateGetActivities.value.isLoading){

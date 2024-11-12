@@ -15,12 +15,16 @@ import androidx.compose.ui.graphics.Color
 
 @Composable
 fun ListPosts(viewModel: PostsViewModel, courseId: String) {
-    val posts by viewModel.posts(courseId).collectAsState()
+    val posts by viewModel.postsFlow.collectAsState()
     val postsState by viewModel.postsState.collectAsState()
 
     LaunchedEffect(key1 = posts, block = {
         Log.e("posts", posts.toString())
     })
+
+    LaunchedEffect(true) {
+        viewModel.fetchPosts(courseId)
+    }
 
     when {
         postsState.isLoading -> {

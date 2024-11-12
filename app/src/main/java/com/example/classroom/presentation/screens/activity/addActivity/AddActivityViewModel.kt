@@ -12,6 +12,8 @@ import com.example.classroom.domain.use_case.activities.InsertActivityUseCase
 import com.example.classroom.domain.use_case.activities.UpdateActivityUseCase
 import com.example.classroom.presentation.screens.activity.addActivity.states.AddActivityState
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import proyecto.person.appconsultapopular.common.Resource
@@ -22,8 +24,8 @@ class AddActivityViewModel(
     private val insertActivityUseCase: InsertActivityUseCase,
 ): ViewModel() {
 
-    private val _stateAddActivity = mutableStateOf(AddActivityState())
-    val stateAddActivity: State<AddActivityState> = _stateAddActivity
+    private val _stateAddActivity = MutableStateFlow(AddActivityState())
+    val stateAddActivity: StateFlow<AddActivityState> = _stateAddActivity
 
     var title = mutableStateOf("")
     var description = mutableStateOf("")

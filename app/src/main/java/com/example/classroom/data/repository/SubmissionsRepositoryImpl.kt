@@ -67,7 +67,5 @@ class SubmissionsRepositoryImpl(
         return apiService.professorReviewsEvaluation(review)
     }
 
-    override suspend fun uploadFile(file: File): HttpResponse {
-        return apiService.uploadFile(file)
-    }
+
 }
