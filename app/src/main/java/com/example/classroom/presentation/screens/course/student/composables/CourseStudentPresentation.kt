@@ -74,14 +74,17 @@ fun CourseStudentPresentation(viewModel: ActivityViewmodel, courseViewmodel: Cou
     val courseInfo = courseViewmodel.courseFlow.collectAsState(initial = null)
     var scope = rememberCoroutineScope()
 
-
     LaunchedEffect(key1 = true, block = {
         courseViewmodel.getCourseByIdLocal(id)
         viewModel.getActivitiesByCourse(id)
         viewModel.getActivitiesLocalByCourse(id)
-
-
     })
+
+    LaunchedEffect(key1 = true, block = {
+        pagerState.animateScrollToPage(0)
+        }
+    )
+
     Column(
         modifier = Modifier.background(Azul3)
     ) {
@@ -255,7 +258,7 @@ fun CourseStudentPresentation(viewModel: ActivityViewmodel, courseViewmodel: Cou
                                     ListActivities(viewModel = viewModel, scope = scope, id = id, userId = it.first().idApi, navController = navController)
                                 }
                                 1 -> {
-                                    ListPosts(viewModel = App.appModule.postViewModel, courseId = id)
+                                    ListPosts(viewModel = App.appModule.postViewModel, courseId = id, scope)
                                 }
                                 2-> {
                                     ListActivitiesSubmitted(viewModel = courseViewmodel, courseId = id, studentId = it.first().idApi, navController = navController)

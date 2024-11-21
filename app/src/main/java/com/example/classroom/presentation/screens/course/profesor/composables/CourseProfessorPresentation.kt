@@ -1,8 +1,12 @@
 package com.example.classroom.presentation.screens.course.profesor.composables
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -28,6 +33,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.icons.filled.CopyAll
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -54,6 +61,7 @@ import com.example.classroom.presentation.screens.activity.addActivity.AddActivi
 import com.example.classroom.presentation.screens.course.AddCourse.AddCourseViewModel
 import com.example.classroom.presentation.screens.course.CourseViewmodel
 import com.example.classroom.presentation.screens.course.posts.ListPosts
+import com.example.classroom.presentation.screens.course.posts.PostsViewModel
 import com.example.classroom.presentation.screens.home.HomeViewmodel
 import com.example.classroom.presentation.screens.home.composables.ListCourses
 import com.example.classroom.presentation.screens.home.composables.ListMyCourses
@@ -63,6 +71,7 @@ import com.example.classroom.presentation.theme.Azul3
 import com.example.classroom.presentation.theme.AzulGradient
 import com.example.classroom.presentation.theme.Gris
 import com.example.classroom.presentation.theme.PaddingCustom
+import kotlinx.coroutines.launch
 import proyecto.person.appconsultapopular.common.shimmerEffects.ListShimmer
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -72,6 +81,7 @@ fun CourseProfessorPresentation(
     courseViewmodel: CourseViewmodel,
     addActivityViewModel: AddActivityViewModel,
     addCourseViewModel: AddCourseViewModel,
+    postsViewModel: PostsViewModel,
     id: String,
     navController: NavController
 ){
@@ -80,7 +90,7 @@ fun CourseProfessorPresentation(
     val (selected, setSelected) = remember { mutableStateOf(0) }
 //    val userInfo = viewModel.userInfo.collectAsState(initial = emptyList())
     val courseInfo = courseViewmodel.courseFlow.collectAsState(initial = null)
-//    val students by courseViewmodel.filteredListUsersByCourseFlow.collectAsState(initial = null)
+    val context = LocalContext.current
 
     LaunchedEffect(key1 = courseInfo.value, block = {
         Log.e("courseInfo", courseInfo.value.toString())
@@ -92,8 +102,19 @@ fun CourseProfessorPresentation(
     })
 
     LaunchedEffect(key1 = true, block = {
-         courseViewmodel.getUsersByCourseLocal(id)
+            pagerState.animateScrollToPage(0)
     })
+
+    LaunchedEffect(key1 = true, block = {
+         courseViewmodel.getUsersByCourseLocal(id)
+        viewModel.getActivitiesByCourse(id)
+        postsViewModel.getPostsByCourseRemote(id)
+        courseViewmodel.getUsersByCourseRemote(id)
+
+
+    })
+
+
 //    LaunchedEffect(key1 = true, block = {
 //        courseViewmodel.getCourseByIdLocal(id)
 //
@@ -156,6 +177,43 @@ fun CourseProfessorPresentation(
                                 fontSize = 16.sp,
                             )
                         )
+
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Row(
+                            modifier = Modifier
+//                                .padding(8.dp)
+                                .clickable {
+                                    val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                                    val clip = ClipData.newPlainText("Codigo", courseInfo.value?.token ?: "...")
+                                    clipboardManager.setPrimaryClip(clip)
+                                }
+                        ) {
+                            Text(
+                                text = "codigo: ",
+                                style = TextStyle(
+                                    color = Color.White,
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+                            Text(
+                                text = courseInfo.value?.token ?: "...",
+                                style = TextStyle(
+                                    color = Color.White,
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Normal
+                                ),
+                                // Ensures proper spacing
+                            )
+                            Spacer(modifier = Modifier.width(3.dp))
+                            Icon(
+                                imageVector = Icons.Default.CopyAll, // Replace with your clipboard icon resource
+                                contentDescription = "Copy to Clipboard",
+                                tint = Color.White,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+
                     }
 
                 }
@@ -228,12 +286,25 @@ fun CourseProfessorPresentation(
                             ListUsers(viewModel, courseViewmodel, scope, id, navController)
                         }
                         1 -> {
-                            ListPosts(viewModel = App.appModule.postViewModel, courseId = id)
+                            ListPosts(viewModel = App.appModule.postViewModel, courseId = id, scope)
                         }
                         2 -> {
                             ListActivities(viewModel, courseViewmodel,addActivityViewModel, scope, id, navController)
                         }
                     }
+                }
+            }
+        }
+    }
+
+    courseInfo.value.let {
+        if (it != null){
+            if (!it.verified){
+                Box(modifier = Modifier.fillMaxSize()){
+                    Text(
+                        text = "Este curso no esta verificado, contacte un administrador para verificar este curso.",
+                        modifier = Modifier.align(Alignment.Center)
+                        )
                 }
             }
         }

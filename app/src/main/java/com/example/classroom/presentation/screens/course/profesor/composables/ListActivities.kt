@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -48,18 +49,21 @@ fun ListActivities(viewModel: ActivityViewmodel, courseViewmodel: CourseViewmode
     Box(modifier = Modifier){
         if (items.isEmpty()){
             Column(
-                modifier = Modifier,
+                modifier = Modifier.fillMaxSize(),
                 Arrangement.Center,
                 Alignment.CenterHorizontally
             ) {
-                Column {
-                    Text(text = "No hay cursos")
+                Column(
+                    modifier = Modifier,
+                    Arrangement.Center,
+                    Alignment.CenterHorizontally
+                ) {
+                    Text(text = "No hay actividades")
                     Spacer(modifier = Modifier.height(10.dp))
                     IconButton(onClick = {
                         scope.launch {
 //                            courseViewmodel.getCourseByIdLocal(id)
-                            courseViewmodel.getUsersByCourseRemote(id)
-                            courseViewmodel.getUsersByCourseLocal(id)
+//                            courseViewmodel.getUsersByCourseLocal(id)
                             viewModel.getActivitiesByCourse(id)
                         }
                       }) {
@@ -69,7 +73,7 @@ fun ListActivities(viewModel: ActivityViewmodel, courseViewmodel: CourseViewmode
             }
         }else{
             LazyColumn(
-                modifier = Modifier.padding(bottom = 5.dp)
+                modifier = Modifier.fillMaxSize().padding(bottom = 5.dp)
             ){
                 items(items){
                     Box(modifier = Modifier.padding(vertical = 6.dp, horizontal = 2.dp)){
@@ -77,7 +81,9 @@ fun ListActivities(viewModel: ActivityViewmodel, courseViewmodel: CourseViewmode
                             msgDelete = "¿Estás seguro que deseas eliminar esta actividad?",
                             navController = navController,
                             action = {
-
+                                scope.launch {
+                                    viewModel.deleteActivity(it.idApi)
+                                }
                             },
                             viewModel = addActivityViewModel
                         )

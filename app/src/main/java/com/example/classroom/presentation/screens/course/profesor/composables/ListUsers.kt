@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -51,11 +52,15 @@ fun ListUsers(viewModel: ActivityViewmodel, courseViewmodel: CourseViewmodel, sc
     Box(modifier = Modifier){
         if (items.isEmpty()){
             Column(
-                modifier = Modifier,
+                modifier = Modifier.fillMaxSize(),
                 Arrangement.Center,
                 Alignment.CenterHorizontally
             ) {
-                Column {
+                Column(
+                    modifier = Modifier,
+                    Arrangement.Center,
+                    Alignment.CenterHorizontally
+                ) {
                     Text(text = "No hay cursos")
                     Spacer(modifier = Modifier.height(10.dp))
                     IconButton(onClick = {
@@ -72,7 +77,7 @@ fun ListUsers(viewModel: ActivityViewmodel, courseViewmodel: CourseViewmodel, sc
             }
         }else{
             LazyColumn(
-                modifier = Modifier.padding(bottom = 5.dp)
+                modifier = Modifier.fillMaxSize().padding(bottom = 5.dp)
             ){
                 items(items){
                     Box(modifier = Modifier.padding(vertical = 6.dp, horizontal = 2.dp)){

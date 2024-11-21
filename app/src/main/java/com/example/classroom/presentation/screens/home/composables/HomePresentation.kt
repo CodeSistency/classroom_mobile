@@ -64,6 +64,10 @@ fun HomePresentation(viewModel: HomeViewmodel, navController: NavController, add
     val (selected, setSelected) = remember { mutableStateOf(0) }
     val userInfo = viewModel.userInfo.collectAsStateWithLifecycle(initialValue = null)
     var scope = rememberCoroutineScope()
+
+    var coursesInput = viewModel.coursesInput.collectAsState()
+    var myCoursesInput = viewModel.myCoursesInput.collectAsState()
+
     LaunchedEffect(key1 = true, block = {
         userInfo.value.let {
             if (it != null){
@@ -154,9 +158,9 @@ fun HomePresentation(viewModel: HomeViewmodel, navController: NavController, add
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth(),
                     value = if (selected == 0){
-                        viewModel.coursesInput.value
+                        coursesInput.value
                     }else{
-                        viewModel.myCoursesInput.value
+                        myCoursesInput.value
                     },
                     onValueChange = {
                         if (selected == 0){

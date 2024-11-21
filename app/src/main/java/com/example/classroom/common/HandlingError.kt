@@ -1,4 +1,4 @@
-package proyecto.person.appconsultapopular.common
+package com.example.classroom.common
 
 
 import proyecto.person.appconsultapopular.common.apiUtils.handlingMessageApi
@@ -10,6 +10,9 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import proyecto.person.appconsultapopular.common.InvalidException
+import proyecto.person.appconsultapopular.common.InvalidExceptionModel
+import proyecto.person.appconsultapopular.common.Resource
 import timber.log.Timber
 import java.net.UnknownHostException
 
@@ -59,7 +62,14 @@ fun <T> handlingError(operation: suspend ()-> T): Flow<Resource<T>> = flow{
             GenericCodeFormat.values().find { it.codeInternal == data.code }
         }
 
-        emit(Resource.Error(message = handlingMessageApi(format ?: GenericCodeFormat.INVALID_ERROR, message = data.message)))
+        emit(
+            Resource.Error(
+                message = handlingMessageApi(
+                    format ?: GenericCodeFormat.INVALID_ERROR,
+                    message = data.message
+                )
+            )
+        )
 
     } catch (e: Exception){
         Timber.tag("HANDLED_ERROR").e("Unexpected error ${e.message} ${e.cause} ${e.localizedMessage}")

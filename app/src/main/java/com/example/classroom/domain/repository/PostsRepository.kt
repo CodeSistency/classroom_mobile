@@ -20,6 +20,8 @@ interface PostsRepository {
 
     suspend fun getPostById(postId: Int): LocalPost?
 
+    suspend fun updateListPosts(courseId: String, posts: List<LocalPost>)
+
     //Remote
 
     suspend fun getPostByCourseRemote(id: String): ResponseGenericAPi<GetPostsResponseDto>

@@ -76,8 +76,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class GetUsersByCourseResponse(
-    @SerialName("status")
-    val status: Boolean,
+    @SerialName("code")
+    val status: Int,
     @SerialName("message")
     val message: String,
     @SerialName("data")
@@ -103,8 +103,8 @@ data class GetUsersByCourseResponse(
         val areaId: Int,
         @SerialName("token")
         val token: String,
-        @SerialName("areaName")
-        val areaName: String,
+//        @SerialName("areaName")
+//        val areaName: String,
         @SerialName("verified")
         val verified: Boolean,
         @SerialName("users")

@@ -36,12 +36,7 @@ fun SubmissionProfessorScreen(
             onDownloadFile = { documentUrl ->
                 viewModel.downloadAndOpenFile(context, documentUrl, fileName = "submission_${loadedSubmission.id}.pdf")
             },
-            onGradeChange = { newGrade ->
-                viewModel.updateGrade(newGrade)
-            },
-            onSubmitGrade = {
-                viewModel.submitGrade()
-            }
+          viewModel = viewModel
         )
     } ?: run {
         Text("Cargando la información de la actividad...", modifier = Modifier.padding(16.dp))

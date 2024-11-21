@@ -24,6 +24,8 @@ data class ResponseGenericAPi<T>(
 suspend inline fun <reified T> parseResponseToGenericObject(response: HttpResponse, isUsedResponse: Boolean = true): ResponseGenericAPi<T>{
     return when{
         response.status.value < 300 ->{
+            Log.e("RawResponseBody", response.bodyAsText()) // Log raw response
+
             ResponseGenericAPi(
                 statusCode = response.status,
                 responseData = if (isUsedResponse) response.body<T>() else null,

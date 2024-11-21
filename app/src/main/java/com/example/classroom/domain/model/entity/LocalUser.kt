@@ -1,5 +1,6 @@
 package com.example.classroom.domain.model.entity
 
+import android.util.Log
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -17,8 +18,6 @@ data class LocalUser(
     @ColumnInfo("gender") val gender: Gender,
     @ColumnInfo("birthdate") val birthdate: String,
     @ColumnInfo("phone") val phone: String,
-    @ColumnInfo("isLogged") val isLogged: Boolean,
-    @ColumnInfo( "coursesId") val coursesId: List<Int> = listOf(),
 //    @ColumnInfo( "coursesId") val coursesId: String = "[]"
 )
 
@@ -59,31 +58,32 @@ fun gendertoInt(gender: Gender): Int {
     }
 }
 fun SignInResponseDto.toLoginLocal(): LocalUser {
+    Log.e("signindata", data.toString())
+
     return LocalUser(
         idApi = data.userId.toString(),
         name = data.name,
         lastname = data.lastName,
         email = data.email,
         phone = data.phone,
-//        birthdate = data.birthdate,
         gender = gendertoInt(data.gender),
-        birthdate = "",
-        isLogged = true
+        birthdate = data.creation,
+
 
     )
 }
 
 fun SignUpResponseDto.toLoginLocal(): LocalUser {
+    Log.e("signupdata", data.toString())
     return LocalUser(
         idApi = data.userId.toString(),
         name = data.name,
         lastname = data.lastName,
         email = data.email,
         phone = data.phone,
-//        birthdate = data.birthdate,
         gender = gendertoInt(data.gender),
-        birthdate = "",
-        isLogged = false
+        birthdate = data.creation,
+
     )
 }
 

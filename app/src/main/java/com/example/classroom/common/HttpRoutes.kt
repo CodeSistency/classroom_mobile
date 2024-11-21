@@ -1,14 +1,14 @@
 package proyecto.person.appconsultapopular.common
 
 object HttpRoutes {
-    val SIGNIN_ENDPOINT = "/users/authenicate"
+    val SIGNIN_ENDPOINT = "/users/authenticate"
     val SIGNUP_ENDPOINT = "/users"
 
     val COURSES_ENDPOINT = "/courses"
 
     val ACTIVITIES_ENDPOINT = "/activities"
 
-    val POSTS_ENDPOINT = "/posts"
+    val POSTS_ENDPOINT = "/post"
 
     val UPLOAD_FILE = "/cloud/send/file"
 

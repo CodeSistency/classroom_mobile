@@ -3,10 +3,13 @@ package com.example.classroom.presentation.screens.course.posts
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.classroom.data.repository.RepositoryBundle
 import com.example.classroom.domain.model.entity.LocalPost
+import com.example.classroom.domain.model.entity.toLocal
 import com.example.classroom.domain.repository.PostsRepository
 import com.example.classroom.domain.use_case.posts.DeletePostUseCase
 import com.example.classroom.domain.use_case.posts.GetPostsUseCase
+import com.example.classroom.presentation.screens.activity.addActivity.states.GetActivitiesState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -15,12 +18,14 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import proyecto.person.appconsultapopular.common.Resource
 
 
 class PostsViewModel(
     private val repository: PostsRepository,
     private val getPostsUseCase: GetPostsUseCase,
     private val deletePostUseCase: DeletePostUseCase,
+    private val repositoryBundle: RepositoryBundle,
 ) : ViewModel() {
 
     private val _postsState = MutableStateFlow(PostsState())
@@ -53,6 +58,37 @@ class PostsViewModel(
 
     fun deletePost(post: LocalPost) = viewModelScope.launch {
         repository.deletePost(post)
+    }
+
+    suspend fun getPostsByCourseRemote(id: String) {
+        getPostsUseCase(id).onEach { result ->
+            when (result) {
+                is Resource.Error -> _postsState.value = PostsState(error = result.message?.uiMessage)
+                is Resource.Loading -> _postsState.value = PostsState(isLoading = true)
+                is Resource.Success -> {
+                    _postsState.value = PostsState(info = result.data)
+                    _postsState.value.info?.let {
+                        repository.updateListPosts(id, it)
+//                        repositoryBundle.activitiesRepository.insertAllActivities(it)
+                    }
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    suspend fun deletePostCourseRemote(id: String) {
+        deletePostUseCase(id).onEach { result ->
+            when (result) {
+                is Resource.Error -> _postsState.value.copy(error = result.message?.uiMessage)
+                is Resource.Loading -> _postsState.value.copy(isLoading = true, error = null)
+                is Resource.Success -> {
+                    _postsState.value.copy(isLoading = false, error = null)
+                    _postsState.value.info?.let {
+//                        repositoryBundle.activitiesRepository.insertAllActivities(it)
+                    }
+                }
+            }
+        }.launchIn(viewModelScope)
     }
 
 //    fun fetchPosts(courseId: Int) = viewModelScope.launch {

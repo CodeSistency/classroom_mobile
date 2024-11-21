@@ -9,6 +9,7 @@ import com.example.classroom.data.repository.RepositoryBundle
 import com.example.classroom.domain.model.entity.LocalCourses
 import com.example.classroom.domain.model.entity.LocalUser
 import com.example.classroom.domain.model.entity.toCoursesLocal
+import com.example.classroom.domain.use_case.courses.DeleteCourseUseCase
 import com.example.classroom.domain.use_case.courses.GetCoursesUseCase
 import com.example.classroom.domain.use_case.courses.JoinCourseUseCase
 import com.example.classroom.presentation.screens.course.states.JoinUserState
@@ -39,6 +40,7 @@ import timber.log.Timber
 class HomeViewmodel(
     private val getCoursesUseCase: GetCoursesUseCase,
     private val joinCourseUseCase: JoinCourseUseCase,
+    private val deleteCourseUseCase: DeleteCourseUseCase,
     private val repositoryBundle: RepositoryBundle
 ) : ViewModel() {
 
@@ -119,6 +121,25 @@ class HomeViewmodel(
         }.launchIn(viewModelScope)
     }
 
+    suspend fun deleteCourse(id: String) {
+        deleteCourseUseCase(id).onEach { result ->
+            when (result) {
+                is Resource.Error -> {
+                    Log.e("HOME_VM:", "Error ${result.message?.uiMessage}")
+                    _stateCourse.value = _stateCourse.value.copy(error = result.message, isLoading = false)
+                }
+                is Resource.Loading -> {
+                    _stateCourse.value = _stateCourse.value.copy(error = null, isLoading = true)
+                }
+                is Resource.Success -> {
+                    _stateCourse.value = _stateCourse.value.copy(error = null, isLoading = false)
+                    _stateCourse.value.info?.let {
+                        repositoryBundle.coursesRepository.deleteCourse(id)
+                    }
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
     // Filter courses based on user input
     fun filterListByInput(typeCourse: SelectedOption) {
         viewModelScope.launch {

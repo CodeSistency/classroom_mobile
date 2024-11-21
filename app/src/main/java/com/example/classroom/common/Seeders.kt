@@ -52,8 +52,7 @@ class Seeders(
                 gender = Gender.Woman,
                 birthdate = "1990-01-01",
                 phone = "123-456-7890",
-                isLogged = true,
-                coursesId = listOf(1, 2) // References both created and joined courses
+
             )
         )
         users.forEach { dao.insertOrUpdateUser(it) }

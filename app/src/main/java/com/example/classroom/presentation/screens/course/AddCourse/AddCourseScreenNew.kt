@@ -71,7 +71,7 @@ fun AddCourseScreenNew(
     navController: NavHostController,
 ){
     val scope = rememberCoroutineScope()
-    val courseInfoState = coursesViewModel.stateCourse.value
+    val courseInfoState = viewModel.stateCourse.value
     var dialogState: SetupCustomDialogState by remember {
         mutableStateOf(SetupCustomDialogState.Default())
     }
@@ -118,18 +118,18 @@ fun AddCourseScreenNew(
                     item {
                         //Title input
                         // Campo de Token
-                        CustomTextField(
-                            value = viewModel.token.value,
-                            onValueChange = {
-                                viewModel.token.value = it
-                                viewModel.validateToken()
-                            },
-                            label = "Token",
-                            errorMessage = viewModel.tokenError.value ?: "",
-                            onNextClick = {
-                                focusManager.moveFocus(FocusDirection.Down)
-                            }
-                        )
+//                        CustomTextField(
+//                            value = viewModel.token.value,
+//                            onValueChange = {
+//                                viewModel.token.value = it
+//                                viewModel.validateToken()
+//                            },
+//                            label = "Token",
+//                            errorMessage = viewModel.tokenError.value ?: "",
+//                            onNextClick = {
+//                                focusManager.moveFocus(FocusDirection.Down)
+//                            }
+//                        )
 
                         // Campo de Título
                         CustomTextField(
@@ -156,32 +156,32 @@ fun AddCourseScreenNew(
                         )
 
                         // Campo de ID del Propietario
-                        CustomTextField(
-                            value = viewModel.ownerId.value.toString(),
-                            onValueChange = {
-                                viewModel.ownerId.value = it.toIntOrNull() ?: 0
-                                viewModel.validateOwnerId()
-                            },
-                            label = "ID del Propietario",
-                            errorMessage = viewModel.ownerIdError.value ?: "",
-                            onNextClick = {
-                                focusManager.moveFocus(FocusDirection.Down)
-                            }
-                        )
+//                        CustomTextField(
+//                            value = viewModel.ownerId.value.toString(),
+//                            onValueChange = {
+//                                viewModel.ownerId.value = it.toIntOrNull() ?: 0
+//                                viewModel.validateOwnerId()
+//                            },
+//                            label = "ID del Propietario",
+//                            errorMessage = viewModel.ownerIdError.value ?: "",
+//                            onNextClick = {
+//                                focusManager.moveFocus(FocusDirection.Down)
+//                            }
+//                        )
 
                         // Campo de Nombre del Propietario
-                        CustomTextField(
-                            value = viewModel.ownerName.value,
-                            onValueChange = {
-                                viewModel.ownerName.value = it
-                                viewModel.validateOwnerName()
-                            },
-                            label = "Nombre del Propietario",
-                            errorMessage = viewModel.ownerNameError.value ?: "",
-                            onNextClick = {
-                                focusManager.moveFocus(FocusDirection.Down)
-                            }
-                        )
+//                        CustomTextField(
+//                            value = viewModel.ownerName.value,
+//                            onValueChange = {
+//                                viewModel.ownerName.value = it
+//                                viewModel.validateOwnerName()
+//                            },
+//                            label = "Nombre del Propietario",
+//                            errorMessage = viewModel.ownerNameError.value ?: "",
+//                            onNextClick = {
+//                                focusManager.moveFocus(FocusDirection.Down)
+//                            }
+//                        )
 
                         // Campo de Sección
                         CustomTextField(
@@ -228,7 +228,8 @@ fun AddCourseScreenNew(
 
                         // Botón de Enviar
                         CustomButton(
-                            text = "Crear Curso",
+                            text = if (id != null) "Actualizar curso" else "Crear Curso",
+                            isLoading = courseInfoState.isLoading,
                             style = NavigationButtonStyle.SolidGradient,
                             color1 = Color(0xFF4CAF50),
                             color2 = Color(0xFF81C784),
@@ -238,7 +239,7 @@ fun AddCourseScreenNew(
 
                                 }
                             },
-                            disabled = !viewModel.isFormValid
+                            disabled = !viewModel.isFormValid || courseInfoState.isLoading
                         )
 
                     }

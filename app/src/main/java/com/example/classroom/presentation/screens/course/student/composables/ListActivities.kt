@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -45,12 +46,16 @@ fun ListActivities(viewModel: ActivityViewmodel, scope: CoroutineScope, id: Stri
     Box(modifier = Modifier){
         if (items.value.isEmpty()){
             Column(
-                modifier = Modifier,
+                modifier = Modifier.fillMaxSize(),
                 Arrangement.Center,
                 Alignment.CenterHorizontally
             ) {
-                Column {
-                    Text(text = "No hay cursos")
+                Column(
+                    modifier = Modifier,
+                    Arrangement.Center,
+                    Alignment.CenterHorizontally
+                ) {
+                    Text(text = "No hay actividades")
                     Spacer(modifier = Modifier.height(10.dp))
                     IconButton(onClick = {
                         scope.launch {
@@ -63,7 +68,7 @@ fun ListActivities(viewModel: ActivityViewmodel, scope: CoroutineScope, id: Stri
             }
         }else{
             LazyColumn(
-                modifier = Modifier.padding(bottom = 5.dp)
+                modifier = Modifier.fillMaxSize().padding(bottom = 5.dp)
             ){
                 items(items.value){
                     Box(modifier = Modifier.padding(vertical = 6.dp, horizontal = 2.dp)){

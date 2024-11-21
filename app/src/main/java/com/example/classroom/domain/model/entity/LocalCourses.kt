@@ -1,5 +1,6 @@
 package com.example.classroom.domain.model.entity
 
+import android.util.Log
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -20,8 +21,7 @@ data class LocalCourses(
     @ColumnInfo("subject") val subject: String,
     @ColumnInfo("token") val token: String,
     @ColumnInfo("area") val area: Area?,
-
-
+    @ColumnInfo("verified") val verified: Boolean = false,
     )
 
 
@@ -33,7 +33,7 @@ enum class Area(val id: Int, val displayName: String) {
     NATURE(5, "Nature"),
     CODING(6, "Coding"),
     OTHER(7, "Other"),
-    NO_SELECTED(0, "No Selected");
+    NO_SELECTED(0, "No Selecionado");
 
     companion object {
         fun fromId(id: Int): Area = values().find { it.id == id } ?: NO_SELECTED
@@ -68,6 +68,7 @@ fun intToArea(id: Int): Area {
 }
 
 fun CourseResponseDto.toCourseLocal(): LocalCourses {
+    Log.e("data", data.toString())
     return LocalCourses(
         idApi = data.idApi.toString(),
         title = data.title,
@@ -77,7 +78,8 @@ fun CourseResponseDto.toCourseLocal(): LocalCourses {
         owner = data.owner.toString(),
         description = data.description,
         area = intToArea(data.areaId),
-        token = data.token
+        token = data.token,
+        verified = data.verified,
 //        users = data.users.map {
 //            LocalUser(
 //                name = it.name,
@@ -105,7 +107,9 @@ fun GetCoursesResponseDto.toCoursesLocal(): List<LocalCourses> {
             owner = it.owner.toString(),
              area = intToArea(it.areaId),
              token = it.token,
-             description = it.description
+             description = it.description,
+             verified = it.verified
+
 //            users = it.users.map {
 //                LocalUser(
 //                    name = it.name,

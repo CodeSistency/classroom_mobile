@@ -208,6 +208,7 @@ class AuthViewModel(
                 stateLoginForm = stateLoginForm.copy(password = event.password)
             }
             SignInFormEvent.Submit -> submitSignInData()
+            else -> {}
         }
     }
 

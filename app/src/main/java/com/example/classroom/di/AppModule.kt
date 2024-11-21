@@ -17,10 +17,13 @@ import com.example.classroom.data.repository.QuizzRepositoryImpl
 import com.example.classroom.data.repository.RepositoryBundle
 import com.example.classroom.data.repository.StudentsRepositoryImpl
 import com.example.classroom.data.repository.SubmissionsRepositoryImpl
+import com.example.classroom.domain.use_case.activities.DeleteActivityUseCase
 import com.example.classroom.domain.use_case.activities.GetActivitiesByUserUseCase
 import com.example.classroom.domain.use_case.activities.GetActivitiesUseCase
 import com.example.classroom.domain.use_case.activities.InsertActivityUseCase
 import com.example.classroom.domain.use_case.activities.UpdateActivityUseCase
+import com.example.classroom.domain.use_case.cloud.UploadFileUseCase
+import com.example.classroom.domain.use_case.courses.DeleteCourseUseCase
 import com.example.classroom.domain.use_case.courses.GetCoursesByIdUseCase
 import com.example.classroom.domain.use_case.courses.GetCoursesUseCase
 import com.example.classroom.domain.use_case.courses.GetUsersByCourseUseCase
@@ -31,6 +34,10 @@ import com.example.classroom.domain.use_case.courses.UpdateCourseUseCase
 import com.example.classroom.domain.use_case.evaluations.getActivitiesSubmittedByStudent.GetActivitiesSubmitedByStudent
 import com.example.classroom.domain.use_case.evaluations.professorReviewsActivityUseCase.ProfessorReviewsActivityUseCase
 import com.example.classroom.domain.use_case.evaluations.studentSendActivityUseCase.StudentSendActivityUseCase
+import com.example.classroom.domain.use_case.posts.CreatePostUseCase
+import com.example.classroom.domain.use_case.posts.DeletePostUseCase
+import com.example.classroom.domain.use_case.posts.GetPostsUseCase
+import com.example.classroom.domain.use_case.posts.UpdatePostUseCase
 import com.example.classroom.domain.use_case.signIn.SignInUseCase
 import com.example.classroom.domain.use_case.signUp.SignUpUseCase
 import com.example.classroom.domain.use_case.validators.ValidatorBundle
@@ -89,6 +96,15 @@ interface AppModule {
     val getActivitiesSubmitedByStudent: GetActivitiesSubmitedByStudent
     val professorReviewsActivityUseCase: ProfessorReviewsActivityUseCase
     val studentSendActivityUseCase: StudentSendActivityUseCase
+    val deleteCourseUseCase: DeleteCourseUseCase
+    val createPostUseCase: CreatePostUseCase
+    val updatePostUseCase: UpdatePostUseCase
+    val deletePostsUseCase: DeletePostUseCase
+    val getPostUseCase: GetPostsUseCase
+    val deleteActivityUseCase: DeleteActivityUseCase
+    val uploadFileUseCase: UploadFileUseCase
+
+
 
     val studentEvaluationsViewModel: StudentEvaluationsViewModel
     val signInViewModel: SignInViewModel
@@ -203,6 +219,29 @@ class AppModuleImpl(
     override val studentSendActivityUseCase: StudentSendActivityUseCase by lazy {
         StudentSendActivityUseCase(repositoryBundle)
     }
+    override val deleteCourseUseCase: DeleteCourseUseCase by lazy {
+        DeleteCourseUseCase(repositoryBundle)
+    }
+    override val createPostUseCase: CreatePostUseCase by lazy {
+        CreatePostUseCase(repositoryBundle)
+    }
+    override val updatePostUseCase: UpdatePostUseCase by lazy {
+        UpdatePostUseCase(repositoryBundle)
+    }
+    override val deletePostsUseCase: DeletePostUseCase by lazy {
+        DeletePostUseCase(repositoryBundle)
+    }
+
+    override val getPostUseCase: GetPostsUseCase by lazy {
+        GetPostsUseCase(repositoryBundle)
+    }
+    override val deleteActivityUseCase: DeleteActivityUseCase by lazy {
+        DeleteActivityUseCase(repositoryBundle)
+    }
+    override val uploadFileUseCase: UploadFileUseCase by lazy {
+        UploadFileUseCase(repositoryBundle)
+    }
+
     override val studentEvaluationsViewModel: StudentEvaluationsViewModel by lazy {
         StudentEvaluationsViewModel(
             repositoryBundle,
@@ -220,7 +259,9 @@ class AppModuleImpl(
         HomeViewmodel(
             repositoryBundle = repositoryBundle,
             getCoursesUseCase = getCoursesUseCase,
-            joinCourseUseCase = joinCourseUseCase
+            joinCourseUseCase = joinCourseUseCase,
+            deleteCourseUseCase = deleteCourseUseCase,
+
         )
     }
 
@@ -240,7 +281,8 @@ class AppModuleImpl(
             updateActivityUseCase = updateActivityUseCase,
             getActivitiesUseCase = getActivitiesUseCase,
             activitiesValidator = validatorBundle.activitiesValidator,
-            getActivitiesByUserUseCase = getActivitiesByUserUseCase
+            getActivitiesByUserUseCase = getActivitiesByUserUseCase,
+            deleteActivityUseCase = deleteActivityUseCase,
         )
     }
 
@@ -248,7 +290,9 @@ class AppModuleImpl(
         SubmissionViewModel(
             repositoryBundle = repositoryBundle,
             professorReviewsActivityUseCase = professorReviewsActivityUseCase,
-            studentSendActivityUseCase = studentSendActivityUseCase
+            studentSendActivityUseCase = studentSendActivityUseCase,
+            uploadFileUseCase = uploadFileUseCase,
+
         )
     }
     override val courseViewmodel: CourseViewmodel by lazy {
@@ -287,13 +331,16 @@ class AppModuleImpl(
     override val addPostViewModel: AddPostViewModel by lazy {
         AddPostViewModel(
             repositoryBundle = repositoryBundle,
+            createPostUseCase = createPostUseCase,
+            updatePostUseCase = updatePostUseCase,
         )
     }
     override val postViewModel: PostsViewModel by lazy {
         PostsViewModel(
            repository = repositoryBundle.postsRepositoryImpl,
-            getPostsUseCase = ,
-            deletePostUseCase = ,
+            getPostsUseCase = getPostUseCase,
+            deletePostUseCase = deletePostsUseCase,
+            repositoryBundle = repositoryBundle
         )
     }
     override val quizzViewModel: QuizzViewModel by lazy {

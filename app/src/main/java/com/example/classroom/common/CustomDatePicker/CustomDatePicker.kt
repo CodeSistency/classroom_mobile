@@ -55,24 +55,30 @@ fun CustomDatePicker(
     }
 
     // Display selected date and open DatePickerDialog on click
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(Brush.linearGradient(listOf(color1, color2)), shape = RoundedCornerShape(16.dp))
-            .clickable { isDialogOpen = true }
-            .padding(horizontal = 16.dp, vertical = 12.dp)
-    ) {
-        Text(
-            text = if (selectedDate.isEmpty()) label else selectedDate,
-            color = if (selectedDate.isEmpty()) Color.Gray else Color.Black,
-            fontWeight = FontWeight.Normal,
-            fontSize = 16.sp
-        )
-        Icon(
-            imageVector = Icons.Default.CalendarToday,
-            contentDescription = null,
-            tint = Color.Gray,
-            modifier = Modifier.align(Alignment.CenterEnd)
-        )
+    Box(modifier = Modifier.padding(horizontal = 8.dp)){
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .background(
+                    Brush.linearGradient(listOf(color1, color2)),
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .clickable { isDialogOpen = true }
+                .padding(horizontal = 16.dp, vertical = 12.dp)
+        ) {
+            Text(
+                text = if (selectedDate.isEmpty()) label else selectedDate,
+                color = if (selectedDate.isEmpty()) Color.Black else Color.Black,
+                fontWeight = FontWeight.Normal,
+                fontSize = 14.sp
+            )
+            Icon(
+                imageVector = Icons.Default.CalendarToday,
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier.align(Alignment.CenterEnd)
+            )
+        }
+
     }
 }

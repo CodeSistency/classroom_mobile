@@ -1,5 +1,6 @@
 package com.example.classroom.domain.use_case.signIn
 
+import android.util.Log
 import com.example.classroom.data.remote.dto.login.signIn.SignInRequestDto
 import com.example.classroom.data.repository.RepositoryBundle
 import com.example.classroom.domain.model.entity.LocalUser
@@ -8,7 +9,7 @@ import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.flow.Flow
 import proyecto.person.appconsultapopular.common.Resource
 import proyecto.person.appconsultapopular.common.apiUtils.catchError
-import proyecto.person.appconsultapopular.common.handlingError
+import com.example.classroom.common.handlingError
 import timber.log.Timber
 
 
@@ -20,9 +21,12 @@ class SignInUseCase  (
                 val data = repositoryBundle.loginRepository.authUser(
                     user
                 )
-                Timber.tag("responseData").e(data.responseData.toString())
+                Log.e("responseData", data.responseData.toString())
 
-                if (data.statusCode == HttpStatusCode.OK){
+                Log.e("STATUS_CODE", "Status code: ${data.statusCode}")
+
+
+                if (data.statusCode.value == 200 || data.statusCode.value == 201) { // Allow both 200 and 201
                     repositoryBundle.loginRepository.logout()
                     Timber.tag("dataaaLogin").e(data.responseData.toString())
 
@@ -34,5 +38,4 @@ class SignInUseCase  (
                 }
             }
         }
-
 }

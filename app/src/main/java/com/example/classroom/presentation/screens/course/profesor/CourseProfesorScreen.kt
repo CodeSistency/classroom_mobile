@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.classroom.App
 import com.example.classroom.presentation.screens.activity.ActivityViewmodel
 import com.example.classroom.presentation.screens.activity.addActivity.AddActivityViewModel
 import com.example.classroom.presentation.screens.course.AddCourse.AddCourseViewModel
@@ -45,7 +46,7 @@ fun CourseProfesorScreen(
             TopBarProfessor(navController = navController)
         }
     ) {
-        CourseProfessorPresentation(viewModel = viewModel, courseViewmodel = courseViewmodel, addActivityViewModel, id = id, addCourseViewModel = addCourseViewModel, navController =  navController)
+        CourseProfessorPresentation(viewModel = viewModel, courseViewmodel = courseViewmodel, postsViewModel = App.appModule.postViewModel, addActivityViewModel = addActivityViewModel, id = id, addCourseViewModel = addCourseViewModel, navController =  navController)
         var isDialogOpen by remember { mutableStateOf(false) }
         Box(
             modifier = Modifier.fillMaxSize(),

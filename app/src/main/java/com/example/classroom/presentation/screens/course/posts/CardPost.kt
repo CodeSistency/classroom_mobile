@@ -35,9 +35,11 @@ import com.example.classroom.R
 import com.example.classroom.common.CustomDialog
 import com.example.classroom.domain.model.entity.LocalPost
 import com.example.classroom.presentation.theme.PaddingCustom
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
-fun CardPostItem(post: LocalPost) {
+fun CardPostItem(post: LocalPost, viewModel: PostsViewModel, scope: CoroutineScope) {
     val shape = RoundedCornerShape(PaddingCustom.MEDIUM.size)
     var isDeleteOpen by remember { mutableStateOf(false) }
     Box(modifier = Modifier) {
@@ -105,7 +107,9 @@ fun CardPostItem(post: LocalPost) {
             message = "Are you sure you want to delete this post?",
             messageBtn = "Delete",
             loading = false,
-            action = { /* Perform delete action */ },
+            action = { scope.launch{
+                viewModel.deletePostCourseRemote(post.idApi)
+            }  },
             dismissDialog = { isDeleteOpen = false },
             icon = painterResource(id = R.drawable.ic_person_remove)
         )

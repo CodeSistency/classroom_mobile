@@ -59,14 +59,7 @@ interface AppDao {
     @Query("SELECT * FROM localUser_table")
     fun getAllUsersWithFlow(): Flow<List<LocalUser>>
 
-    fun getUsersByCourseIdWithFlow(courseId: String): Flow<List<LocalUser>> {
-        return getAllUsersWithFlow()
-            .map { users ->
-                users.filter { user ->
-                    user.coursesId.contains(courseId.toInt())
-                }
-            }
-    }
+  
 
 
 

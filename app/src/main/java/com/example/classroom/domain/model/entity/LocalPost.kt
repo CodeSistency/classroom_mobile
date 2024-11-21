@@ -35,13 +35,13 @@ fun PostResponseDto.toLocal(): LocalPost {
 fun GetPostsResponseDto.toLocal(): List<LocalPost> {
     return data.map {
         LocalPost(
-            idApi = it.data.id.toString(),
+            idApi = it.id.toString(),
             id = 0,
-            courseId = it.data.courseId.toString(),
-            content = it.data.title,
-            title = it.data.title,
-            authorId = it.data.authorId.toString(),
-            createdAt = it.data.creation,
+            courseId = it.courseId.toString(),
+            content = it.title,
+            title = it.title,
+            authorId = it.authorId.toString(),
+            createdAt = it.createdAt,
         )
     }
 }

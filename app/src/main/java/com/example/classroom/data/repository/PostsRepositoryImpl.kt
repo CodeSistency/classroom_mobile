@@ -34,6 +34,10 @@ class PostsRepositoryImpl(private val localPostDao: LocalPostDao, private val ap
         return localPostDao.getPostById(postId)
     }
 
+    override suspend fun updateListPosts(courseId: String, posts: List<LocalPost>) {
+        return localPostDao.updatePostsByCourse(courseId, posts)
+    }
+
     override suspend fun getPostByCourseRemote(id: String): ResponseGenericAPi<GetPostsResponseDto> {
         return apiService.getPostByCourseRemote(id)
     }

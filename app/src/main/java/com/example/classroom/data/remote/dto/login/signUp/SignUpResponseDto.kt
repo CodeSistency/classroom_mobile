@@ -47,8 +47,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class SignUpResponseDto(
-    @SerialName("status")
-    val status: Boolean,
+    @SerialName("code")
+    val status: Int,
     @SerialName("message")
     val message: String,
     @SerialName("data")

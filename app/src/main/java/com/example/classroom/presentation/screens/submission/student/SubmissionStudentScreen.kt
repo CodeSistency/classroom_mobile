@@ -24,7 +24,8 @@ fun SubmissionStudentScreen(
                 fileUri = fileUri,
                 message = message,
                 onSubmissionSuccess = {},
-                onSubmissionFailure = {}
+                onSubmissionFailure = {},
+                userId = studentId
             )
         }
     )

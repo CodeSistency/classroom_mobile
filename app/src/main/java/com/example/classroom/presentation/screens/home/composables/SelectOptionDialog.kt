@@ -26,6 +26,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,12 +50,15 @@ import androidx.navigation.NavController
 import com.example.classroom.R
 import com.example.classroom.common.CustomButton.CustomButton
 import com.example.classroom.common.CustomButton.NavigationButtonStyle
+import com.example.classroom.common.composables.customDialogs.SetupCustomDialog
+import com.example.classroom.common.composables.customDialogs.SetupCustomDialogState
 import com.example.classroom.presentation.navigation.Destination
 import com.example.classroom.presentation.screens.auth.composables.ItemInputField
 import com.example.classroom.presentation.screens.home.HomeViewmodel
 import com.example.classroom.presentation.theme.Azul
 import com.example.classroom.presentation.theme.AzulGradient
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -66,6 +70,9 @@ fun SelectedOptionDialog(
 ) {
     val state = viewmodel.stateJoinCourse.value
     val user = viewmodel.userInfo.collectAsState(initial = null)
+    var dialogState: SetupCustomDialogState by remember {
+        mutableStateOf(SetupCustomDialogState.Default())
+    }
     Dialog(
         onDismissRequest = dismissDialog,
     ) {
@@ -76,7 +83,7 @@ fun SelectedOptionDialog(
         var input by remember {
             mutableStateOf("")
         }
-        Box(modifier = Modifier){
+        Box(modifier = Modifier.fillMaxWidth()){
             var position =  Modifier.align(Alignment.TopStart)
             Column(
                 modifier = Modifier
@@ -133,11 +140,7 @@ fun SelectedOptionDialog(
                             onClick = { isSelectedOption = Options.NO_SELECTED }) {
                             Icon(Icons.Default.ArrowBack, contentDescription = null)
                         }
-                        if (state.isLoading){
-                            Box(modifier = Modifier){
-                                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                            }
-                        }
+
                         Text(text = "Únete",
                             style = TextStyle(
                                 fontWeight = FontWeight.Bold,
@@ -148,14 +151,12 @@ fun SelectedOptionDialog(
                             modifier = Modifier.padding(horizontal = 5.dp,)
                         )
                         Spacer(modifier = Modifier.height(15.dp))
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            Arrangement.SpaceBetween,
-                            Alignment.CenterVertically
-                        ){
+
+                            // Input field
 
                             ItemInputField(
                                 titulo = stringResource(id = R.string.join_class_text),
+
                                 darkTheme = false,
                                 valueField = input,
                                 fieldRestriction = {
@@ -166,33 +167,64 @@ fun SelectedOptionDialog(
                                         null
                                     }
                                 },
-                                valueOnChange = {
-                                    input = it
-                                }
-                            ) {
-                            }
-                            IconButton(onClick = {
-                                if (state.isLoading){
+                                valueOnChange = { input = it }
+                            ){}
 
-                                }else{
-                                    if (input.isNotBlank()){
+
+
+                        Spacer(modifier = Modifier.height(7.dp))
+
+
+
+                        CustomButton(
+                            onClick = {
+                                if (state.isLoading) {
+                                    // Handle loading
+                                } else {
+                                    if (input.isNotBlank()) {
                                         scope.launch {
                                             viewmodel.joinCourse(user.value!!.idApi, input)
                                         }
                                     }
                                 }
-                            }) {
-                                Icon(Icons.Default.ArrowForwardIos,
-                                    contentDescription = null,
-                                    tint = Color.Black)
-                            }
-
-                        }
+                            },
+                            text = "Unirse",
+                            isLoading = state.isLoading,
+                            style = NavigationButtonStyle.SolidGradient,
+                            color1 = Azul,
+                            color2 = AzulGradient,
+                            icon = Icons.Default.ArrowForwardIos,
+                            disabled = state.isLoading,
+                            modifier = Modifier.fillMaxWidth(0.85f))
                     }
                 }
 
             }
 
+        }
+
+        LaunchedEffect(key1 = state, block = {
+            when{
+                state.isLoading -> {
+                    dialogState = SetupCustomDialogState.Loading()
+                }
+                state.error != null -> {
+                    dialogState = SetupCustomDialogState.Error(state.error.uiMessage)
+                }
+
+                else -> {
+                    if (state.info != null){
+                        dialogState = SetupCustomDialogState.Success(message = "Te has unido exitosamente al curso")
+                    }
+                }
+            }
+        })
+
+        SetupCustomDialog(
+            setupCustomDialogState = dialogState,
+            showDialog = dialogState != SetupCustomDialogState.Default()
+        ) {
+            dialogState = SetupCustomDialogState.Default()
         }
     }
 

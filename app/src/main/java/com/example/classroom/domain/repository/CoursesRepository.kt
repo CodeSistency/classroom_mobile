@@ -30,6 +30,5 @@ interface CoursesRepository {
     suspend fun getCourses() : List<LocalCourses>
     suspend fun getCoursesWithFlow() : Flow<List<LocalCourses>>
     suspend fun getCoursesWithFlowById(id: String) : Flow<LocalCourses?>
-    suspend fun getUsersByCourseWithFlow(id: String) : Flow<List<LocalUser>>
 
 }

@@ -15,6 +15,7 @@ import com.example.classroom.domain.model.entity.LocalUser
 import com.example.classroom.domain.model.entity.Status
 import com.example.classroom.domain.model.entity.toCoursesLocal
 import com.example.classroom.domain.model.entity.toLocal
+import com.example.classroom.domain.use_case.activities.DeleteActivityUseCase
 import com.example.classroom.domain.use_case.activities.GetActivitiesByUserUseCase
 import com.example.classroom.domain.use_case.activities.GetActivitiesUseCase
 import com.example.classroom.domain.use_case.activities.InsertActivityUseCase
@@ -46,6 +47,7 @@ class ActivityViewmodel(
     private val updateActivityUseCase: UpdateActivityUseCase,
     private val insertActivityUseCase: InsertActivityUseCase,
     private val getActivitiesUseCase: GetActivitiesUseCase,
+    private val deleteActivityUseCase: DeleteActivityUseCase,
     private val getActivitiesByUserUseCase: GetActivitiesByUserUseCase,
     private val repositoryBundle: RepositoryBundle
 ) : ViewModel() {
@@ -172,6 +174,21 @@ class ActivityViewmodel(
                     _stateGetActivities.value = GetActivitiesState(info = result.data?.toLocal())
                     _stateGetActivities.value.info?.let {
                         repositoryBundle.activitiesRepository.insertAllActivities(it)
+                    }
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    suspend fun deleteActivity(id: String) {
+        deleteActivityUseCase(id).onEach { result ->
+            when (result) {
+                is Resource.Error -> _stateAddActivity.value = _stateAddActivity.value.copy(error = result.message, isLoading = false)
+                is Resource.Loading -> _stateAddActivity.value = _stateAddActivity.value.copy(error = null, isLoading = true)
+                is Resource.Success -> {
+                    _stateAddActivity.value = _stateAddActivity.value.copy(error = null, isLoading = false)
+                    result.data?.let {
+//                        repositoryBundle.activitiesRepository.insertAllActivities(listOf(it))
                     }
                 }
             }

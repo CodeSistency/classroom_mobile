@@ -147,8 +147,8 @@ fun SignUpScreenNew(
 
                 LazyColumn(
                     modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
+                        .fillMaxWidth()
+                        .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     item {
                         //Name input
@@ -167,6 +167,9 @@ fun SignUpScreenNew(
                             }
                         )
 
+                        Spacer(modifier = Modifier.height(2.dp))
+
+
                         CustomTextField(
                             value = viewModel.name.value,
                             onValueChange = {
@@ -180,6 +183,8 @@ fun SignUpScreenNew(
                                 focusManager.moveFocus(FocusDirection.Down)
                             }
                         )
+
+                        Spacer(modifier = Modifier.height(2.dp))
 
                         // Lastname
                         CustomTextField(
@@ -196,6 +201,8 @@ fun SignUpScreenNew(
                             }
                         )
 
+                        Spacer(modifier = Modifier.height(2.dp))
+
                         // Password
                         CustomTextField(
                             value = viewModel.password.value,
@@ -210,6 +217,8 @@ fun SignUpScreenNew(
                                 focusManager.moveFocus(FocusDirection.Down)
                             }
                         )
+
+                        Spacer(modifier = Modifier.height(2.dp))
 
                         // Email
                         CustomTextField(
@@ -226,12 +235,8 @@ fun SignUpScreenNew(
                             }
                         )
 
-                        // Birthdate
-                        CustomDatePicker(
-                            label = "Fecha de Nacimiento",
-                            selectedDate = viewModel.birthdate.value,
-                            onDateSelected = { viewModel.birthdate.value = it }
-                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+
 
                         // Phone
                         CustomTextField(
@@ -247,6 +252,16 @@ fun SignUpScreenNew(
                                 focusManager.moveFocus(FocusDirection.Down)
                             }
                         )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+                        // Birthdate
+                        CustomDatePicker(
+                            label = "Fecha de Nacimiento",
+                            selectedDate = viewModel.birthdate.value,
+                            onDateSelected = { viewModel.birthdate.value = it }
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
 
                         CustomSelect(
                             label = "Género",

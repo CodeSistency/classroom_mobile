@@ -47,8 +47,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class GetActivitiesResponseDto(
-    @SerialName("status")
-    val status: Boolean,
+    @SerialName("code")
+    val status: Int,
     @SerialName("message")
     val message: String,
     @SerialName("data")
@@ -60,8 +60,6 @@ data class GetActivitiesResponseDto(
         val idApi: Int,
         @SerialName("course_id")
         val idCourse: Int,
-        @SerialName("course_name")
-        val nameCourse: String,
         @SerialName("title")
         val title: String,
         @SerialName("description")
@@ -74,8 +72,6 @@ data class GetActivitiesResponseDto(
         val endDate: String,
         @SerialName("status_id")
         val status: Int,
-        @SerialName("status_name")
-        val statusName: String,
         @SerialName("email")
         val email: String
     )

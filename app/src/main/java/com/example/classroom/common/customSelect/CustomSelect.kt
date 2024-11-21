@@ -35,50 +35,53 @@ fun <T> CustomSelect(
         selectedOption.firstOrNull()?.let { optionDisplay(it) } ?: ""
     }
 
-    Column(modifier = modifier) {
-        Text(text = label, fontSize = 12.sp, color = Color.Gray)
+    Box(modifier = Modifier.padding(horizontal = 8.dp)){
+        Column(modifier = modifier) {
+            Text(text = label, fontSize = 12.sp, color = Color.Gray)
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp)
-                .clip(RoundedCornerShape(16.dp))
-                .background(Brush.linearGradient(listOf(color1, color2)), RoundedCornerShape(16.dp))
-                .clickable { expanded = true }
-                .padding(horizontal = 16.dp, vertical = 12.dp)
-        ) {
-            Text(text = if (selectedText.isEmpty()) "Seleccione" else selectedText, color = Color.Black)
-        }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(Brush.linearGradient(listOf(color1, color2)), RoundedCornerShape(16.dp))
+                    .clickable { expanded = true }
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
+            ) {
+                Text(text = if (selectedText.isEmpty()) "Seleccione" else selectedText, color = Color.Black, fontSize = 14.sp)
+            }
 
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.White)
-        ) {
-            options.forEach { option ->
-                val isSelected = selectedOption.contains(option)
-                DropdownMenuItem(onClick = {
-                    expanded = false
-                    if (multiple) {
-                        // Toggle selection in multiple mode
-                        val newSelection = selectedOption.toMutableList()
-                        if (isSelected) newSelection.remove(option) else newSelection.add(option)
-                        onOptionSelected(newSelection)
-                    } else {
-                        // Set single selection
-                        onOptionSelected(listOf(option))
-                    }
-                }) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
+            ) {
+                options.forEach { option ->
+                    val isSelected = selectedOption.contains(option)
+                    DropdownMenuItem(onClick = {
+                        expanded = false
                         if (multiple) {
-                            Checkbox(checked = isSelected, onCheckedChange = null)
+                            // Toggle selection in multiple mode
+                            val newSelection = selectedOption.toMutableList()
+                            if (isSelected) newSelection.remove(option) else newSelection.add(option)
+                            onOptionSelected(newSelection)
+                        } else {
+                            // Set single selection
+                            onOptionSelected(listOf(option))
                         }
-                        Text(text = optionDisplay(option), modifier = Modifier.padding(start = if (multiple) 8.dp else 0.dp))
+                    }) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            if (multiple) {
+                                Checkbox(checked = isSelected, onCheckedChange = null)
+                            }
+                            Text(text = optionDisplay(option), modifier = Modifier.padding(start = if (multiple) 8.dp else 0.dp))
+                        }
                     }
                 }
             }
         }
+
     }
 }

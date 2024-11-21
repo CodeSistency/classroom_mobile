@@ -78,9 +78,7 @@ class CoursesRepositoryImpl(
         return dao.getCourseById(id)
     }
 
-    override suspend fun getUsersByCourseWithFlow(id: String): Flow<List<LocalUser>> {
-        return dao.getUsersByCourseIdWithFlow(id)
-    }
+
 
 
 }

@@ -66,7 +66,7 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
     override suspend fun signInUser(signInRequestDto: SignInRequestDto): ResponseGenericAPi<SignInResponseDto> = withContext(
         Dispatchers.IO)  {
         val response = signInUserInner(signInRequestDto)
-        return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
+        return@withContext parseResponseToGenericObject(response, true)
     }
 
     @OptIn(InternalAPI::class)
@@ -90,7 +90,7 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
         val response = signUpUserInner(signUpRequestDto)
 //        Log.e("Entro", "${Constants.BASE_URL}${HttpRoutes.SIGNUP_ENDPOINT}")
 
-        return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
+        return@withContext parseResponseToGenericObject(response, true)
     }
 
     @OptIn(InternalAPI::class)
@@ -118,7 +118,7 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
     override suspend fun insertCourseRemote(course: CourseRequestDto): ResponseGenericAPi<CourseResponseDto> = withContext(
     Dispatchers.IO)  {
         val response = courseInnerMethod(course, null)
-        return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
+        return@withContext parseResponseToGenericObject(response, true)
     }
 
     @OptIn(InternalAPI::class)
@@ -129,7 +129,10 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
             put("ownerId", courseRequestDto.ownerId)
             put("section", courseRequestDto.section)
             put("subject", courseRequestDto.subject)
-            put("areaId", 1)
+            put("owner_name", courseRequestDto.ownerName)
+            put("ownerId", courseRequestDto.ownerId)
+            put("areaId", courseRequestDto.areaId)
+            put("token", "5")
 //            put("area", areatoInt(courseRequestDto.area))
         }
 
@@ -139,7 +142,10 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
             put("description", courseRequestDto.description ?: "")
             put("section", courseRequestDto.section)
             put("subject", courseRequestDto.subject)
-            put("areaId", 1)
+            put("owner_name", courseRequestDto.ownerName)
+            put("ownerId", courseRequestDto.ownerId)
+            put("areaId", courseRequestDto.areaId)
+//            put("token", "")
 //            put("area", areatoInt(courseRequestDto.area))
         }
 
@@ -149,13 +155,13 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
         val response = if (id != null) {
             App.appModule.apiClient.put{
 
-                url("${Constants.BASE_URL}${HttpRoutes.COURSES_ENDPOINT}/${method}")
+                url("${Constants.BASE_URL}${HttpRoutes.COURSES_ENDPOINT}")
                 contentType(ContentType.Application.Json)
                 body = jsonUpdate.toString()
             }
         }else{
             App.appModule.apiClient.post{
-                url("${Constants.BASE_URL}${HttpRoutes.COURSES_ENDPOINT}/${method}")
+                url("${Constants.BASE_URL}${HttpRoutes.COURSES_ENDPOINT}")
                 contentType(ContentType.Application.Json)
                 body = json.toString()
             }
@@ -166,7 +172,7 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
     override suspend fun updateCourseRemote(course: CourseRequestDto, id: String): ResponseGenericAPi<CourseResponseDto> =  withContext(
     Dispatchers.IO)  {
         val response = courseInnerMethod(course, id)
-        return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
+        return@withContext parseResponseToGenericObject(response, true)
     }
 
     override suspend fun deleteCourseRemote(id: String): ResponseGenericAPi<Boolean> = withContext(
@@ -175,16 +181,16 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
             url("${Constants.BASE_URL}${HttpRoutes.COURSES_ENDPOINT}${id}")
             contentType(ContentType.Application.Json)
         }
-        return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
+        return@withContext parseResponseToGenericObject(response, true)
     }
 
     override suspend fun getCoursesRemote(id: String): ResponseGenericAPi<GetCoursesResponseDto> = withContext(
     Dispatchers.IO)  {
         val response = client.get{
-            url("${Constants.BASE_URL}${HttpRoutes.COURSES_ENDPOINT}/mine/${id}")
+            url("${Constants.BASE_URL}${HttpRoutes.COURSES_ENDPOINT}/owner/${id}")
             contentType(ContentType.Application.Json)
         }
-        return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
+        return@withContext parseResponseToGenericObject(response, true)
     }
 
     override suspend fun getCourseByIdRemote(id: String): ResponseGenericAPi<CourseResponseDto> = withContext(
@@ -193,7 +199,7 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
             url("${Constants.BASE_URL}${HttpRoutes.COURSES_ENDPOINT}/${id}")
             contentType(ContentType.Application.Json)
         }
-        return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
+        return@withContext parseResponseToGenericObject(response, true)
     }
 
     override suspend fun getUsersByCourseRemote(id: String): ResponseGenericAPi<GetUsersByCourseResponse> = withContext(
@@ -202,7 +208,7 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
             url("${Constants.BASE_URL}${HttpRoutes.COURSES_ENDPOINT}/users/${id}")
             contentType(ContentType.Application.Json)
         }
-        return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
+        return@withContext parseResponseToGenericObject(response, true)
     }
 
     override suspend fun getCoursesWithFlowRemote(): Flow<List<LocalCourses>> {
@@ -216,7 +222,7 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
     ): ResponseGenericAPi<CourseResponseDto> = withContext(
         Dispatchers.IO)  {
         val json = buildJsonObject {
-            put("idUser", id.toInt())
+            put("id", id.toInt())
             put("token", token)
         }
         Log.e("RUTA:", "${Constants.BASE_URL}${HttpRoutes.COURSES_ENDPOINT}/join")
@@ -225,7 +231,7 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
             contentType(ContentType.Application.Json)
             body = json.toString()
         }
-        return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
+        return@withContext parseResponseToGenericObject(response, true)
 
     }
 
@@ -245,7 +251,7 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
             contentType(ContentType.Application.Json)
             body = json.toString()
         }
-        return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
+        return@withContext parseResponseToGenericObject(response, true)
 
     }
     @OptIn(InternalAPI::class)
@@ -263,11 +269,11 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
 //        }
         Log.e("RUTA:", "${Constants.BASE_URL}${HttpRoutes.ACTIVITIES_ENDPOINT}/new")
         val response = client.post{
-            url("${Constants.BASE_URL}${HttpRoutes.ACTIVITIES_ENDPOINT}/new")
+            url("${Constants.BASE_URL}${HttpRoutes.ACTIVITIES_ENDPOINT}")
             contentType(ContentType.Application.Json)
             setBody(activity)
         }
-        return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
+        return@withContext parseResponseToGenericObject(response, true)
     }
 
     @OptIn(InternalAPI::class)
@@ -281,13 +287,13 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
             put("endDate", activity.endDate)
             put("startDate", activity.startDate)
         }
-        Log.e("RUTA:", "${Constants.BASE_URL}${HttpRoutes.ACTIVITIES_ENDPOINT}/update")
+        Log.e("RUTA:", "${Constants.BASE_URL}${HttpRoutes.ACTIVITIES_ENDPOINT}")
         val response = client.post{
-            url("${Constants.BASE_URL}${HttpRoutes.ACTIVITIES_ENDPOINT}/${id}")
+            url("${Constants.BASE_URL}${HttpRoutes.ACTIVITIES_ENDPOINT}")
             contentType(ContentType.Application.Json)
             body = json.toString()
         }
-        return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
+        return@withContext parseResponseToGenericObject(response, true)
     }
 
     @OptIn(InternalAPI::class)
@@ -298,7 +304,7 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
             contentType(ContentType.Application.Json)
             body = json.toString()
         }
-        return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
+        return@withContext parseResponseToGenericObject(response, true)
 
     }
 
@@ -308,17 +314,17 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
             url("${Constants.BASE_URL}${HttpRoutes.ACTIVITIES_ENDPOINT}/${id}")
             contentType(ContentType.Application.Json)
         }
-        return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
+        return@withContext parseResponseToGenericObject(response, true)
 
     }
 
     override suspend fun getActivitiesByCourseRemote(id: String): ResponseGenericAPi<GetActivitiesResponseDto> = withContext(
         Dispatchers.IO)  {
         val response = client.get{
-            url("${Constants.BASE_URL}${HttpRoutes.ACTIVITIES_ENDPOINT}/${id}")
+            url("${Constants.BASE_URL}${HttpRoutes.ACTIVITIES_ENDPOINT}/course/${id}")
             contentType(ContentType.Application.Json)
         }
-        return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
+        return@withContext parseResponseToGenericObject(response, true)
 
     }
 
@@ -328,7 +334,7 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
             url("${Constants.BASE_URL}${HttpRoutes.ACTIVITIES_ENDPOINT}/mine/${id}")
             contentType(ContentType.Application.Json)
         }
-        return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
+        return@withContext parseResponseToGenericObject(response, true)
 
     }
 
@@ -345,7 +351,7 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
             url("${Constants.BASE_URL}${HttpRoutes.ACTIVITIES_ENDPOINT}/send/course/user/${userId}/${courseId}")
             contentType(ContentType.Application.Json)
         }
-        return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
+        return@withContext parseResponseToGenericObject(response, true)
 
     }
 
@@ -358,7 +364,7 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
             setBody(body) // Ensure proper serialization of body
 
         }
-        return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
+        return@withContext parseResponseToGenericObject(response, true)
 
     }
 
@@ -371,7 +377,7 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
 
 
         }
-        return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
+        return@withContext parseResponseToGenericObject(response, true)
 
     }
 
@@ -385,20 +391,20 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
                 })
             }
         )
-        return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
+        return@withContext parseResponseToGenericObject(response, true)
 
     }
 
     override suspend fun getPostByCourseRemote(id: String): ResponseGenericAPi<GetPostsResponseDto> = withContext(
     Dispatchers.IO)  {
         val response = client.get{
-            url("${Constants.BASE_URL}${HttpRoutes.POSTS_ENDPOINT}/${id}")
+            url("${Constants.BASE_URL}${HttpRoutes.POSTS_ENDPOINT}/course/${id}")
             contentType(ContentType.Application.Json)
 
 
 
         }
-        return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
+        return@withContext parseResponseToGenericObject(response, true)
 
     }
 
@@ -411,7 +417,7 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
 
 
         }
-        return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
+        return@withContext parseResponseToGenericObject(response, true)
 
     }
 
@@ -424,7 +430,7 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
 
 
         }
-        return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
+        return@withContext parseResponseToGenericObject(response, true)
 
     }
 
@@ -433,10 +439,8 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
         val response = client.delete{
             url("${Constants.BASE_URL}${HttpRoutes.POSTS_ENDPOINT}/${id}")
             contentType(ContentType.Application.Json)
-
-
         }
-        return@withContext parseResponseToGenericObject(response, response.status == HttpStatusCode.OK)
+        return@withContext parseResponseToGenericObject(response, true)
 
     }
 

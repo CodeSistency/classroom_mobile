@@ -61,16 +61,17 @@ class AddCourseViewModel(
 
     // Validación general del formulario
     val isFormValid: Boolean
-        get() = tokenError.value == null &&
+        get() =
+//            tokenError.value == null &&
                 titleError.value == null &&
-                ownerIdError.value == null &&
-                ownerNameError.value == null &&
+//                ownerIdError.value == null &&
+//                ownerNameError.value == null &&
                 sectionError.value == null &&
                 subjectError.value == null &&
-                token.value.isNotBlank() &&
+//                token.value.isNotBlank() &&
                 title.value.isNotBlank() &&
-                ownerId.value > 0 &&
-                ownerName.value.isNotBlank() &&
+//                ownerId.value > 0 &&
+//                ownerName.value.isNotBlank() &&
                 section.value.isNotBlank() &&
                 subject.value.isNotBlank() &&
                 area.value != Area.NO_SELECTED
@@ -131,7 +132,7 @@ class AddCourseViewModel(
             CourseRequestDto(
                 description = description.value,
                 title = title.value,
-                token = token.value,
+                token = "",
                 ownerName = it.name,
                 subject = subject.value,
                 section = section.value,

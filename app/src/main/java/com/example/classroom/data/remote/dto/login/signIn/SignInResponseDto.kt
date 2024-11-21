@@ -38,16 +38,16 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class SignInResponseDto(
-    @SerialName("status")
-    val status: Boolean,
+    @SerialName("code")
+    val status: Int, // Matches "code" in JSON
     @SerialName("message")
-    val message: String,
+    val message: String, // Matches "message" in JSON
     @SerialName("data")
     val data: Data
 ) {
     @Serializable
     data class Data(
-        @SerialName("id")
+        @SerialName("id") // Map "id" in JSON to userId in the Kotlin model
         val userId: Int,
         @SerialName("email")
         val email: String,

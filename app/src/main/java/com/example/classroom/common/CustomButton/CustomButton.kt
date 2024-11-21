@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +33,7 @@ enum class NavigationButtonStyle {
 @Composable
 fun CustomButton(
     text: String,
+    isLoading: Boolean = false,
     style: NavigationButtonStyle,
     color1: Color,
     color2: Color,
@@ -58,7 +60,12 @@ fun CustomButton(
                     else -> Brush.linearGradient(listOf(Color.Transparent, Color.Transparent))
                 }
             )
-            .then(if (borderStroke != null) Modifier.border(borderStroke, shape = RoundedCornerShape(50)) else Modifier)
+            .then(
+                if (borderStroke != null) Modifier.border(
+                    borderStroke,
+                    shape = RoundedCornerShape(50)
+                ) else Modifier
+            )
             .clickable(enabled = !disabled) { onClick() }
             .padding(horizontal = 20.dp, vertical = 12.dp)
     ) {
@@ -67,40 +74,47 @@ fun CustomButton(
             horizontalArrangement = if (icon == null) Arrangement.Center else Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(
-                text = text,
-                color = if (disabled) Color.LightGray else if (style == NavigationButtonStyle.SolidGradient) Color.White else color1,
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
-            )
-            if (icon != null) {
-                val iconBorderStroke = if (style == NavigationButtonStyle.OutlineOnly && !disabled) {
-                    BorderStroke(1.dp, gradient)
-                } else {
-                    BorderStroke(1.dp, Color.Transparent)
-                }
 
-                Box(
-                    modifier = Modifier
-                        .padding(start = 8.dp)
-                        .size(24.dp)
-                        .clip(CircleShape)
-                        .then(
-                            if (style == NavigationButtonStyle.OutlineWithIconGradient) {
-                                Modifier.background(backgroundBrush)
-                            } else {
-                                Modifier.background(Color.Transparent)
-                            }
+            if (isLoading){
+                Box(modifier = Modifier.size(20.dp)){
+                    CircularProgressIndicator()
+                }
+            }else{
+                Text(
+                    text = text,
+                    color = if (disabled) Color.LightGray else if (style == NavigationButtonStyle.SolidGradient) Color.White else color1,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+                if (icon != null) {
+                    val iconBorderStroke = if (style == NavigationButtonStyle.OutlineOnly && !disabled) {
+                        BorderStroke(1.dp, gradient)
+                    } else {
+                        BorderStroke(1.dp, Color.Transparent)
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .size(24.dp)
+                            .clip(CircleShape)
+                            .then(
+                                if (style == NavigationButtonStyle.OutlineWithIconGradient) {
+                                    Modifier.background(backgroundBrush)
+                                } else {
+                                    Modifier.background(Color.Transparent)
+                                }
+                            )
+                            .border(iconBorderStroke, shape = CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = null,
+                            tint = if (disabled) Color.LightGray else if (style == NavigationButtonStyle.SolidGradient) Color.White else color1,
+                            modifier = Modifier.size(16.dp)
                         )
-                        .border(iconBorderStroke, shape = CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = null,
-                        tint = if (disabled) Color.LightGray else if (style == NavigationButtonStyle.SolidGradient) Color.White else color1,
-                        modifier = Modifier.size(16.dp)
-                    )
+                    }
                 }
             }
         }
