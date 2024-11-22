@@ -231,7 +231,7 @@ fun AddActivityScreen(
                                         statusId = state.status.id,
                                         startDate = currentDateFormatted,
                                         endDate = state.endDate,
-                                        idCourse = idCourse,
+                                        idCourse = idCourse.toInt(),
                                         grade = state.grade.toInt(),
                                         email = email
                                     )

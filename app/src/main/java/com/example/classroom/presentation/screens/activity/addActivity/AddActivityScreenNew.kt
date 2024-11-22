@@ -81,7 +81,6 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun AddActivityScreenNew(
     idCourse: String,
-    email: String,
     id: String?,
     viewModel: AddActivityViewModel,
     focusManager: FocusManager,
@@ -139,6 +138,7 @@ fun AddActivityScreenNew(
                                 focusManager.moveFocus(FocusDirection.Down)
                             }
                         )
+                        Spacer(modifier = Modifier.height(4.dp))
 
                         // Campo de Descripción (opcional)
                         CustomTextField(
@@ -149,35 +149,37 @@ fun AddActivityScreenNew(
                                 focusManager.moveFocus(FocusDirection.Down)
                             }
                         )
+                        Spacer(modifier = Modifier.height(4.dp))
+
 
                         // Campo de Calificación
-                        CustomTextField(
-                            value = viewModel.grade.value.toString(),
-                            onValueChange = {
-                                viewModel.grade.value = it.toIntOrNull() ?: 0
-                                viewModel.validateGrade()
-                            },
-                            label = "Calificación",
-                            errorMessage = viewModel.gradeError.value ?: "",
-                            onNextClick = {
-                                focusManager.moveFocus(FocusDirection.Down)
-                            }
-                        )
+//                        CustomTextField(
+//                            value = viewModel.grade.value.toString(),
+//                            onValueChange = {
+//                                viewModel.grade.value = it.toIntOrNull() ?: 0
+//                                viewModel.validateGrade()
+//                            },
+//                            label = "Calificación",
+//                            errorMessage = viewModel.gradeError.value ?: "",
+//                            onNextClick = {
+//                                focusManager.moveFocus(FocusDirection.Down)
+//                            }
+//                        )
 
                         // Campo de Correo Electrónico
-                        CustomTextField(
-                            value = viewModel.email.value,
-                            onValueChange = {
-                                viewModel.email.value = it
-                                viewModel.validateEmail()
-                            },
-                            label = "Correo Electrónico",
-                            validationRegex = ValidationRegex.Email,
-                            errorMessage = viewModel.emailError.value ?: "",
-                            onNextClick = {
-                                focusManager.moveFocus(FocusDirection.Down)
-                            }
-                        )
+//                        CustomTextField(
+//                            value = viewModel.email.value,
+//                            onValueChange = {
+//                                viewModel.email.value = it
+//                                viewModel.validateEmail()
+//                            },
+//                            label = "Correo Electrónico",
+//                            validationRegex = ValidationRegex.Email,
+//                            errorMessage = viewModel.emailError.value ?: "",
+//                            onNextClick = {
+//                                focusManager.moveFocus(FocusDirection.Down)
+//                            }
+//                        )
 
                         // Fecha de Inicio
                         CustomDatePicker(
@@ -188,6 +190,7 @@ fun AddActivityScreenNew(
                                 viewModel.validateStartDate()
                             }
                         )
+                        Spacer(modifier = Modifier.height(4.dp))
 
                         // Fecha de Finalización
                         CustomDatePicker(
@@ -198,19 +201,23 @@ fun AddActivityScreenNew(
                                 viewModel.validateEndDate()
                             }
                         )
+                        Spacer(modifier = Modifier.height(4.dp))
 
                         // Selección de Estado
-                        CustomSelect(
-                            label = "Status",
-                            options = Status.values().toList(),
-                            selectedOption = listOf(viewModel.status.value),
-                            onOptionSelected = { selected ->
-                                if (selected.isNotEmpty()) viewModel.status.value = selected.first()
-                                viewModel.validateStatus()
-                            },
-                            multiple = false,
-                            optionDisplay = { it.displayName }
-                        )
+                        if (id == null){
+                            CustomSelect(
+                                label = "Status",
+                                options = Status.values().toList(),
+                                selectedOption = listOf(viewModel.status.value),
+                                onOptionSelected = { selected ->
+                                    if (selected.isNotEmpty()) viewModel.status.value = selected.first()
+                                    viewModel.validateStatus()
+                                },
+                                multiple = false,
+                                optionDisplay = { it.displayName }
+                            )
+                        }
+
 
                         Spacer(modifier = Modifier.height(16.dp))
 
@@ -233,7 +240,7 @@ fun AddActivityScreenNew(
         }
     }
 
-    LaunchedEffect(key1 = activityInfoState, block = {
+    LaunchedEffect(key1 = activityInfoState.value, block = {
         when{
             activityInfoState.value.isLoading -> {
                 dialogState = SetupCustomDialogState.Loading()
@@ -246,6 +253,8 @@ fun AddActivityScreenNew(
                 if (activityInfoState.value.info != null){
                     dialogState = SetupCustomDialogState.Success(message = "Se ha creado la actividad exitosamente")
                     delay(1000)
+                    navController.popBackStack()
+                    viewModel.resetForm()
                 }
             }
         }

@@ -16,7 +16,7 @@ data class LocalPost(
     @ColumnInfo("content") val content: String,
     @ColumnInfo("createdAt") val createdAt: String,
     @ColumnInfo("course_id") val courseId: String,
-//    @ColumnInfo("activity_id") val activityId: Int?,
+    @ColumnInfo("mediaUrl") val mediaUrl: String? = null,
     @ColumnInfo("author_id") val authorId: String
 )
 
@@ -25,7 +25,7 @@ fun PostResponseDto.toLocal(): LocalPost {
         idApi = data.id.toString(),
         id = 0,
         courseId = data.courseId.toString(),
-        content = data.title,
+        content = data.content,
         title = data.title,
         authorId = data.authorId.toString(),
         createdAt = data.creation,
@@ -38,7 +38,7 @@ fun GetPostsResponseDto.toLocal(): List<LocalPost> {
             idApi = it.id.toString(),
             id = 0,
             courseId = it.courseId.toString(),
-            content = it.title,
+            content = it.content,
             title = it.title,
             authorId = it.authorId.toString(),
             createdAt = it.createdAt,

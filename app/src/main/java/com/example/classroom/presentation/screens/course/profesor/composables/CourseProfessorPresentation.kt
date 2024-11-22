@@ -53,9 +53,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.classroom.App
 import com.example.classroom.R
+import com.example.classroom.common.composables.customDialogs.SetupCustomDialog
+import com.example.classroom.common.composables.customDialogs.SetupCustomDialogState
 import com.example.classroom.common.customTab.CustomTab
 import com.example.classroom.common.scrolleableTab.CustomScrollableTabRow
 import com.example.classroom.domain.model.entity.Gender
+import com.example.classroom.presentation.navigation.Destination
 import com.example.classroom.presentation.screens.activity.ActivityViewmodel
 import com.example.classroom.presentation.screens.activity.addActivity.AddActivityViewModel
 import com.example.classroom.presentation.screens.course.AddCourse.AddCourseViewModel
@@ -71,6 +74,7 @@ import com.example.classroom.presentation.theme.Azul3
 import com.example.classroom.presentation.theme.AzulGradient
 import com.example.classroom.presentation.theme.Gris
 import com.example.classroom.presentation.theme.PaddingCustom
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import proyecto.person.appconsultapopular.common.shimmerEffects.ListShimmer
 
@@ -92,7 +96,18 @@ fun CourseProfessorPresentation(
     val courseInfo = courseViewmodel.courseFlow.collectAsState(initial = null)
     val context = LocalContext.current
 
-    LaunchedEffect(key1 = courseInfo.value, block = {
+    //ESTADOS
+    var dialogState: SetupCustomDialogState by remember {
+        mutableStateOf(SetupCustomDialogState.Default())
+    }
+
+    val deleteStudentState = courseViewmodel.stateDeleteStudents.collectAsState()
+    val deleteActivityState = viewModel.stateAddActivity.value
+    val deletePostState = postsViewModel.postsState.collectAsState()
+
+
+
+        LaunchedEffect(key1 = courseInfo.value, block = {
         Log.e("courseInfo", courseInfo.value.toString())
     })
     val scope = rememberCoroutineScope()
@@ -308,6 +323,72 @@ fun CourseProfessorPresentation(
                 }
             }
         }
+    }
+
+
+
+    LaunchedEffect(key1 = deleteActivityState, block = {
+        Log.e("DELETE ACTIVITY STATE", deleteActivityState.toString())
+
+        when{
+            deleteActivityState.isLoading -> {
+                dialogState = SetupCustomDialogState.Loading()
+            }
+            deleteActivityState.error != null -> {
+                dialogState = SetupCustomDialogState.Error(deleteActivityState.error.uiMessage)
+            }
+
+            else -> {
+                if (deleteActivityState.info != null){
+                    dialogState = SetupCustomDialogState.Success(message = "La actividad ha sido eliminada exitosamente")
+                    delay(1000)
+                }
+            }
+        }
+    })
+
+
+    LaunchedEffect(key1 = deletePostState, block = {
+        Log.e("DELETE POST STATE", deletePostState.value.toString())
+        when{
+            deletePostState.value.isLoading -> {
+                dialogState = SetupCustomDialogState.Loading()
+            }
+            deletePostState.value.error != null -> {
+                dialogState = SetupCustomDialogState.Error(deletePostState.value.error)
+            }
+
+            else -> {
+                if (deletePostState.value.info != null){
+                    dialogState = SetupCustomDialogState.Success(message = "La publicacion ha sido eliminada exitosamente")
+                    delay(1000)
+                }
+            }
+        }
+    })
+
+    LaunchedEffect(key1 = deleteStudentState, block = {
+        Log.e("DELETE STUDENT STATE", deleteStudentState.value.toString())
+
+        when{
+            deleteStudentState.value.isLoading -> {
+                dialogState = SetupCustomDialogState.Loading()
+            }
+            deleteStudentState.value.error != null -> {
+                dialogState = SetupCustomDialogState.Error(deleteStudentState.value.error?.uiMessage)
+            }
+
+            else -> {
+                if (deleteStudentState.value.info != null){
+                    dialogState = SetupCustomDialogState.Success(message = "El alumno ha sido eliminada exitosamente")
+                    delay(1000)
+                }
+            }
+        }
+    })
+
+    SetupCustomDialog(setupCustomDialogState = dialogState, showDialog = dialogState != SetupCustomDialogState.Default()) {
+        dialogState = SetupCustomDialogState.Default()
     }
 }
 

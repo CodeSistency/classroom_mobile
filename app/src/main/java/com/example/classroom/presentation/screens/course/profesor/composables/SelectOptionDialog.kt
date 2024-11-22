@@ -56,7 +56,7 @@ fun SelectedOptionDialog(
     dismissDialog: () -> Unit,
     navController: NavController,
     id: String,
-    email: String// Lambda to dismiss the dialog
+    email: String,
 ) {
     Dialog(
         onDismissRequest = dismissDialog,
@@ -95,7 +95,7 @@ fun SelectedOptionDialog(
                         CustomButton(
                             onClick = {
                                 navController.navigate(
-                                    Destination.REGISTRO_ACTIVITY.screenRoute + "?idCourse=${id}&email=${email}"
+                                    Destination.REGISTRO_ACTIVITY.screenRoute + "?idCourse=${id}&id=${null}"
                                 )
                             },
                             text = "Crear actividad",

@@ -313,6 +313,7 @@ class AppModuleImpl(
       AddActivityViewModel(
           updateActivityUseCase = updateActivityUseCase,
           insertActivityUseCase = insertActivityUseCase,
+          repositoryBundle = repositoryBundle
       )
     }
     override val authViewModel: AuthViewModel by lazy {

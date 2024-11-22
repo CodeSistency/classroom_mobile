@@ -1,6 +1,11 @@
 package com.example.classroom.presentation.screens.course.posts
 
+import android.app.DownloadManager
+import android.content.Context
+import android.net.Uri
+import android.os.Environment
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.classroom.data.repository.RepositoryBundle
@@ -30,6 +35,10 @@ class PostsViewModel(
 
     private val _postsState = MutableStateFlow(PostsState())
     val postsState: StateFlow<PostsState> = _postsState
+
+    private val _deletePostState = MutableStateFlow(PostsState())
+    val deletePostState: StateFlow<PostsState> = _deletePostState
+
 
     private val _postsFlow = MutableStateFlow<List<LocalPost>>(emptyList())
     val postsFlow: StateFlow<List<LocalPost>> = _postsFlow
@@ -82,7 +91,7 @@ class PostsViewModel(
                 is Resource.Error -> _postsState.value.copy(error = result.message?.uiMessage)
                 is Resource.Loading -> _postsState.value.copy(isLoading = true, error = null)
                 is Resource.Success -> {
-                    _postsState.value.copy(isLoading = false, error = null)
+                    _postsState.value.copy(isLoading = false, error = null, )
                     _postsState.value.info?.let {
 //                        repositoryBundle.activitiesRepository.insertAllActivities(it)
                     }
@@ -100,4 +109,24 @@ class PostsViewModel(
 //            _postsState.value.copy(isLoading = false, error = result.exceptionOrNull()?.message)
 //        }
 //    }
+
+    fun downloadFile(context: Context, url: String, fileName: String) {
+        try {
+            val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+            val uri = Uri.parse(url)
+
+            val request = DownloadManager.Request(uri).apply {
+                setTitle("Downloading $fileName")
+                setDescription("File is being downloaded...")
+                setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
+                setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName)
+            }
+
+            downloadManager.enqueue(request)
+            Toast.makeText(context, "Downloading $fileName...", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            Toast.makeText(context, "Failed to download file: ${e.message}", Toast.LENGTH_LONG).show()
+        }
+    }
 }

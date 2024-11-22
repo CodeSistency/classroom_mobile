@@ -30,5 +30,5 @@ interface PostsRepository {
 
     suspend fun updatePostRemote(body: PostRequestDto): ResponseGenericAPi<PostResponseDto>
 
-    suspend fun deletePostRemote(id: String): ResponseGenericAPi<Boolean>
+    suspend fun deletePostRemote(id: String): ResponseGenericAPi<PostResponseDto>
 }

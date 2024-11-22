@@ -148,22 +148,22 @@ fun Navigation(
             }
 
             composable(
-                route = "${Destination.REGISTRO_ACTIVITY.screenRoute}?idCourse={idCourse}&email={email}&id={id}",
+                route = "${Destination.REGISTRO_ACTIVITY.screenRoute}?idCourse={idCourse}&id={id}",
                 arguments = listOf(
                     navArgument("idCourse") { nullable = false },
-                    navArgument("email") { nullable = false },
+//                    navArgument("email") { nullable = false },
                     navArgument("id") { nullable = true })
             ) { backStackEntry ->
                 val id = backStackEntry.arguments?.getString("id")
                 val idCourse = backStackEntry.arguments?.getString("idCourse")
-                val email = backStackEntry.arguments?.getString("email")
+//                val email = backStackEntry.arguments?.getString("email")
 
-                if (idCourse != null && email != null) {
+                if (idCourse != null) {
                     AddActivityScreenNew(
-                        idCourse,
-                        email = email,
+                        idCourse = idCourse,
+//                        email = email,
                         id = id,
-                        viewModel = App.appModule.addActivityViewmodel, // Assuming you have a RegisterViewModel
+                        viewModel = App.appModule.addActivityViewmodel,
 
                         navController = navController,
                         focusManager = focusManager
@@ -358,19 +358,24 @@ fun Navigation(
             }
 
             composable(
-                route = "${Destination.ADD_POST_SCREEN.screenRoute}?idCourse={idCourse}",
+                route = "${Destination.ADD_POST_SCREEN.screenRoute}?idCourse={idCourse}&idPost={idPost}",
                 arguments = listOf(
                     navArgument("idCourse") { type = NavType.StringType; nullable = false },
-                )
+                    navArgument("idPost") { type = NavType.StringType; nullable = true },
+
+                    )
             ) { backStackEntry ->
                 val idCourse = backStackEntry.arguments?.getString("idCourse")
+                val idPost = backStackEntry.arguments?.getString("idPost")
+
                 if (idCourse != null ) {
 
                     AddPostForm(
                         viewModel = App.appModule.addPostViewModel,
                         focusManager = focusManager,
                         courseId = idCourse,
-                        onSubmit = {},
+                        idPost = idPost,
+                        navController = navController
                     )
                 }
             }

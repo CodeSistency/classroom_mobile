@@ -282,6 +282,7 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
         val json = buildJsonObject {
             put("id", id.toInt())
             put("title", activity.title)
+            put("course_id", activity.idCourse)
             put("description", activity.description)
             put("grade", activity.grade)
             put("endDate", activity.endDate)
@@ -434,7 +435,7 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
 
     }
 
-    override suspend fun deletePostRemote(id: String): ResponseGenericAPi<Boolean>  = withContext(
+    override suspend fun deletePostRemote(id: String): ResponseGenericAPi<PostResponseDto>  = withContext(
         Dispatchers.IO)  {
         val response = client.delete{
             url("${Constants.BASE_URL}${HttpRoutes.POSTS_ENDPOINT}/${id}")

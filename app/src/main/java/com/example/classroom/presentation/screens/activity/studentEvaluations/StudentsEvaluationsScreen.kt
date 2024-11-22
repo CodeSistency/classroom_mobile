@@ -73,7 +73,7 @@ fun StudentsEvaluationsScreen(
                         tint = Color.White)
                 }
                 Spacer(modifier = Modifier.width(3.dp))
-                Text(text = "Actividades", color = Color.White, fontSize = 16.sp)
+                Text(text = "Evaluaciones", color = Color.White, fontSize = 16.sp)
             }
         }
     ){
@@ -125,6 +125,17 @@ fun StudentsEvaluationsScreen(
                             )
                         }
                     }
+                }
+            }
+            else -> {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Text(
+                        "No hay evaluaciones disponibles",
+                        style = MaterialTheme.typography.subtitle1
+                    )
                 }
             }
         }

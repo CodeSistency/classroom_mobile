@@ -117,4 +117,8 @@ dependencies {
 
     //system ui controller (Cambiar color status bar y navigation buttons)
     implementation ("com.google.accompanist:accompanist-systemuicontroller:0.27.0")
+
+    //Images
+    implementation ("io.coil-kt:coil-compose:2.4.0")
+
 }

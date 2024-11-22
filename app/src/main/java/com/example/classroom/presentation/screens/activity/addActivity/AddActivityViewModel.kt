@@ -6,7 +6,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.classroom.data.remote.dto.activities.ActivityRequestDto
+import com.example.classroom.data.remote.dto.posts.PostRequestDto
+import com.example.classroom.data.repository.RepositoryBundle
 import com.example.classroom.domain.model.entity.LocalActivities
+import com.example.classroom.domain.model.entity.LocalUser
 import com.example.classroom.domain.model.entity.Status
 import com.example.classroom.domain.use_case.activities.InsertActivityUseCase
 import com.example.classroom.domain.use_case.activities.UpdateActivityUseCase
@@ -14,22 +17,35 @@ import com.example.classroom.presentation.screens.activity.addActivity.states.Ad
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import proyecto.person.appconsultapopular.common.Resource
 import timber.log.Timber
 
 class AddActivityViewModel(
     private val updateActivityUseCase: UpdateActivityUseCase,
     private val insertActivityUseCase: InsertActivityUseCase,
+    private val repositoryBundle: RepositoryBundle,
 ): ViewModel() {
+
+
+    var userInfo: List<LocalUser>? = emptyList()
+
+    init {
+        viewModelScope.launch {
+            userInfo = repositoryBundle.loginRepository.getUserInfo()
+
+        }
+    }
 
     private val _stateAddActivity = MutableStateFlow(AddActivityState())
     val stateAddActivity: StateFlow<AddActivityState> = _stateAddActivity
 
     var title = mutableStateOf("")
     var description = mutableStateOf("")
-    var grade = mutableStateOf(0)
+    var grade = mutableStateOf(1)
     var email = mutableStateOf("")
     var startDate = mutableStateOf("")
     var endDate = mutableStateOf("")
@@ -47,13 +63,13 @@ class AddActivityViewModel(
     val isFormValid: Boolean
         get() = titleError.value == null &&
                 gradeError.value == null &&
-                emailError.value == null &&
+//                emailError.value == null &&
                 startDateError.value == null &&
                 endDateError.value == null &&
                 statusError.value == null &&
                 title.value.isNotBlank() &&
                 grade.value >= 0 &&
-                email.value.isNotBlank() &&
+//                email.value.isNotBlank() &&
                 startDate.value.isNotBlank() &&
                 endDate.value.isNotBlank()
 
@@ -104,67 +120,84 @@ class AddActivityViewModel(
 
     suspend fun executeActivityRequest(id: String?, idCourse:String){
 
-        var activity= ActivityRequestDto(
-            idCourse = idCourse,
-            title = title.value,
-            description = description.value.takeIf { it.isNotBlank() },
-            grade = grade.value,
-            email = email.value,
-            startDate = startDate.value,
-            endDate = endDate.value,
-            statusId = status.value.id
-        )
+        Log.e("idActivity", id.toString())
 
-        if (id != null){
-            updateActivityUseCase(activity, id).onEach { result ->
-                when(result){
-                    is Resource.Error -> {
-                        //Timber.tag("AUTH_VM").e("Error ${result.message?.uiMessage}")
-                        Log.e("ACTIVITIES:", "Error ${result.message?.uiMessage}")
-                        _stateAddActivity.value = AddActivityState(error = result.message)
-                    }
-                    is Resource.Loading -> {
-                        Timber.tag("ACTIVITIES").e("is loading")
-                        _stateAddActivity.value = AddActivityState(isLoading = true)
-                    }
-                    is Resource.Success -> {
-                        Timber.tag("ACTIVITIES_VM").e("success")
-                        Log.e("ACTIVITIES:", "success")
-                        _stateAddActivity.value = AddActivityState(info = result.data)
-                        Log.e("ACTIVITIES:", "${_stateAddActivity.value.info}")
-                        _stateAddActivity.value.info?.let {
-//                            insertUserDb(it)
-                            delay(300)
+        var activity = userInfo?.first()?.let {
+            ActivityRequestDto(
+                idCourse = idCourse.toInt(),
+                title = title.value,
+                description = description.value.takeIf { it.isNotBlank() },
+                grade = grade.value,
+                email = it.email,
+                startDate = startDate.value,
+                endDate = endDate.value,
+                statusId = status.value.id
+            )
+        }
 
+        if (!id.isNullOrEmpty() && id != "null"){
+            Log.e("pasa por aqui", "pasa por aqui")
+            if (activity != null) {
+                updateActivityUseCase(activity, id).onEach { result ->
+                    when(result){
+                        is Resource.Error -> {
+                            //Timber.tag("AUTH_VM").e("Error ${result.message?.uiMessage}")
+                            Log.e("ACTIVITIES:", "Error ${result.message?.uiMessage}")
+                            _stateAddActivity.value = AddActivityState(error = result.message)
+                        }
+
+                        is Resource.Loading -> {
+                            Timber.tag("ACTIVITIES").e("is loading")
+                            _stateAddActivity.value = AddActivityState(isLoading = true)
+                        }
+
+                        is Resource.Success -> {
+                            Timber.tag("ACTIVITIES_VM").e("success")
+                            Log.e("ACTIVITIES:", "success")
+                            _stateAddActivity.value = AddActivityState(info = result.data)
+                            Log.e("ACTIVITIES:", "${_stateAddActivity.value.info}")
+                            _stateAddActivity.value.info?.let {
+        //                            insertUserDb(it)
+                                delay(300)
+                                repositoryBundle.activitiesRepository.updateActivity(it)
+
+
+                            }
                         }
                     }
-                }
-            }.launchIn(viewModelScope)
+                }.launchIn(viewModelScope)
+            }
         }else {
-            insertActivityUseCase(activity).onEach { result ->
-                when(result){
-                    is Resource.Error -> {
-                        //Timber.tag("AUTH_VM").e("Error ${result.message?.uiMessage}")
-                        Log.e("ACTIVITIES:", "Error ${result.message?.uiMessage}")
-                        _stateAddActivity.value = AddActivityState(error = result.message)
-                    }
-                    is Resource.Loading -> {
-                        Timber.tag("ACTIVITIES").e("is loading")
-                        _stateAddActivity.value = AddActivityState(isLoading = true)
-                    }
-                    is Resource.Success -> {
-                        Timber.tag("ACTIVITIES_VM").e("success")
-                        Log.e("ACTIVITIES:", "success")
-                        _stateAddActivity.value = AddActivityState(info = result.data)
-                        Log.e("ACTIVITIES:", "${_stateAddActivity.value.info}")
-                        _stateAddActivity.value.info?.let {
-//                            insertUserDb(it)
-                            delay(300)
+            if (activity != null) {
 
+                insertActivityUseCase(activity).onEach { result ->
+                    when(result){
+                        is Resource.Error -> {
+                            //Timber.tag("AUTH_VM").e("Error ${result.message?.uiMessage}")
+                            Log.e("ACTIVITIES:", "Error ${result.message?.uiMessage}")
+                            _stateAddActivity.value = AddActivityState(error = result.message)
+                        }
+
+                        is Resource.Loading -> {
+                            Timber.tag("ACTIVITIES").e("is loading")
+                            _stateAddActivity.value = AddActivityState(isLoading = true)
+                        }
+
+                        is Resource.Success -> {
+                            Timber.tag("ACTIVITIES_VM").e("success")
+                            Log.e("ACTIVITIES:", "success")
+                            _stateAddActivity.value = AddActivityState(info = result.data)
+                            Log.e("ACTIVITIES:", "${_stateAddActivity.value.info}")
+                            _stateAddActivity.value.info?.let {
+        //                            insertUserDb(it)
+                                delay(300)
+                                repositoryBundle.activitiesRepository.insertActivity(it)
+
+                            }
                         }
                     }
-                }
-            }.launchIn(viewModelScope)
+                }.launchIn(viewModelScope)
+            }
         }
 
     }

@@ -130,7 +130,7 @@ fun CardActivity(
                 Row() {
                     IconButton(onClick = {
                         viewModel.fillForm(activity)
-                        navController.navigate(Destination.REGISTRO_ACTIVITY.screenRoute + "id=${activity.idApi}")
+                        navController.navigate(Destination.REGISTRO_ACTIVITY.screenRoute + "?idCourse=${activity.idCourse}&id=${activity.idApi}")
                     }) {
                         Icon(
                             Icons.Default.Edit,
@@ -149,7 +149,6 @@ fun CardActivity(
                         )
                     }
                 }
-
             }
         }
         Box(modifier = Modifier

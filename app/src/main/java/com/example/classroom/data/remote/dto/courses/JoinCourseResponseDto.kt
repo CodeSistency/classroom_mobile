@@ -3,10 +3,9 @@ package com.example.classroom.data.remote.dto.courses
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-
 @Serializable
 data class
-CourseResponseDto(
+JoinCourseResponseDto(
     @SerialName("code")
     val status: Int,
     @SerialName("message")

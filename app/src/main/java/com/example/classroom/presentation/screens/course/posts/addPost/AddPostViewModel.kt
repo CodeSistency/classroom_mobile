@@ -7,6 +7,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.classroom.data.remote.dto.courses.CourseRequestDto
 import com.example.classroom.data.remote.dto.posts.PostRequestDto
 import com.example.classroom.data.repository.RepositoryBundle
+import com.example.classroom.domain.model.entity.Area
+import com.example.classroom.domain.model.entity.LocalCourses
+import com.example.classroom.domain.model.entity.LocalPost
 import com.example.classroom.domain.model.entity.LocalUser
 import com.example.classroom.domain.use_case.posts.CreatePostUseCase
 import com.example.classroom.domain.use_case.posts.DeletePostUseCase
@@ -93,6 +96,11 @@ class AddPostViewModel(
 //        authorId.value = 0
     }
 
+    fun fillForm(post: LocalPost) {
+        title.value = post.title
+        content.value = post.content
+    }
+
     suspend fun executeCourseRequest(idPost: String?, courseId: String){
 
         var post = userInfo?.first()?.let {
@@ -126,7 +134,7 @@ class AddPostViewModel(
 
 
                             _statePost.value.info?.let {
-
+                                repositoryBundle.postsRepositoryImpl.updatePost(it)
 
                             }
                         }
@@ -155,8 +163,7 @@ class AddPostViewModel(
 
 
                             _statePost.value.info?.let {
-
-
+                                repositoryBundle.postsRepositoryImpl.insertPost(it)
                             }
                         }
                     }

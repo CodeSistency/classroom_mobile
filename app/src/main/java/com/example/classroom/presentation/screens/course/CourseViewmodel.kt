@@ -28,6 +28,7 @@ import com.example.classroom.presentation.screens.activity.studentEvaluations.st
 import com.example.classroom.presentation.screens.course.AddCourse.states.AddCourseState
 import com.example.classroom.presentation.screens.course.AddCourse.CourseFormEvent
 import com.example.classroom.presentation.screens.course.AddCourse.states.CourseFormState
+import com.example.classroom.presentation.screens.course.states.DeleteStudentState
 import com.example.classroom.presentation.screens.course.states.GetCourseState
 import com.example.classroom.presentation.screens.course.states.GetUsersState
 import com.example.classroom.presentation.screens.course.states.JoinUserState
@@ -107,6 +108,9 @@ class CourseViewmodel(
 
     private val _stateJoinUser = MutableStateFlow(JoinUserState())
     val stateJoinUser: StateFlow<JoinUserState> = _stateJoinUser
+
+    private val _stateDeleteStudents = MutableStateFlow(DeleteStudentState())
+    val stateDeleteStudents: StateFlow<DeleteStudentState> = _stateDeleteStudents
 
     init {
         viewModelScope.launch {

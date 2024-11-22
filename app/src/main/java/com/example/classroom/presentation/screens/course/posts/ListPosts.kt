@@ -21,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -30,6 +31,7 @@ import proyecto.person.appconsultapopular.common.shimmerEffects.ListShimmer
 fun ListPosts(viewModel: PostsViewModel, courseId: String, scope: CoroutineScope) {
     val posts by viewModel.postsFlow.collectAsState()
     val postsState by viewModel.postsState.collectAsState()
+    val context = LocalContext.current
 
     LaunchedEffect(key1 = posts, block = {
         Log.e("posts", posts.toString())
@@ -101,7 +103,7 @@ fun ListPosts(viewModel: PostsViewModel, courseId: String, scope: CoroutineScope
             }else{
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(posts) { post ->
-                        CardPostItem(post = post, viewModel, scope)
+                        CardPostItem(post = post, viewModel, scope, context)
                     }
                 }
             }

@@ -50,7 +50,7 @@ class PostsRepositoryImpl(private val localPostDao: LocalPostDao, private val ap
         return apiService.updatePostRemote(body)
     }
 
-    override suspend fun deletePostRemote(id: String): ResponseGenericAPi<Boolean> {
+    override suspend fun deletePostRemote(id: String): ResponseGenericAPi<PostResponseDto> {
        return apiService.deletePostRemote(id)
     }
 }

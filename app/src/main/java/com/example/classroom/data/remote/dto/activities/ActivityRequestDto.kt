@@ -32,7 +32,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ActivityRequestDto(
     @SerialName("course_id")
-    val idCourse: String,
+    val idCourse: Int,
     @SerialName("title")
     val title: String,
     @SerialName("description")
