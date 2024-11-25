@@ -39,9 +39,12 @@ class PostsViewModel(
     private val _deletePostState = MutableStateFlow(PostsState())
     val deletePostState: StateFlow<PostsState> = _deletePostState
 
-
     private val _postsFlow = MutableStateFlow<List<LocalPost>>(emptyList())
     val postsFlow: StateFlow<List<LocalPost>> = _postsFlow
+
+    private val _filteredPostsFlow = MutableStateFlow<List<LocalPost>>(emptyList())
+    val filteredPostsFlow: StateFlow<List<LocalPost>> = _filteredPostsFlow
+
     fun fetchPosts(courseId: String) {
         viewModelScope.launch {
             repository.getPostsByCourse(courseId)
@@ -99,6 +102,18 @@ class PostsViewModel(
             }
         }.launchIn(viewModelScope)
     }
+
+    fun filterPosts(query: String) {
+        _filteredPostsFlow.value = if (query.isBlank()) {
+            _postsFlow.value
+        } else {
+            _postsFlow.value.filter { post ->
+                post.title.contains(query, ignoreCase = true) ||
+                        post.content.contains(query, ignoreCase = true)
+            }
+        }
+    }
+
 
 //    fun fetchPosts(courseId: Int) = viewModelScope.launch {
 //        _postsState.value = _postsState.value.copy(isLoading = true)

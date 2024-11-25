@@ -29,11 +29,11 @@ fun ListActivitiesSubmitted(
 
     // Trigger data loading when the screen is first displayed
 
-    LaunchedEffect(true) {
-
-        viewModel.observeLocalEvaluations(courseId, studentId)
-        viewModel.getActivitiesByStudent(courseId, studentId)
-    }
+//    LaunchedEffect(true) {
+//
+//        viewModel.observeLocalEvaluations(courseId, studentId)
+//        viewModel.getActivitiesByStudent(courseId, studentId)
+//    }
 
     val uiState = viewModel.stateStudentEvaluations.value
 

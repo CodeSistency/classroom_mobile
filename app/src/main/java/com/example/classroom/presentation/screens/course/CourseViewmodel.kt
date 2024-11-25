@@ -12,6 +12,7 @@ import com.example.classroom.data.remote.dto.courses.CourseRequestDto
 import com.example.classroom.data.repository.RepositoryBundle
 import com.example.classroom.domain.model.entity.Area
 import com.example.classroom.domain.model.entity.LocalActivities
+import com.example.classroom.domain.model.entity.LocalActivitySubmission
 import com.example.classroom.domain.model.entity.LocalCourses
 import com.example.classroom.domain.model.entity.LocalStudents
 import com.example.classroom.domain.model.entity.LocalUser
@@ -81,6 +82,18 @@ class CourseViewmodel(
 
     private val _filteredListUsersByCourseFlow = MutableStateFlow<List<LocalStudents>>(emptyList())
     val filteredListUsersByCourseFlow: StateFlow<List<LocalStudents>> = _filteredListUsersByCourseFlow
+
+    private val _listActivitiesSubmittedFlow = MutableStateFlow<List<LocalActivitySubmission>>(emptyList())
+    val listActivitiesSubmittedFlow: StateFlow<List<LocalActivitySubmission>> = _listActivitiesSubmittedFlow
+
+    private val _filteredListActivitiesSubmittedFlow = MutableStateFlow<List<LocalActivitySubmission>>(emptyList())
+    val filteredListActivitiesSubmittedFlow: StateFlow<List<LocalActivitySubmission>> = _filteredListActivitiesSubmittedFlow
+
+    val studentInput = MutableStateFlow("")
+    val postInput = MutableStateFlow("")
+    val activityInput = MutableStateFlow("")
+    val activitySubmittedInput = MutableStateFlow("")
+
 
     // Form input states
     val userInput = MutableStateFlow("")
@@ -172,15 +185,34 @@ class CourseViewmodel(
 
     // Function to filter students based on search query
     fun filterStudents(query: String) {
-        if (query.isBlank()) {
-            // Show full list if query is empty
-            _filteredListUsersByCourseFlow.value = _listStudentsFlow.value
+        _filteredListUsersByCourseFlow.value = if (query.isBlank()) {
+            _listStudentsFlow.value
         } else {
-            // Filter list based on query
-            _filteredListUsersByCourseFlow.value = _listStudentsFlow.value.filter { student ->
+            _listStudentsFlow.value.filter { student ->
                 student.name.contains(query, ignoreCase = true) ||
                         student.lastname.contains(query, ignoreCase = true)
             }
+        }
+    }
+
+    fun filterActivitiesSubmitted(query: String) {
+        _filteredListActivitiesSubmittedFlow.value = if (query.isBlank()) {
+            _listActivitiesSubmittedFlow.value
+        } else {
+            _listActivitiesSubmittedFlow.value.filter { activity ->
+                activity.activityId.contains(query, ignoreCase = true)
+//                        || student.lastname.contains(query, ignoreCase = true)
+            }
+        }
+    }
+
+    suspend fun getActivitiesSubmitted(courseId: String, studentId: String) {
+        try {
+            _filteredListActivitiesSubmittedFlow.value = repositoryBundle.submissionsRepository.getSubmissionsForStudentAndCourse(courseId, studentId).first()
+
+            Log.e("_filteredListActivitiesSubmittedFlow", _filteredListActivitiesSubmittedFlow.value.toString())
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
@@ -294,6 +326,7 @@ class CourseViewmodel(
 
                     if (!evaluations.isNullOrEmpty()) {
                         // Only update if evaluations is non-null and non-empty
+                        _listActivitiesSubmittedFlow.value = evaluations
                         _stateStudentEvaluations.value = _stateStudentEvaluations.value.copy(
                             info = evaluations,
                             isLoading = false,
@@ -343,301 +376,3 @@ class CourseViewmodel(
     }
 }
 
-
-//class CourseViewmodel(
-//    private val coursesValidator: CoursesValidator,
-//    private val courseDataValidator: CourseDataValidator,
-//    private val insertCourseUseCase: InsertCourseUseCase,
-//    private val updateCourseUseCase: UpdateCourseUseCase,
-//    private val getActivitiesUseCase: GetActivitiesUseCase,
-//    private val getCoursesByIdUseCase: GetCoursesByIdUseCase,
-//    private val joinUserToCourseUseCase: JoinUserToCourseUseCase,
-//    private val getUsersByCourseUseCase: GetUsersByCourseUseCase,
-//    private val repositoryBundle: RepositoryBundle,
-////    private val insertActivityUseCase: InsertActivityUseCase,
-////    private val updateActivityUseCase: UpdateActivityUseCase,
-////    private val sendActivityUseCase: SendActivityUseCase,
-////    private val deleteActivityUseCase: DeleteActivityUseCase
-//): ViewModel() {
-//
-//    var userInfo: Flow<LocalUser?> = emptyFlow()
-//    var isOwner: Flow<Boolean?> = emptyFlow()
-//
-//    var courseFlow: Flow<LocalCourses?> = emptyFlow()
-//
-//    var filteredListUsersByCourseFLow: Flow<List<LocalStudents>> = emptyFlow()
-//    var listStudensFlow: Flow<List<LocalStudents>> = emptyFlow()
-//
-//    var stateCourseForm by mutableStateOf(CourseFormState())
-//
-//    private val _stateCourse = mutableStateOf(AddCourseState())
-//    val stateCourse: State<AddCourseState> = _stateCourse
-//
-//    private val _stateGetCourse = mutableStateOf(GetCourseState())
-//    val stateGetCourse: State<GetCourseState> = _stateGetCourse
-//
-//    private val _stateGetUsers = mutableStateOf(GetUsersState())
-//    val stateGetUsers: State<GetUsersState> = _stateGetUsers
-//
-//    private val _stateJoinUser = mutableStateOf(JoinUserState())
-//    val stateJoinUser: State<JoinUserState> = _stateJoinUser
-//
-//    val userInput = mutableStateOf("")
-//
-//    init {
-//        viewModelScope.launch {
-//
-//            filteredListUsersByCourseFLow = if (userInput.value.isNotBlank()){
-//                listStudensFlow.map { list ->
-//                    list.filter { it.name.startsWith(userInput.value) }
-//                        .sortedByDescending { activity -> activity.id }
-//                }
-//            }else{
-//                listStudensFlow
-//            }
-//        }
-//    }
-//
-//    val titleField = mutableStateOf("")
-//    val descripcionField = mutableStateOf("")
-//    val seccionField = mutableStateOf("")
-//    val subjectField = mutableStateOf("")
-//    val areaField = mutableStateOf(Area.OTHER)
-//
-//    private val validationEventChannel = Channel<ValidationEvent>()
-//    val validationEvents = validationEventChannel.receiveAsFlow()
-//
-//    init {
-//        viewModelScope.launch {
-//            userInfo = repositoryBundle.loginRepository.getUserInfoWithFlow().let {
-//                it?.first().let {
-//                    flow { it }
-//                }
-//            }
-////            isOwner = if (courseFlow.first().let { if (it != null) it.owner } == userInfo.first().let { if (it != null) it.idApi }){
-////                flow {  true  }
-////            }else{
-////                flow {  false  }
-////
-////            }
-//        }
-//    }
-//
-//    suspend fun getUsersByCourseRemote(id: String){
-//        getUsersByCourseUseCase(id).onEach { result ->
-//            when(result){
-//                is Resource.Error -> {
-//                    //Timber.tag("AUTH_VM").e("Error ${result.message?.uiMessage}")
-//                    Log.e("ACTIVITIES:", "Error ${result.message?.uiMessage}")
-//                    _stateGetUsers.value = GetUsersState(error = result.message)
-//                }
-//                is Resource.Loading -> {
-//                    Timber.tag("ACTIVITIES").e("is loading")
-//                    _stateGetUsers.value = GetUsersState(isLoading = true)
-//                }
-//                is Resource.Success -> {
-//                    Timber.tag("ACTIVITIES_VM").e("success")
-//                    Log.e("ACTIVITIES:", "success")
-//                    _stateGetUsers.value = GetUsersState(info = result.data)
-//                    Log.e("ACTIVITIES:", "${_stateCourse.value.info}")
-//                    _stateGetUsers.value.info?.let {
-//                        repositoryBundle.studentsRepository.addStudentsToCourse(id, it)
-////                        repositoryBundle.coursesRepository.updateUsersInCourse(it, id)
-//                        delay(300)
-//                    }
-//                }
-//            }
-//        }.launchIn(viewModelScope)
-//
-//    }
-//
-//   suspend fun getUsersByCourseLocal(id: String){
-//       listStudensFlow = repositoryBundle.studentsRepository.getStudentsByCourseId(id)
-//        Log.e("students", listStudensFlow.first().toString())
-//       filteredListUsersByCourseFLow = if (userInput.value.isNotBlank()){
-//           listStudensFlow.map { list ->
-//               list.filter { it.name.startsWith(userInput.value) }
-//                   .sortedByDescending { activity -> activity.id }
-//           }
-//       }else{
-//           listStudensFlow
-//       }
-//   }
-//
-//    suspend fun getCourseByIdLocal(id: String){
-//        courseFlow = repositoryBundle.coursesRepository.getCoursesWithFlowById(id)
-//    }
-//
-//    suspend fun getCourseById(id: String){
-//        getCoursesByIdUseCase(id).onEach { result ->
-//            when(result){
-//                is Resource.Error -> {
-//                    //Timber.tag("AUTH_VM").e("Error ${result.message?.uiMessage}")
-//                    Log.e("ACTIVITIES:", "Error ${result.message?.uiMessage}")
-//                    _stateGetCourse.value = GetCourseState(error = result.message)
-//                }
-//                is Resource.Loading -> {
-//                    Timber.tag("ACTIVITIES").e("is loading")
-//                    _stateGetCourse.value = GetCourseState(isLoading = true)
-//                }
-//                is Resource.Success -> {
-//                    Timber.tag("ACTIVITIES_VM").e("success")
-//                    Log.e("ACTIVITIES:", "success")
-//                    _stateGetCourse.value = GetCourseState(info = result.data)
-//                    Log.e("ACTIVITIES:", "${_stateCourse.value.info}")
-//                    _stateGetCourse.value.info?.let {
-////                            insertUserDb(it)
-//                        delay(300)
-//
-//                    }
-//                }
-//            }
-//        }.launchIn(viewModelScope)
-//
-//    }
-//    fun onCourseEvent(event: CourseFormEvent) {
-//        when(event) {
-//
-//            is CourseFormEvent.AreaChanged -> {
-//                stateCourseForm = stateCourseForm.copy(area = event.area)
-//             }
-//            is CourseFormEvent.DescriptionChanged -> {
-//                stateCourseForm = stateCourseForm.copy(description = event.description)
-//            }
-//            is CourseFormEvent.SectionChanged -> {
-//                stateCourseForm = stateCourseForm.copy(section = event.section)
-//            }
-//            is CourseFormEvent.SubjectChanged -> {
-//                stateCourseForm = stateCourseForm.copy(subject = event.subject)
-//            }
-//            is CourseFormEvent.TitleChanged -> {
-//                stateCourseForm = stateCourseForm.copy(title = event.title)
-//            }
-//            is CourseFormEvent.Submit -> {
-//                submitCourseData(event.id, event.body)
-//            }
-////            is CourseFormEvent.Submit -> submitCourseData(id = event.id)
-//
-//        }
-//    }
-//
-//
-//    private fun submitCourseData(id: String?, course: CourseRequestDto) {
-//        val titleResult = coursesValidator.validateNames.execute(stateCourseForm.title)
-//        val descriptionResult = coursesValidator.validateNames.execute(stateCourseForm.description)
-//        val sectionResult = coursesValidator.validateNames.execute(stateCourseForm.section)
-//        val subjectResult = coursesValidator.validateNames.execute(stateCourseForm.subject)
-//
-//        val hasError = listOf(
-//            titleResult,
-//            descriptionResult,
-//            sectionResult,
-//            subjectResult,
-//
-//        ).any { !it.successful }
-//
-//        if(hasError) {
-//            stateCourseForm = stateCourseForm.copy(
-//                subjectError = subjectResult.errorMessage,
-//                sectionError = sectionResult.errorMessage,
-//                titleError = titleResult.errorMessage,
-//                descriptionError = descriptionResult.errorMessage,
-//                )
-//            return
-//        }
-//        Log.e("final", "final")
-//        viewModelScope.launch {
-//            Log.e("final2", "final2")
-//            executeCourseRequest(course, id)
-//            validationEventChannel.send(ValidationEvent.Success)
-//        }
-//    }
-//
-//    suspend fun executeCourseRequest(courseRequestDto: CourseRequestDto, id: String?){
-//
-//        if (id != null){
-//            updateCourseUseCase(courseRequestDto, id).onEach { result ->
-//                when(result){
-//                    is Resource.Error -> {
-//                        //Timber.tag("AUTH_VM").e("Error ${result.message?.uiMessage}")
-//                        Log.e("ACTIVITIES:", "Error ${result.message?.uiMessage}")
-//                        _stateCourse.value = AddCourseState(error = result.message)
-//                    }
-//                    is Resource.Loading -> {
-//                        Timber.tag("ACTIVITIES").e("is loading")
-//                        _stateCourse.value = AddCourseState(isLoading = true)
-//                    }
-//                    is Resource.Success -> {
-//                        Timber.tag("ACTIVITIES_VM").e("success")
-//                        Log.e("ACTIVITIES:", "success")
-//                        _stateCourse.value = AddCourseState(info = result.data)
-//                        Log.e("ACTIVITIES:", "${_stateCourse.value.info}")
-//                        _stateCourse.value.info?.let {
-//                            repositoryBundle.coursesRepository.insertCourse(it)
-////                            insertUserDb(it)
-//                            delay(300)
-//
-//                        }
-//                    }
-//                }
-//            }.launchIn(viewModelScope)
-//        }else {
-//            insertCourseUseCase(courseRequestDto).onEach { result ->
-//                when(result){
-//                    is Resource.Error -> {
-//                        //Timber.tag("AUTH_VM").e("Error ${result.message?.uiMessage}")
-//                        Log.e("ACTIVITIES:", "Error ${result.message?.uiMessage}")
-//                        _stateCourse.value = AddCourseState(error = result.message)
-//                    }
-//                    is Resource.Loading -> {
-//                        Timber.tag("ACTIVITIES").e("is loading")
-//                        _stateCourse.value = AddCourseState(isLoading = true)
-//                    }
-//                    is Resource.Success -> {
-//                        Timber.tag("ACTIVITIES_VM").e("success")
-//                        Log.e("ACTIVITIES:", "success")
-//                        _stateCourse.value = AddCourseState(info = result.data)
-//                        Log.e("ACTIVITIES:", "${_stateCourse.value.info}")
-//                        _stateCourse.value.info?.let {
-////                            insertUserDb(it)
-//                            delay(300)
-//
-//                        }
-//                    }
-//                }
-//            }.launchIn(viewModelScope)
-//        }
-//
-//    }
-//
-//    suspend fun joinUser(id: String, token: String){
-//        joinUserToCourseUseCase(id, token).onEach { result ->
-//            when(result){
-//                is Resource.Error -> {
-//                    //Timber.tag("AUTH_VM").e("Error ${result.message?.uiMessage}")
-//                    Log.e("ACTIVITIES:", "Error ${result.message?.uiMessage}")
-//                    _stateJoinUser.value = JoinUserState(error = result.message)
-//                }
-//                is Resource.Loading -> {
-//                    Timber.tag("ACTIVITIES").e("is loading")
-//                    _stateJoinUser.value = JoinUserState(isLoading = true)
-//                }
-//                is Resource.Success -> {
-//                    Timber.tag("ACTIVITIES_VM").e("success")
-//                    Log.e("ACTIVITIES:", "success")
-//                    _stateJoinUser.value = JoinUserState(info = result.data)
-//                    Log.e("ACTIVITIES:", "${_stateCourse.value.info}")
-//                    _stateJoinUser.value.info?.let {
-////                            insertUserDb(it)
-//                        delay(300)
-//                    }
-//                }
-//            }
-//        }.launchIn(viewModelScope)
-//    }
-//
-//
-//    sealed class ValidationEvent {
-//        object Success: ValidationEvent()
-//    }
-//}

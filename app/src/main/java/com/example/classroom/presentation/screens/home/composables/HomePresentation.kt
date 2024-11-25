@@ -54,6 +54,7 @@ import com.example.classroom.presentation.theme.Azul3
 import com.example.classroom.presentation.theme.AzulGradient
 import com.example.classroom.presentation.theme.Gris
 import com.example.classroom.presentation.theme.PaddingCustom
+import kotlinx.coroutines.launch
 import proyecto.person.appconsultapopular.common.shimmerEffects.ListShimmer
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -157,16 +158,18 @@ fun HomePresentation(viewModel: HomeViewmodel, navController: NavController, add
                 Spacer(modifier = Modifier.height(10.dp))
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth(),
-                    value = if (selected == 0){
+                    value = if (selected == 0) {
                         coursesInput.value
-                    }else{
+                    } else {
                         myCoursesInput.value
                     },
-                    onValueChange = {
-                        if (selected == 0){
-                            viewModel.coursesInput.value = it
-                        }else{
-                            viewModel.myCoursesInput.value = it
+                    onValueChange = { newValue ->
+                        if (selected == 0) {
+                            viewModel.coursesInput.value = newValue
+                            viewModel.filterListByInput(SelectedOption.COURSES)
+                        } else {
+                            viewModel.myCoursesInput.value = newValue
+                            viewModel.filterListByInput(SelectedOption.MY_COURSES)
                         }
                     },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -203,7 +206,16 @@ fun HomePresentation(viewModel: HomeViewmodel, navController: NavController, add
                 CustomTab(
                     items = tabTitles,
                     selectedItemIndex = selected,
-                    onClick = setSelected,
+                    onClick = {
+                        setSelected(it)
+                        scope.launch {
+                            if (it == 0) {
+                                viewModel.myCoursesInput.value = "" // Clear myCoursesInput when switching to Courses tab
+                            } else {
+                                viewModel.coursesInput.value = "" // Clear coursesInput when switching to My Courses tab
+                            }
+                        }
+                    },
                     pagerState = pagerState,
                     tabWidth = 150.dp,
                     color = AzulGradient,

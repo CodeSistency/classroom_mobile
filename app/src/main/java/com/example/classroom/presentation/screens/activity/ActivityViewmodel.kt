@@ -106,6 +106,28 @@ class ActivityViewmodel(
         }
     }
 
+    fun filterActivities(query: String) {
+        _filteredListActivitiesByCourseFlow.value = if (query.isBlank()) {
+            _listActivitiesFlow.value
+        } else {
+            _listActivitiesFlow.value.filter { activity ->
+                activity.title.contains(query, ignoreCase = true)
+//                        || activity.description?.contains(query, ignoreCase = true) ?: em
+            }
+        }
+    }
+
+    fun filterActivitiesSubmitted(query: String) {
+        _filteredListActivitiesByCourseFlow.value = if (query.isBlank()) {
+            _listActivitiesFlow.value
+        } else {
+            _listActivitiesFlow.value.filter { activity ->
+                activity.title.contains(query, ignoreCase = true)
+//                        || activity.description?.contains(query, ignoreCase = true) ?: em
+            }
+        }
+    }
+
     // Handle form events
     fun onActivityEvent(event: ActivityFormEvent) {
         when (event) {

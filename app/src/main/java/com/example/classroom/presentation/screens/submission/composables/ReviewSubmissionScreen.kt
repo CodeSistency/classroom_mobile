@@ -1,19 +1,29 @@
 package com.example.classroom.presentation.screens.submission.composables
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -22,10 +32,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.classroom.common.CustomButton.CustomButton
 import com.example.classroom.common.CustomButton.NavigationButtonStyle
 import com.example.classroom.common.CustomInput.CustomTextField
@@ -42,11 +55,13 @@ import com.example.classroom.presentation.theme.AzulGradient
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun ReviewSubmissionScreen(
     submission: LocalActivitySubmission,
     onDownloadFile: (String) -> Unit,
-    viewModel: SubmissionViewModel
+    viewModel: SubmissionViewModel,
+    navController: NavController
 ) {
     val state = viewModel.stateReviewActivity.collectAsState()
 
@@ -62,42 +77,62 @@ fun ReviewSubmissionScreen(
     }
     val scope = rememberCoroutineScope()
 
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        // Document preview and download
-        if (submission.documentUrl != null) {
-            DocumentPreviewComponent(
-                documentUrl = submission.documentUrl,
-                onDownloadFile = onDownloadFile,
-                fileType = getFileType(submission.documentUrl)
-
-            )
-        } else {
-            Text(text = "Ningun documento.", style = MaterialTheme.typography.body2)
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Display student's comment
-        Text(text = "Comentario del estudiante:", style = MaterialTheme.typography.subtitle1)
-        submission.comment?.let {
-            Text(
-                text = it,
-                style = MaterialTheme.typography.body2,
+    Box(modifier = Modifier.fillMaxSize()){
+        Scaffold(
+            topBar = {
+                Row(
+                    modifier= Modifier
+                        .background(Azul)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = null,
+                            tint = Color.White)
+                    }
+                    Spacer(modifier = Modifier.width(3.dp))
+                    Text(text = "Evaluar", color = Color.White, fontSize = 16.sp)
+                }
+            }
+        ){
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color.LightGray, shape = RoundedCornerShape(8.dp))
-                    .padding(8.dp)
-            )
-        }
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                // Document preview and download
+                if (submission.documentUrl != null) {
+                    DocumentPreviewComponent(
+                        documentUrl = submission.documentUrl,
+                        onDownloadFile = onDownloadFile,
+                        fileType = getFileType(submission.documentUrl)
 
-        Spacer(modifier = Modifier.height(16.dp))
+                    )
+                } else {
+                    Text(text = "Ningun documento.", style = MaterialTheme.typography.body2)
+                }
 
-        // Grade input
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Display student's comment
+                Text(text = "Comentario del estudiante:", style = MaterialTheme.typography.subtitle1)
+                submission.comment?.let {
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.body2,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color.LightGray, shape = RoundedCornerShape(8.dp))
+                            .padding(8.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Grade input
 //        Text(text = "Calificación (0-100):", style = MaterialTheme.typography.subtitle1)
 //        OutlinedTextField(
 //            value = grade.toString(),
@@ -114,36 +149,39 @@ fun ReviewSubmissionScreen(
 //        )
 
 
-        CustomTextField(value = viewModel.grade.toString(),
-            onValueChange = { value ->
-                val newGrade = value.toFloatOrNull()
-                if (newGrade != null && newGrade in 0f..100f) {
-                    viewModel.grade.value = newGrade.toFloat()
+                CustomTextField(value = viewModel.grade.toString(),
+                    onValueChange = { value ->
+                        val newGrade = value.toFloatOrNull()
+                        if (newGrade != null && newGrade in 0f..100f) {
+                            viewModel.grade.value = newGrade.toFloat()
+                        }
+                    }, label = "Calificación (0-100)") {
+
                 }
-            }, label = "Calificación (0-100)") {
-            
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Submit grade button
+                CustomButton(
+                    onClick = {
+                        scope.launch {
+                            viewModel.reviewActivity(
+                                body = ReviewEvaluationRequestDto(
+                                    activityId = submission.activityId.toInt(),
+                                    grade = viewModel.grade.value.toInt(),
+                                )
+                            )
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    text = "Guardar calificacion",
+                    style = NavigationButtonStyle.SolidGradient,
+                    color2 = Azul,
+                    color1 = AzulGradient
+
+                )
+            }
+
         }
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Submit grade button
-        CustomButton(
-            onClick = {
-                scope.launch {
-                    viewModel.reviewActivity(
-                        body = ReviewEvaluationRequestDto(
-                            activityId = submission.activityId.toInt(),
-                            grade = viewModel.grade.value.toInt(),
-                        )
-                    )
-                }
-            },
-            modifier = Modifier.fillMaxWidth(),
-            text = "Guardar calificacion",
-            style = NavigationButtonStyle.SolidGradient,
-            color2 = Azul,
-            color1 = AzulGradient
-
-        )
     }
 
     LaunchedEffect(key1 = state, block = {

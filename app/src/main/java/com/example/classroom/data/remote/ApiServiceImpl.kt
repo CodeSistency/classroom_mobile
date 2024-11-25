@@ -187,7 +187,8 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
     override suspend fun getCoursesRemote(id: String): ResponseGenericAPi<GetCoursesResponseDto> = withContext(
     Dispatchers.IO)  {
         val response = client.get{
-            url("${Constants.BASE_URL}${HttpRoutes.COURSES_ENDPOINT}/find/course/users/${id}")
+            url("${Constants.BASE_URL}${HttpRoutes.COURSES_ENDPOINT}/mine/${id}")
+//            url("${Constants.BASE_URL}${HttpRoutes.COURSES_ENDPOINT}/find/course/users/${id}")
             contentType(ContentType.Application.Json)
         }
         return@withContext parseResponseToGenericObject(response, true)

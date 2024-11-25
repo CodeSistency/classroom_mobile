@@ -50,6 +50,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.classroom.App
 import com.example.classroom.R
@@ -128,6 +129,10 @@ fun CourseProfessorPresentation(
 
 
     })
+
+    val studentInput = courseViewmodel.studentInput.collectAsStateWithLifecycle()
+    val postInput = courseViewmodel.postInput.collectAsStateWithLifecycle()
+    val activityInput = courseViewmodel.activityInput.collectAsStateWithLifecycle()
 
 
 //    LaunchedEffect(key1 = true, block = {
@@ -236,10 +241,27 @@ fun CourseProfessorPresentation(
 
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth(),
-                    value = viewModel.activityInput.value,
-                    onValueChange = {
-//                        viewModel.activityInput.value = it
-
+                    value = when (selected) {
+                        0 -> studentInput.value
+                        1 -> postInput.value
+                        2 -> activityInput.value
+                        else -> ""
+                    },
+                    onValueChange = { newValue ->
+                        when (selected) {
+                            0 -> {
+                                courseViewmodel.studentInput.value = newValue
+                                courseViewmodel.filterStudents(newValue)
+                            }
+                            1 -> {
+                                courseViewmodel.postInput.value = newValue
+                                postsViewModel.filterPosts(newValue) // Add a filterPosts method in PostsViewModel
+                            }
+                            2 -> {
+                                viewModel.activityInput.value = newValue
+                                viewModel.filterActivities(newValue) // Add a filterActivities method in ActivityViewModel
+                            }
+                        }
                     },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         backgroundColor = Color.White,
@@ -275,7 +297,25 @@ fun CourseProfessorPresentation(
                 CustomScrollableTabRow(
                     tabs = tabTitles,
                     selectedTabIndex = selected,
-                    onTabSelected = setSelected,
+                    onTabSelected = {
+                        setSelected(it)
+                        scope.launch {
+                            when (it) {
+                                0 -> {
+                                    courseViewmodel.postInput.value = "" // Clear Post input
+                                    viewModel.activityInput.value = "" // Clear Activity input
+                                }
+                                1 -> {
+                                    courseViewmodel.studentInput.value = "" // Clear Student input
+                                    courseViewmodel.activityInput.value = "" // Clear Activity input
+                                }
+                                2 -> {
+                                    courseViewmodel.studentInput.value = "" // Clear Student input
+                                    courseViewmodel.postInput.value = "" // Clear Post input
+                                }
+                            }
+                        }
+                    },
                     scope = scope,
                     pagerState = pagerState,
                 )

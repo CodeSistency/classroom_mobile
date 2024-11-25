@@ -45,6 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.classroom.App
 import com.example.classroom.R
@@ -54,6 +55,7 @@ import com.example.classroom.domain.model.entity.Gender
 import com.example.classroom.presentation.screens.activity.ActivityViewmodel
 import com.example.classroom.presentation.screens.course.CourseViewmodel
 import com.example.classroom.presentation.screens.course.posts.ListPosts
+import com.example.classroom.presentation.screens.course.posts.PostsViewModel
 import com.example.classroom.presentation.screens.course.profesor.composables.ListUsers
 import com.example.classroom.presentation.screens.home.HomeViewmodel
 import com.example.classroom.presentation.theme.Azul
@@ -62,11 +64,19 @@ import com.example.classroom.presentation.theme.Azul3
 import com.example.classroom.presentation.theme.AzulGradient
 import com.example.classroom.presentation.theme.Gris
 import com.example.classroom.presentation.theme.PaddingCustom
+import kotlinx.coroutines.launch
 import proyecto.person.appconsultapopular.common.shimmerEffects.ListShimmer
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CourseStudentPresentation(viewModel: ActivityViewmodel, courseViewmodel: CourseViewmodel, id: String, navController: NavController){
+fun CourseStudentPresentation(
+    viewModel: ActivityViewmodel,
+    courseViewmodel: CourseViewmodel,
+    id: String,
+    navController: NavController,
+    postsViewModel: PostsViewModel,
+
+    ){
     val tabTitles = listOf(SelectedOption.ACTIVIDADES.title, SelectedOption.POSTS.title, SelectedOption.ENTREGADAS.title)
     val pagerState = rememberPagerState(pageCount = { tabTitles.size })
     val (selected, setSelected) = remember { mutableStateOf(0) }
@@ -74,10 +84,21 @@ fun CourseStudentPresentation(viewModel: ActivityViewmodel, courseViewmodel: Cou
     val courseInfo = courseViewmodel.courseFlow.collectAsState(initial = null)
     var scope = rememberCoroutineScope()
 
+    val postInput = courseViewmodel.postInput.collectAsStateWithLifecycle()
+    val activityInput = courseViewmodel.activityInput.collectAsStateWithLifecycle()
+    val activitySubmittedInput = courseViewmodel.activitySubmittedInput.collectAsStateWithLifecycle()
+
+
     LaunchedEffect(key1 = true, block = {
         courseViewmodel.getCourseByIdLocal(id)
         viewModel.getActivitiesByCourse(id)
         viewModel.getActivitiesLocalByCourse(id)
+        userInfo.value?.let {
+            courseViewmodel.observeLocalEvaluations(id, it.first().idApi)
+            courseViewmodel.getActivitiesByStudent(id, it.first().idApi)
+            courseViewmodel.getActivitiesSubmitted(id, it.first().idApi)
+        }
+
     })
 
     LaunchedEffect(key1 = true, block = {
@@ -191,10 +212,27 @@ fun CourseStudentPresentation(viewModel: ActivityViewmodel, courseViewmodel: Cou
 //                Spacer(modifier = Modifier.height(10.dp))
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth(),
-                    value = viewModel.activityInput.value,
-                    onValueChange = {
-                        viewModel.activityInput.value = it
-
+                    value = when (selected) {
+                        1 -> postInput.value
+                        2 -> activityInput.value
+                        3 -> activitySubmittedInput.value
+                        else -> ""
+                    },
+                    onValueChange = { newValue ->
+                        when (selected) {
+                            0 -> {
+                                courseViewmodel.studentInput.value = newValue
+                                courseViewmodel.filterStudents(newValue)
+                            }
+                            1 -> {
+                                courseViewmodel.postInput.value = newValue
+                                postsViewModel.filterPosts(newValue) // Add a filterPosts method in PostsViewModel
+                            }
+                            2 -> {
+                                courseViewmodel.activitySubmittedInput.value = newValue
+                                viewModel.filterActivities(newValue) // Add a filterActivities method in ActivityViewModel
+                            }
+                        }
                     },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         backgroundColor = Color.White,
@@ -228,8 +266,25 @@ fun CourseStudentPresentation(viewModel: ActivityViewmodel, courseViewmodel: Cou
                 CustomScrollableTabRow(
                     tabs = tabTitles,
                     selectedTabIndex = selected,
-                    onTabSelected = setSelected,
-                    scope = scope,
+                    onTabSelected = {
+                        setSelected(it)
+                        scope.launch {
+                            when (it) {
+                                0 -> {
+                                    courseViewmodel.postInput.value = "" // Clear Post input
+                                    viewModel.activityInput.value = "" // Clear Activity input
+                                }
+                                1 -> {
+                                    courseViewmodel.studentInput.value = "" // Clear Student input
+                                    viewModel.activityInput.value = "" // Clear Activity input
+                                }
+                                2 -> {
+                                    courseViewmodel.studentInput.value = "" // Clear Student input
+                                    courseViewmodel.postInput.value = "" // Clear Post input
+                                }
+                            }
+                        }
+                    },                    scope = scope,
                     pagerState = pagerState,
                 )
             }

@@ -146,16 +146,14 @@ class HomeViewmodel(
             when (typeCourse) {
                 SelectedOption.MY_COURSES -> {
                     _filteredListMyCoursesFlow.value = if (myCoursesInput.value.isNotEmpty()) {
-                        listMyCoursesFlow.value.filter { it.title.startsWith(myCoursesInput.value) }
-                            .sortedByDescending { it.id }
+                        listMyCoursesFlow.value.filter { it.title.startsWith(myCoursesInput.value, ignoreCase = true) }
                     } else {
                         listMyCoursesFlow.value
                     }
                 }
                 SelectedOption.COURSES -> {
                     _filteredListCoursesFlow.value = if (coursesInput.value.isNotEmpty()) {
-                        listCoursesFlow.value.filter { it.title.startsWith(coursesInput.value) }
-                            .sortedByDescending { it.id }
+                        listCoursesFlow.value.filter { it.title.startsWith(coursesInput.value, ignoreCase = true) }
                     } else {
                         listCoursesFlow.value
                     }
