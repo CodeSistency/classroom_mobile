@@ -15,9 +15,7 @@ import com.example.classroom.domain.model.entity.LocalPost
 import com.example.classroom.domain.model.entity.LocalStudentEvaluation
 import com.example.classroom.domain.model.entity.LocalStudents
 import com.example.classroom.domain.model.entity.LocalUser
-import com.example.classroom.domain.model.entity.QuestionsEntity
-import com.example.classroom.domain.model.entity.QuizzEntity
-import com.example.classroom.domain.model.entity.QuizzWithQuestions
+
 import com.example.classroom.domain.model.typeConverter.UsersCoursesIdConverter
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -177,20 +175,7 @@ interface AppDao {
     @Delete
     suspend fun deleteSubmission(submission: LocalActivitySubmission)
 
-    //Quizzes
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertQuizz(quizz: QuizzEntity)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertQuestion(question: QuestionsEntity)
-
-    @Transaction
-    @Query("SELECT * FROM quizz WHERE course_id = :courseId AND id = :quizzId")
-    fun getQuizzWithQuestions(courseId: String, quizzId: Int): Flow<QuizzWithQuestions>
-
-    @Query("SELECT * FROM questions WHERE course_id = :courseId")
-    fun getQuestionsForCourse(courseId: String): Flow<List<QuestionsEntity>>
 
     //SEEDERS
 
@@ -218,13 +203,7 @@ interface AppDao {
 
     // QUIZZES
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertOrUpdateQuiz(quiz: QuizzEntity)
 
-    // QUESTIONS
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertOrUpdateQuestion(question: QuestionsEntity)
 
 
 }

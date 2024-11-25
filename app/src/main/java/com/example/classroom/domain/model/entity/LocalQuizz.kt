@@ -3,32 +3,52 @@ package com.example.classroom.domain.model.entity
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import androidx.room.Relation
 
 
-@Entity(tableName = "quizz")
-data class QuizzEntity(
+@Entity
+data class QuizEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    @ColumnInfo(name = "activity_id") val activityId: String,
-    @ColumnInfo(name = "course_id") val courseId: String
+    val activityId: Int,
+    val title: String
 )
 
-@Entity(tableName = "questions")
-data class QuestionsEntity(
+@Entity(
+    foreignKeys = [ForeignKey(
+        entity = QuizEntity::class,
+        parentColumns = ["id"],
+        childColumns = ["quizId"],
+        onDelete = ForeignKey.CASCADE
+    )]
+)
+data class QuestionEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    @ColumnInfo(name = "quizz_id") val quizzId: Int,
-    @ColumnInfo(name = "course_id") val courseId: String,
-    @ColumnInfo(name = "text") val text: String,
-    @ColumnInfo(name = "answer") val answer: Int
+    val quizId: Int,
+    val text: String,
+    val correctAnswer: Int
 )
 
-data class QuizzWithQuestions(
-    @Embedded val quizz: QuizzEntity,
-    @Relation(
-        parentColumn = "id",
-        entityColumn = "quizz_id"
-    )
-    val questions: List<QuestionsEntity>
+@Entity(
+    foreignKeys = [ForeignKey(
+        entity = QuestionEntity::class,
+        parentColumns = ["id"],
+        childColumns = ["questionId"],
+        onDelete = ForeignKey.CASCADE
+    )]
 )
+data class OptionEntity(
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val questionId: Int,
+    val text: String
+)
+
+@Entity
+data class AnswerEntity(
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val questionId: Int,
+    val selectedOptionId: Int
+)
+
 

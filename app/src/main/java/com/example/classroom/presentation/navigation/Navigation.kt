@@ -34,6 +34,7 @@ import com.example.classroom.domain.use_case.signIn.SignInUseCase
 import com.example.classroom.domain.use_case.signUp.SignUpUseCase
 import com.example.classroom.presentation.SplashScreen
 import com.example.classroom.presentation.screens.Quizz.addQuizz.CreateQuizzScreen
+import com.example.classroom.presentation.screens.Quizz.composables.AnswerQuizScreen
 import com.example.classroom.presentation.screens.activity.ActivityViewmodel
 import com.example.classroom.presentation.screens.activity.addActivity.AddActivityScreen
 import com.example.classroom.presentation.screens.activity.addActivity.AddActivityScreenNew
@@ -351,9 +352,25 @@ fun Navigation(
 
                     CreateQuizzScreen(
                         viewModel = App.appModule.quizzViewModel,
-                        courseId = idCourse,
-                        navController = navController,
+                        activityId = 0,
+
                     )
+                }
+            }
+
+            composable(
+                route = "${Destination.ANSWER_QUIZZ.screenRoute}?quizzId={quizzId}",
+                arguments = listOf(
+                    navArgument("quizzId") { type = NavType.IntType; nullable = false },
+                )
+            ) { backStackEntry ->
+                val quizzId = backStackEntry.arguments?.getInt("quizzId")
+                if (quizzId != null ) {
+
+                    AnswerQuizScreen(
+                        viewModel = App.appModule.quizzViewModel,
+                        quizId = quizzId
+                        )
                 }
             }
 

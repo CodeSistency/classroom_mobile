@@ -1,11 +1,12 @@
 package com.example.classroom.presentation.screens.Quizz
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.classroom.data.local.db.QuizWithQuestions
+import com.example.classroom.data.remote.dto.quizz.QuestionDto
 import com.example.classroom.data.repository.RepositoryBundle
-import com.example.classroom.domain.model.entity.QuestionsEntity
-import com.example.classroom.domain.model.entity.QuizzEntity
-import com.example.classroom.domain.model.entity.QuizzWithQuestions
+import com.example.classroom.domain.model.entity.AnswerEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
@@ -13,23 +14,25 @@ import kotlinx.coroutines.launch
 class QuizzViewModel(private val repositoryBundle: RepositoryBundle,
 ) : ViewModel() {
 
-    fun getQuizzWithQuestions(courseId: String, quizzId: Int): Flow<QuizzWithQuestions> {
-        return repositoryBundle.quizzRepository.getQuizzWithQuestions(courseId, quizzId)
-    }
+    private val quizzRepository = repositoryBundle.quizzRepository
 
-    fun insertQuizz(quizz: QuizzEntity) {
+    val quizState = mutableStateOf<QuizWithQuestions?>(null)
+
+    fun createQuiz(activityId: Int, title: String, questions: List<QuestionDto>) {
         viewModelScope.launch {
-            repositoryBundle.quizzRepository.insertQuizz(quizz)
+            quizzRepository.createQuiz(activityId, title, questions)
         }
     }
 
-    fun insertQuestion(question: QuestionsEntity) {
+    fun loadQuiz(quizId: Int) {
         viewModelScope.launch {
-            repositoryBundle.quizzRepository.insertQuestion(question)
+            quizState.value = quizzRepository.loadQuiz(quizId)
         }
     }
 
-    fun getQuestionsForCourse(courseId: String): Flow<List<QuestionsEntity>> {
-        return repositoryBundle.quizzRepository.getQuestionsForCourse(courseId)
+    fun submitAnswers(answers: List<AnswerEntity>) {
+        viewModelScope.launch {
+            quizzRepository.submitAnswers(answers)
+        }
     }
 }

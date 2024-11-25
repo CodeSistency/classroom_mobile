@@ -17,8 +17,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.classroom.domain.model.entity.QuestionsEntity
-import com.example.classroom.domain.model.entity.QuizzEntity
+//import com.example.classroom.domain.model.entity.QuestionsEntity
+//import com.example.classroom.domain.model.entity.QuizzEntity
 import com.example.classroom.presentation.screens.course.AddQuizz.AddQuizzViewModel
 
 @Composable
@@ -58,15 +58,15 @@ fun CreateQuizzScreen(viewModel: AddQuizzViewModel, courseId: String) {
             Text(text = question)
         }
         Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = {
-            val quizz = QuizzEntity(activityId = "0", courseId = courseId)
-            viewModel.insertQuizz(quizz)
-            questions.forEach { questionText ->
-                val question = QuestionsEntity(quizzId = quizz.id, courseId = courseId, text = questionText, answer = 0)
-                viewModel.insertQuestion(question)
-            }
-        }) {
-            Text("Save Quiz")
-        }
+//        Button(onClick = {
+//            val quizz = QuizzEntity(activityId = "0", courseId = courseId)
+//            viewModel.insertQuizz(quizz)
+//            questions.forEach { questionText ->
+//                val question = QuestionsEntity(quizzId = quizz.id, courseId = courseId, text = questionText, answer = 0)
+//                viewModel.insertQuestion(question)
+//            }
+//        }) {
+//            Text("Save Quiz")
+//        }
     }
 }

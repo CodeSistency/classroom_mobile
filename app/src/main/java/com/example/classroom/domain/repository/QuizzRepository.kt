@@ -1,13 +1,12 @@
 package com.example.classroom.domain.repository
 
-import com.example.classroom.domain.model.entity.QuestionsEntity
-import com.example.classroom.domain.model.entity.QuizzEntity
-import com.example.classroom.domain.model.entity.QuizzWithQuestions
+import com.example.classroom.data.local.db.QuizWithQuestions
+import com.example.classroom.data.remote.dto.quizz.QuestionDto
+import com.example.classroom.domain.model.entity.AnswerEntity
 import kotlinx.coroutines.flow.Flow
 
 interface QuizzRepository {
-    fun getQuizzWithQuestions(courseId: String, quizzId: Int): Flow<QuizzWithQuestions>
-    suspend fun insertQuizz(quizz: QuizzEntity)
-    suspend fun insertQuestion(question: QuestionsEntity)
-    fun getQuestionsForCourse(courseId: String): Flow<List<QuestionsEntity>>
+    suspend fun createQuiz(activityId: Int, title: String, questions: List<QuestionDto>)
+    suspend fun loadQuiz(quizId: Int): QuizWithQuestions
+    suspend fun submitAnswers(answers: List<AnswerEntity>)
 }

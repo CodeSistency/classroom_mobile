@@ -1,5 +1,7 @@
 package com.example.classroom.presentation.screens.submission.composables
 
+import android.content.Context
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -53,6 +55,8 @@ fun ReviewSubmissionScreen(
         viewModel.grade.value = submission.grade
     })
 
+
+
     var dialogState: SetupCustomDialogState by remember {
         mutableStateOf(SetupCustomDialogState.Default())
     }
@@ -68,7 +72,9 @@ fun ReviewSubmissionScreen(
         if (submission.documentUrl != null) {
             DocumentPreviewComponent(
                 documentUrl = submission.documentUrl,
-                onDownloadFile = onDownloadFile
+                onDownloadFile = onDownloadFile,
+                fileType = getFileType(submission.documentUrl)
+
             )
         } else {
             Text(text = "Ningun documento.", style = MaterialTheme.typography.body2)
@@ -162,5 +168,20 @@ fun ReviewSubmissionScreen(
 
     SetupCustomDialog(setupCustomDialogState = dialogState, showDialog = dialogState != SetupCustomDialogState.Default()) {
         dialogState = SetupCustomDialogState.Default()
+    }
+}
+
+fun getFileType(documentUrl: String): String {
+    val fileExtension = documentUrl.substringAfterLast('.', "").lowercase()
+    return when (fileExtension) {
+        "jpg", "jpeg", "png", "gif", "bmp", "webp" -> "image"
+        "pdf" -> "pdf"
+        "doc", "docx" -> "word"
+        "xls", "xlsx" -> "excel"
+        "ppt", "pptx" -> "powerpoint"
+        "txt" -> "text"
+        "mp4", "avi", "mov", "mkv" -> "video"
+        "mp3", "wav", "aac" -> "audio"
+        else -> "unknown"
     }
 }

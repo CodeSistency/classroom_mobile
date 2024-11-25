@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -19,65 +21,47 @@ import androidx.navigation.NavController
 import com.example.classroom.common.CustomButton.CustomButton
 import com.example.classroom.common.CustomButton.NavigationButtonStyle
 import com.example.classroom.common.CustomInput.CustomTextField
-import com.example.classroom.domain.model.entity.QuestionsEntity
-import com.example.classroom.domain.model.entity.QuizzEntity
+import com.example.classroom.data.remote.dto.quizz.QuestionDto
+
 import com.example.classroom.presentation.screens.Quizz.QuizzViewModel
 import com.example.classroom.presentation.theme.Azul
 import com.example.classroom.presentation.theme.AzulGradient
 
+
 @Composable
-fun CreateQuizzScreen(viewModel: QuizzViewModel, courseId: String, navController: NavController) {
+fun CreateQuizzScreen(viewModel: QuizzViewModel, activityId: Int) {
     var title by remember { mutableStateOf("") }
-    var questions = remember { mutableStateListOf<String>() }
-    var newQuestion by remember { mutableStateOf("") }
+    var questions by remember { mutableStateOf(mutableListOf<QuestionDto>()) }
 
-    Column(modifier = Modifier.padding(16.dp)) {
-        Text(text = "Create a Quiz", style = MaterialTheme.typography.h5)
-        Spacer(modifier = Modifier.height(16.dp))
-        CustomTextField(
-            value = title,
-            onValueChange = { title = it },
-            label = "Titulo del quizz",
-            modifier = Modifier.fillMaxWidth(),
-        ){}
-        Spacer(modifier = Modifier.height(16.dp))
-        CustomTextField(
-            value = newQuestion,
-            onValueChange = { newQuestion = it },
-            label =  "New Question",
-            modifier = Modifier.fillMaxWidth()
-        ){}
-        Spacer(modifier = Modifier.height(8.dp))
-        CustomButton(onClick = {
-            if (newQuestion.isNotBlank()) {
-                questions.add(newQuestion)
-                newQuestion = ""
-            }
-        },
-            text = "Agrega una pregunta",
-            style = NavigationButtonStyle.SolidGradient,
-            color1 = Azul,
-            color2 = AzulGradient,
+    Column {
+        TextField(value = title, onValueChange = { title = it }, label = { Text("Quiz Title") })
 
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "Questions:")
-        questions.forEach { question ->
-            Text(text = question)
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        CustomButton(onClick = {
-            val quizz = QuizzEntity(activityId = "0", courseId = courseId)
-            viewModel.insertQuizz(quizz)
-            questions.forEach { questionText ->
-                val question = QuestionsEntity(quizzId = quizz.id, courseId = courseId, text = questionText, answer = 0)
-                viewModel.insertQuestion(question)
-            }
-        },
-            text = "Agrega una pregunta",
-            style = NavigationButtonStyle.SolidGradient,
-            color1 = Azul,
-            color2 = AzulGradient,
+        questions.forEachIndexed { index, question ->
+            TextField(
+                value = question.text,
+                onValueChange = { newText ->
+                    questions[index] = question.copy(text = newText)
+                },
+                label = { Text("Question ${index + 1}") }
             )
+            question.options.forEachIndexed { optIndex, option ->
+                TextField(
+                    value = option,
+                    onValueChange = { newOption ->
+                        // Modify the option in a mutable way
+                        val updatedOptions = question.options.toMutableList()
+                        updatedOptions[optIndex] = newOption
+                        questions[index] = question.copy(options = updatedOptions)
+                    },
+                    label = { Text("Option ${optIndex + 1}") }
+                )
+            }
+        }
+
+        Button(onClick = {
+            viewModel.createQuiz(activityId, title, questions)
+        }) {
+            Text("Save Quiz")
+        }
     }
 }

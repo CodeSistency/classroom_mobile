@@ -13,6 +13,6 @@ data class SendEvaluationRequestDto(
     val activityId: Int,
     @SerialName("message")
     val message: String,
-    @SerialName("docuemnt")
+    @SerialName("document")
     val document: String
 )

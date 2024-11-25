@@ -3,9 +3,14 @@ package com.example.classroom.presentation.screens.course.posts.addPost.composab
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Checkbox
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -14,15 +19,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.classroom.common.CustomButton.CustomButton
 import com.example.classroom.common.CustomButton.NavigationButtonStyle
 import com.example.classroom.common.CustomInput.CustomTextField
+import com.example.classroom.common.FileUploadComponent.FileUploadComponent
 import com.example.classroom.common.composables.customDialogs.SetupCustomDialog
 import com.example.classroom.common.composables.customDialogs.SetupCustomDialogState
 import com.example.classroom.presentation.navigation.Destination
@@ -33,6 +41,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun AddPostForm(viewModel: AddPostViewModel, focusManager: FocusManager, courseId: String, idPost: String?, navController: NavController) {
 
+    val context = LocalContext.current
     var state = viewModel.statePost.collectAsState()
 
     var dialogState: SetupCustomDialogState by remember {
@@ -42,6 +51,8 @@ fun AddPostForm(viewModel: AddPostViewModel, focusManager: FocusManager, courseI
     LaunchedEffect(key1 = true, block = {
 //        viewModel.f
     })
+
+    var isFileUploadChecked by remember { mutableStateOf(false) }
 
     var scope = rememberCoroutineScope()
 
@@ -72,6 +83,37 @@ fun AddPostForm(viewModel: AddPostViewModel, focusManager: FocusManager, courseI
                 focusManager.moveFocus(FocusDirection.Down)
             }
         )
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Checkbox(
+                checked = isFileUploadChecked,
+                onCheckedChange = { isChecked ->
+                    isFileUploadChecked = isChecked
+                    if (!isChecked) {
+                        viewModel.selectedFileUri = null
+                    }
+                }
+            )
+            Text(
+                text = "Attach a file",
+                style = MaterialTheme.typography.body1
+            )
+        }
+
+        // Show FileUploadComponent if the checkbox is checked
+        if (isFileUploadChecked) {
+            FileUploadComponent(
+                onFileSelected = { uri ->
+                    viewModel.selectedFileUri = uri
+                },
+                onFileCleared = {
+                    viewModel.selectedFileUri = null
+                }
+            )
+        }
 
 //        CustomTextField(
 //            value = viewModel.courseId.value.toString(),
@@ -108,7 +150,7 @@ fun AddPostForm(viewModel: AddPostViewModel, focusManager: FocusManager, courseI
             color2 = Color(0xFF81C784),
             onClick = {
                 scope.launch {
-                    viewModel.executeCourseRequest(idPost, courseId)
+                    viewModel.executeCourseRequest(idPost, courseId, isFileUploadChecked, context)
                 }
             },
             disabled = !viewModel.isFormValid

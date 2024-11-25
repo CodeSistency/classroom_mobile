@@ -3,6 +3,7 @@ package com.example.classroom.common
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.coroutineScope
 import com.example.classroom.data.local.db.AppDao
+import com.example.classroom.data.local.db.QuizzDao
 import com.example.classroom.domain.model.entity.Area
 import com.example.classroom.domain.model.entity.Gender
 import com.example.classroom.domain.model.entity.LocalActivities
@@ -11,8 +12,9 @@ import com.example.classroom.domain.model.entity.LocalCourses
 import com.example.classroom.domain.model.entity.LocalPost
 import com.example.classroom.domain.model.entity.LocalStudents
 import com.example.classroom.domain.model.entity.LocalUser
-import com.example.classroom.domain.model.entity.QuestionsEntity
-import com.example.classroom.domain.model.entity.QuizzEntity
+import com.example.classroom.domain.model.entity.OptionEntity
+import com.example.classroom.domain.model.entity.QuestionEntity
+import com.example.classroom.domain.model.entity.QuizEntity
 import com.example.classroom.domain.model.entity.Status
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -28,14 +30,14 @@ class Seeders(
 
 
 
-    fun seedDatabase(dao: AppDao)  {
+    fun seedDatabase(dao: AppDao, quizzDao: QuizzDao)  {
         lifecycle.coroutineScope.launch {
             seedUsers(dao)
             seedCourses(dao)
             seedStudents(dao)
             seedActivities(dao)
             seedPosts(dao)
-            seedQuizzes(dao)
+            seedQuizzes(quizzDao)
             seedSubmissions(dao)
         }
 
@@ -165,28 +167,44 @@ class Seeders(
         posts.forEach { dao.insertOrUpdatePost(it) }
     }
 
-    private suspend fun seedQuizzes(dao: AppDao) {
+    private suspend fun seedQuizzes(dao: QuizzDao) {
+        // Seed Quizzes
         val quizzes = listOf(
-            QuizzEntity(activityId = "1", courseId = "1"),
-            QuizzEntity(activityId = "2", courseId = "2")
+            QuizEntity(activityId = 1, title = "Basic Math Quiz"),
+            QuizEntity(activityId = 2, title = "Biology Quiz")
         )
         quizzes.forEach { dao.insertOrUpdateQuiz(it) }
 
+        // Seed Questions
         val questions = listOf(
-            QuestionsEntity(
-                quizzId = 1,
-                courseId = "1",
+            QuestionEntity(
+                quizId = 1,
                 text = "What is 2 + 2?",
-                answer = 4
+                correctAnswer = 0 // Refers to the index of the correct option
             ),
-            QuestionsEntity(
-                quizzId = 2,
-                courseId = "2",
+            QuestionEntity(
+                quizId = 2,
                 text = "What is the function of mitochondria?",
-                answer = 1
+                correctAnswer = 1
             )
         )
         questions.forEach { dao.insertOrUpdateQuestion(it) }
+
+        // Seed Options
+        val options = listOf(
+            OptionEntity(questionId = 1, text = "3"),
+            OptionEntity(questionId = 1, text = "4"), // Correct
+            OptionEntity(questionId = 1, text = "5"),
+            OptionEntity(questionId = 1, text = "6"),
+            OptionEntity(questionId = 2, text = "Powerhouse of the cell"), // Correct
+            OptionEntity(questionId = 2, text = "Photosynthesis site"),
+            OptionEntity(questionId = 2, text = "Stores DNA"),
+            OptionEntity(questionId = 2, text = "Regulates cell division")
+        )
+        options.forEach { dao.insertOrUpdateOption(it) }
+
+        // Optionally log or confirm seeding success
+        println("Seeded quizzes, questions, and options.")
     }
 
     private suspend fun seedSubmissions(dao: AppDao) {

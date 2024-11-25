@@ -12,6 +12,8 @@ data class PostRequestDto(
     @SerialName("courseId")
     val courseId: Int,
     @SerialName("authorId")
-    val authorId: Int
+    val authorId: Int,
+    @SerialName("file")
+    val file: String? = null
 
 )

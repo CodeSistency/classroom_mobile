@@ -157,7 +157,7 @@ class AppModuleImpl(
             loginRepository = LoginRepositoryImpl(apiService, db.appDao),
             activitiesRepository = ActivitiesRepositoryImpl(apiService, db.appDao),
             coursesRepository = CoursesRepositoryImpl(apiService, db.appDao),
-            quizzRepository = QuizzRepositoryImpl(apiService, db.appDao),
+            quizzRepository = QuizzRepositoryImpl(apiService, db.quizDao),
             studentsRepository = StudentsRepositoryImpl(apiService, db.appDao),
             submissionsRepository = SubmissionsRepositoryImpl(apiService, db.appDao),
             postsRepositoryImpl = PostsRepositoryImpl(db.localPostDao, apiService),
@@ -334,6 +334,7 @@ class AppModuleImpl(
             repositoryBundle = repositoryBundle,
             createPostUseCase = createPostUseCase,
             updatePostUseCase = updatePostUseCase,
+            uploadFileUseCase= uploadFileUseCase
         )
     }
     override val postViewModel: PostsViewModel by lazy {
