@@ -1,10 +1,14 @@
 package com.example.classroom.data.repository
 
+import com.example.classroom.common.ResponseGenericAPi
 import com.example.classroom.data.local.db.AppDao
 import com.example.classroom.data.local.db.QuizWithQuestions
 import com.example.classroom.data.local.db.QuizzDao
 import com.example.classroom.data.remote.ApiService
+import com.example.classroom.data.remote.dto.quizz.AnswerQuizzDto
+import com.example.classroom.data.remote.dto.quizz.CreateQuizzDto
 import com.example.classroom.data.remote.dto.quizz.QuestionDto
+import com.example.classroom.data.remote.dto.quizz.QuizzResponseDto
 import com.example.classroom.domain.model.entity.AnswerEntity
 import com.example.classroom.domain.model.entity.OptionEntity
 import com.example.classroom.domain.model.entity.QuestionEntity
@@ -36,5 +40,13 @@ class QuizzRepositoryImpl(
 
     override suspend fun submitAnswers(answers: List<AnswerEntity>) {
         quizDao.insertAnswers(answers)
+    }
+
+    override suspend fun createQuizzRemote(body: CreateQuizzDto): ResponseGenericAPi<QuizzResponseDto> {
+        return apiService.createQuizzRemote(body)
+    }
+
+    override suspend fun answerQuizzRemote(body: AnswerQuizzDto): ResponseGenericAPi<QuizzResponseDto> {
+        return apiService.answerQuizzRemote(body)
     }
 }

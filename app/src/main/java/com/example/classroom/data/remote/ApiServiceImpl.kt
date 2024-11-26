@@ -50,6 +50,9 @@ import com.example.classroom.data.remote.dto.evaluations.sendEvaluationRequestDt
 import com.example.classroom.data.remote.dto.posts.GetPostsResponseDto
 import com.example.classroom.data.remote.dto.posts.PostRequestDto
 import com.example.classroom.data.remote.dto.posts.PostResponseDto
+import com.example.classroom.data.remote.dto.quizz.AnswerQuizzDto
+import com.example.classroom.data.remote.dto.quizz.CreateQuizzDto
+import com.example.classroom.data.remote.dto.quizz.QuizzResponseDto
 import com.example.classroom.domain.model.entity.areatoInt
 import io.ktor.client.request.delete
 import io.ktor.client.request.forms.formData
@@ -444,6 +447,14 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
         }
         return@withContext parseResponseToGenericObject(response, true)
 
+    }
+
+    override suspend fun createQuizzRemote(body: CreateQuizzDto): ResponseGenericAPi<QuizzResponseDto> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun answerQuizzRemote(body: AnswerQuizzDto): ResponseGenericAPi<QuizzResponseDto> {
+        TODO("Not yet implemented")
     }
 
 

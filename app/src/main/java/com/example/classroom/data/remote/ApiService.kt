@@ -24,6 +24,9 @@ import com.example.classroom.data.remote.dto.evaluations.sendEvaluationRequestDt
 import com.example.classroom.data.remote.dto.posts.GetPostsResponseDto
 import com.example.classroom.data.remote.dto.posts.PostRequestDto
 import com.example.classroom.data.remote.dto.posts.PostResponseDto
+import com.example.classroom.data.remote.dto.quizz.AnswerQuizzDto
+import com.example.classroom.data.remote.dto.quizz.CreateQuizzDto
+import com.example.classroom.data.remote.dto.quizz.QuizzResponseDto
 import io.ktor.client.statement.HttpResponse
 import okhttp3.Response
 import java.io.File
@@ -72,6 +75,11 @@ interface ApiService {
     suspend fun updatePostRemote(body: PostRequestDto): ResponseGenericAPi<PostResponseDto>
 
     suspend fun deletePostRemote(id: String): ResponseGenericAPi<PostResponseDto>
+
+    suspend fun createQuizzRemote(body: CreateQuizzDto): ResponseGenericAPi<QuizzResponseDto>
+
+    suspend fun answerQuizzRemote(body: AnswerQuizzDto): ResponseGenericAPi<QuizzResponseDto>
+
 
 
 

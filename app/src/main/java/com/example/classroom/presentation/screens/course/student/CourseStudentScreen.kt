@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.classroom.App
 import com.example.classroom.presentation.screens.activity.ActivityViewmodel
 import com.example.classroom.presentation.screens.course.CourseViewmodel
 import com.example.classroom.presentation.screens.course.profesor.composables.SelectedOptionDialog
@@ -36,7 +37,7 @@ fun CourseStudentScreen(activityViewmodel: ActivityViewmodel, courseViewmodel: C
         }
     ) {
 
-        CourseStudentPresentation(viewModel = activityViewmodel, courseViewmodel = courseViewmodel, id, navController)
+        CourseStudentPresentation(viewModel = activityViewmodel, courseViewmodel = courseViewmodel, id, navController, App.appModule.postViewModel)
 
         var isDialogOpen by remember { mutableStateOf(false) }
         Box(

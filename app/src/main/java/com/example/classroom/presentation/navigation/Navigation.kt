@@ -353,7 +353,7 @@ fun Navigation(
                     CreateQuizzScreen(
                         viewModel = App.appModule.quizzViewModel,
                         activityId = 0,
-
+                        navController = navController
                     )
                 }
             }
