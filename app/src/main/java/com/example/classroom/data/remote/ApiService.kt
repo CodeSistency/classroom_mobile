@@ -14,6 +14,7 @@ import com.example.classroom.domain.model.entity.LocalActivities
 import com.example.classroom.domain.model.entity.LocalCourses
 import kotlinx.coroutines.flow.Flow
 import com.example.classroom.common.ResponseGenericAPi
+import com.example.classroom.data.remote.dto.activities.GetActivitiesWithQuizzResponseDto
 import com.example.classroom.data.remote.dto.cloud.CloudResposeDto
 import com.example.classroom.data.remote.dto.courses.GetUsersByCourseResponse
 import com.example.classroom.data.remote.dto.evaluations.evaluationsSent.EvaluationsSentResponseDto
@@ -25,7 +26,9 @@ import com.example.classroom.data.remote.dto.posts.GetPostsResponseDto
 import com.example.classroom.data.remote.dto.posts.PostRequestDto
 import com.example.classroom.data.remote.dto.posts.PostResponseDto
 import com.example.classroom.data.remote.dto.quizz.AnswerQuizzDto
+import com.example.classroom.data.remote.dto.quizz.AnswerQuizzResponseDto
 import com.example.classroom.data.remote.dto.quizz.CreateQuizzDto
+import com.example.classroom.data.remote.dto.quizz.CreateQuizzResponseDto
 import com.example.classroom.data.remote.dto.quizz.QuizzResponseDto
 import io.ktor.client.statement.HttpResponse
 import okhttp3.Response
@@ -53,7 +56,7 @@ interface ApiService {
     suspend fun updateActivityRemote(activity: ActivityRequestDto, id: String) : ResponseGenericAPi<ActivityResponseDto>
     suspend fun deleteActivityRemote(id: String) : ResponseGenericAPi<Boolean>
     suspend fun getActivitiesRemote(id: String) : ResponseGenericAPi<GetActivitiesResponseDto>
-    suspend fun getActivitiesByCourseRemote(id: String) : ResponseGenericAPi<GetActivitiesResponseDto>
+    suspend fun getActivitiesByCourseRemote(id: String) : ResponseGenericAPi<GetActivitiesWithQuizzResponseDto>
     suspend fun getActivitiesByUserRemote(id: String) : ResponseGenericAPi<GetActivitiesResponseDto>
     suspend fun getActivitiesWithFlowRemote() : Flow<List<LocalActivities>>
 
@@ -76,9 +79,9 @@ interface ApiService {
 
     suspend fun deletePostRemote(id: String): ResponseGenericAPi<PostResponseDto>
 
-    suspend fun createQuizzRemote(body: CreateQuizzDto): ResponseGenericAPi<QuizzResponseDto>
+    suspend fun createQuizzRemote(body: CreateQuizzDto): ResponseGenericAPi<CreateQuizzResponseDto>
 
-    suspend fun answerQuizzRemote(body: AnswerQuizzDto): ResponseGenericAPi<QuizzResponseDto>
+    suspend fun answerQuizzRemote(body: AnswerQuizzDto, idQuizz: String): ResponseGenericAPi<AnswerQuizzResponseDto>
 
 
 

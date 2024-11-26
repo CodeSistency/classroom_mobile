@@ -232,7 +232,7 @@ fun AddActivityScreen(
                                         startDate = currentDateFormatted,
                                         endDate = state.endDate,
                                         idCourse = idCourse.toInt(),
-                                        grade = state.grade.toInt(),
+                                        grade = state.grade.toDouble(),
                                         email = email
                                     )
                                     ))

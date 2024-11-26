@@ -9,12 +9,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.classroom.common.validator.ActivityDataValidator
 import com.example.classroom.data.remote.dto.activities.ActivityRequestDto
+import com.example.classroom.data.remote.dto.activities.GetActivitiesWithQuizzResponseDto
 import com.example.classroom.data.repository.RepositoryBundle
 import com.example.classroom.domain.model.entity.LocalActivities
 import com.example.classroom.domain.model.entity.LocalUser
+import com.example.classroom.domain.model.entity.OptionEntity
+import com.example.classroom.domain.model.entity.QuestionEntity
+import com.example.classroom.domain.model.entity.QuizEntity
 import com.example.classroom.domain.model.entity.Status
 import com.example.classroom.domain.model.entity.toCoursesLocal
 import com.example.classroom.domain.model.entity.toLocal
+import com.example.classroom.domain.model.entity.toLocalActivity
 import com.example.classroom.domain.use_case.activities.DeleteActivityUseCase
 import com.example.classroom.domain.use_case.activities.GetActivitiesByUserUseCase
 import com.example.classroom.domain.use_case.activities.GetActivitiesUseCase
@@ -193,15 +198,56 @@ class ActivityViewmodel(
                 is Resource.Error -> _stateGetActivities.value = GetActivitiesState(error = result.message)
                 is Resource.Loading -> _stateGetActivities.value = GetActivitiesState(isLoading = true)
                 is Resource.Success -> {
-                    _stateGetActivities.value = GetActivitiesState(info = result.data?.toLocal())
-                    _stateGetActivities.value.info?.let {
-                        repositoryBundle.activitiesRepository.insertAllActivities(it)
+
+                    val activities = result.data?.data ?: emptyList()
+
+                    // Save activities
+                    val localActivities = activities.map { it.toLocalActivity() }
+                    repositoryBundle.activitiesRepository.insertAllActivities(localActivities)
+
+                    // Save quizzes if questions are not empty
+                    activities.forEach { activity ->
+                        if (activity.questions.isNotEmpty()) {
+                            saveQuizToLocalDatabase(activity)
+                        }
                     }
+
+                    _stateGetActivities.value = GetActivitiesState(info = localActivities)
+
+
+//                    }
                 }
             }
         }.launchIn(viewModelScope)
     }
 
+    private suspend fun saveQuizToLocalDatabase(activity: GetActivitiesWithQuizzResponseDto.Activity) {
+        val quizEntity = QuizEntity(
+            id = activity.quizzId ?: return,
+            activityId = activity.idApi,
+            title = activity.title
+        )
+        repositoryBundle.quizzRepository.insertQuiz(quizEntity)
+
+        activity.questions.forEach { questionDto ->
+            val questionEntity = QuestionEntity(
+                id = questionDto.id,
+                quizId = activity.quizzId ?: return,
+                text = questionDto.text,
+                correctAnswer = questionDto.answer
+            )
+            repositoryBundle.quizzRepository.insertQuestion(questionEntity)
+
+            questionDto.options.forEach { optionDto ->
+                val optionEntity = OptionEntity(
+                    id = optionDto.id,
+                    questionId = questionDto.id,
+                    text = optionDto.text
+                )
+                repositoryBundle.quizzRepository.insertOption(optionEntity)
+            }
+        }
+    }
     suspend fun deleteActivity(id: String) {
         deleteActivityUseCase(id).onEach { result ->
             when (result) {

@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.classroom.data.remote.dto.activities.ActivityResponseDto
 import com.example.classroom.data.remote.dto.activities.GetActivitiesResponseDto
+import com.example.classroom.data.remote.dto.activities.GetActivitiesWithQuizzResponseDto
 import com.example.classroom.data.remote.dto.login.signIn.SignInResponseDto
 
 @Entity("localActivities_table")
@@ -14,10 +15,13 @@ data class LocalActivities(
     @ColumnInfo("idCourse") val idCourse: String,
     @ColumnInfo("title") val title: String,
     @ColumnInfo("description") val description: String?,
-    @ColumnInfo("grade") val grade: Int = 0,
+    @ColumnInfo("grade") val grade: Double = 0.0,
     @ColumnInfo("start_date") val startDate: String,
     @ColumnInfo("end_date") val endDate: String,
     @ColumnInfo("status") val status: Status,
+    @ColumnInfo("isQuizz") val isQuizz: Boolean = false,
+    @ColumnInfo("quizzId") val quizzId: String? = null,
+
     )
 
 enum class Status(val id: Int, val displayName: String) {
@@ -72,7 +76,36 @@ fun GetActivitiesResponseDto.toLocal() : List<LocalActivities>{
             endDate = it.endDate,
             grade = it.grade,
             idCourse = it.idCourse.toString(),
-
         )
     }
+}
+
+fun GetActivitiesWithQuizzResponseDto.toLocal() : List<LocalActivities>{
+    return data.map {
+        LocalActivities(
+            idApi = it.idApi.toString(),
+            description = it.description,
+            status = Status.fromId(it.status),
+            startDate = it.startDate,
+            title = it.title,
+            endDate = it.endDate,
+            grade = it.grade,
+            idCourse = it.idCourse.toString(),
+        )
+    }
+}
+
+fun GetActivitiesWithQuizzResponseDto.Activity.toLocalActivity(): LocalActivities {
+    return LocalActivities(
+        idApi = this.idApi.toString(),
+        idCourse = this.idCourse.toString(),
+        title = this.title,
+        description = this.description,
+        grade = this.grade,
+        startDate = this.startDate,
+        endDate = this.endDate,
+        quizzId = this.quizzId.toString(),
+        isQuizz = this.isQuizz,
+        status = Status.fromId(this.status),
+    )
 }

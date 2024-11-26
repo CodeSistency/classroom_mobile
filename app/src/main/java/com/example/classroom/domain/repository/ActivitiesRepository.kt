@@ -6,6 +6,7 @@ import com.example.classroom.data.remote.dto.activities.GetActivitiesResponseDto
 import com.example.classroom.domain.model.entity.LocalActivities
 import kotlinx.coroutines.flow.Flow
 import com.example.classroom.common.ResponseGenericAPi
+import com.example.classroom.data.remote.dto.activities.GetActivitiesWithQuizzResponseDto
 
 interface ActivitiesRepository {
     //Remote Methods
@@ -13,7 +14,7 @@ interface ActivitiesRepository {
     suspend fun updateActivityRemote(activity: ActivityRequestDto, id: String) : ResponseGenericAPi<ActivityResponseDto>
     suspend fun deleteActivityRemote(id: String) : ResponseGenericAPi<Boolean>
     suspend fun getActivitiesRemote(id: String) : ResponseGenericAPi<GetActivitiesResponseDto>
-    suspend fun getActivitiesByCourseRemote(id: String) : ResponseGenericAPi<GetActivitiesResponseDto>
+    suspend fun getActivitiesByCourseRemote(id: String) : ResponseGenericAPi<GetActivitiesWithQuizzResponseDto>
 
     suspend fun getActivitiesByUserRemote(id: String) : ResponseGenericAPi<GetActivitiesResponseDto>
 

@@ -2,6 +2,7 @@ package com.example.classroom.presentation.screens.submission.student
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavController
 import com.example.classroom.presentation.screens.submission.SubmissionViewModel
 import com.example.classroom.presentation.screens.submission.composables.SubmissionForm
 
@@ -11,6 +12,7 @@ fun SubmissionStudentScreen(
     activityId: String,
     studentId: String,
     courseId: String,
+    navController: NavController
 ){
     val context = LocalContext.current
 
@@ -27,6 +29,7 @@ fun SubmissionStudentScreen(
                 onSubmissionFailure = {},
                 userId = studentId
             )
-        }
+        },
+        navController = navController
     )
 }

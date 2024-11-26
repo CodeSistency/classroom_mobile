@@ -9,6 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.classroom.presentation.screens.submission.SubmissionViewModel
 import com.example.classroom.presentation.screens.submission.composables.ReviewSubmissionScreen
 
@@ -18,6 +19,7 @@ fun SubmissionProfessorScreen(
     activityId: String,
     studentId: String,
     courseId: String,
+    navController: NavController
 ) {
     val context = LocalContext.current
     val submission by viewModel.currentSubmission // Observe the state directly
@@ -36,7 +38,8 @@ fun SubmissionProfessorScreen(
             onDownloadFile = { documentUrl ->
                 viewModel.downloadAndOpenFile(context, documentUrl, fileName = "submission_${loadedSubmission.id}.pdf")
             },
-          viewModel = viewModel
+          viewModel = viewModel,
+            navController = navController
         )
     } ?: run {
         Text("Cargando la información de la actividad...", modifier = Modifier.padding(16.dp))

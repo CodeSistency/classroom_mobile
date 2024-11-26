@@ -38,7 +38,7 @@ data class ActivityRequestDto(
     @SerialName("description")
     val description: String?,
     @SerialName("grade")
-    val grade: Int = 0,
+    val grade: Double = 0.0,
     @SerialName("email")
     val email: String,
     @SerialName("start_date")

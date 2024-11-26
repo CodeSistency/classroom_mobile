@@ -125,7 +125,7 @@ class Seeders(
                 idCourse = "course1",
                 title = "Math Homework 1",
                 description = "Complete exercises 1-10",
-                grade = 100,
+                grade = 100.0,
                 startDate = "2023-01-01",
                 endDate = "2023-01-10",
                 status = Status.OPEN
@@ -135,7 +135,7 @@ class Seeders(
                 idCourse = "course2",
                 title = "Biology Lab Report",
                 description = "Document your findings from the lab",
-                grade = 100,
+                grade = 100.0,
                 startDate = "2023-02-01",
                 endDate = "2023-02-10",
                 status = Status.OPEN

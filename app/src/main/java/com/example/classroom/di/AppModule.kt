@@ -38,6 +38,8 @@ import com.example.classroom.domain.use_case.posts.CreatePostUseCase
 import com.example.classroom.domain.use_case.posts.DeletePostUseCase
 import com.example.classroom.domain.use_case.posts.GetPostsUseCase
 import com.example.classroom.domain.use_case.posts.UpdatePostUseCase
+import com.example.classroom.domain.use_case.quizz.AnswerQuizzUseCase
+import com.example.classroom.domain.use_case.quizz.CreateQuizzUseCase
 import com.example.classroom.domain.use_case.signIn.SignInUseCase
 import com.example.classroom.domain.use_case.signUp.SignUpUseCase
 import com.example.classroom.domain.use_case.validators.ValidatorBundle
@@ -103,6 +105,8 @@ interface AppModule {
     val getPostUseCase: GetPostsUseCase
     val deleteActivityUseCase: DeleteActivityUseCase
     val uploadFileUseCase: UploadFileUseCase
+    val createQuizzUseCase: CreateQuizzUseCase
+    val answerQuizzUseCase: AnswerQuizzUseCase
 
 
 
@@ -241,6 +245,12 @@ class AppModuleImpl(
     override val uploadFileUseCase: UploadFileUseCase by lazy {
         UploadFileUseCase(repositoryBundle)
     }
+    override val createQuizzUseCase: CreateQuizzUseCase by lazy {
+        CreateQuizzUseCase(repositoryBundle)
+    }
+    override val answerQuizzUseCase: AnswerQuizzUseCase by lazy {
+        AnswerQuizzUseCase(repositoryBundle)
+    }
 
     override val studentEvaluationsViewModel: StudentEvaluationsViewModel by lazy {
         StudentEvaluationsViewModel(
@@ -347,7 +357,9 @@ class AppModuleImpl(
     }
     override val quizzViewModel: QuizzViewModel by lazy {
         QuizzViewModel(
-            repositoryBundle = repositoryBundle
+            repositoryBundle = repositoryBundle,
+            answerQuizzUseCase = answerQuizzUseCase,
+            createQuizzUseCase = createQuizzUseCase
         )
     }
 

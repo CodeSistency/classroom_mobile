@@ -6,7 +6,9 @@ import com.example.classroom.data.local.db.QuizWithQuestions
 import com.example.classroom.data.local.db.QuizzDao
 import com.example.classroom.data.remote.ApiService
 import com.example.classroom.data.remote.dto.quizz.AnswerQuizzDto
+import com.example.classroom.data.remote.dto.quizz.AnswerQuizzResponseDto
 import com.example.classroom.data.remote.dto.quizz.CreateQuizzDto
+import com.example.classroom.data.remote.dto.quizz.CreateQuizzResponseDto
 import com.example.classroom.data.remote.dto.quizz.QuestionDto
 import com.example.classroom.data.remote.dto.quizz.QuizzResponseDto
 import com.example.classroom.domain.model.entity.AnswerEntity
@@ -42,11 +44,27 @@ class QuizzRepositoryImpl(
         quizDao.insertAnswers(answers)
     }
 
-    override suspend fun createQuizzRemote(body: CreateQuizzDto): ResponseGenericAPi<QuizzResponseDto> {
+    override suspend fun insertQuiz(quiz: QuizEntity) {
+       quizDao.insertQuiz(quiz)
+    }
+
+    override suspend fun insertQuestion(question: QuestionEntity) {
+        quizDao.insertQuestion(question)
+    }
+
+    override suspend fun insertOption(option: OptionEntity) {
+        quizDao.insertOption(option)
+    }
+
+    override suspend fun createQuizzRemote(body: CreateQuizzDto): ResponseGenericAPi<CreateQuizzResponseDto> {
         return apiService.createQuizzRemote(body)
     }
 
-    override suspend fun answerQuizzRemote(body: AnswerQuizzDto): ResponseGenericAPi<QuizzResponseDto> {
-        return apiService.answerQuizzRemote(body)
+    override suspend fun answerQuizzRemote(body: AnswerQuizzDto, idQuizz: String): ResponseGenericAPi<AnswerQuizzResponseDto> {
+        return apiService.answerQuizzRemote(body, idQuizz)
+    }
+
+    override suspend fun insertAnswer(answer: AnswerEntity) {
+        quizDao.insertAnswer(answer)
     }
 }

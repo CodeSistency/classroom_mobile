@@ -65,9 +65,17 @@ fun CardActivity(
                 .padding(16.dp)
                 .clickable {
 
-                    navController.navigate(
-                        "${Destination.STUDENT_UPLOAD_EVALUATION.screenRoute}?idStudent=${userId}&idActivity=${activity.idApi}&idCourse=${courseId}"
-                    )
+                    if (activity.isQuizz){
+                        navController.navigate(
+                            "${Destination.ANSWER_QUIZZ.screenRoute}?quizzId=${activity.quizzId}"
+                        )
+                    }else{
+                        navController.navigate(
+                            "${Destination.STUDENT_UPLOAD_EVALUATION.screenRoute}?idStudent=${userId}&idActivity=${activity.idApi}&idCourse=${courseId}"
+                        )
+                    }
+
+
                 }
         ) {
             Row(

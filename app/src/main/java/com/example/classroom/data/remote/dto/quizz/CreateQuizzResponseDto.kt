@@ -1,0 +1,20 @@
+package com.example.classroom.data.remote.dto.quizz
+
+
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class CreateQuizzResponseDto(
+    val code: Int,
+    val message: String,
+    val data: CreatedQuizDataDto
+)
+
+@Serializable
+data class CreatedQuizDataDto(
+    val id: Int,
+    val activityId: Int,
+    val quizzId: Int, // Add the quiz ID explicitly
+    val activity: QuizActivityDto,
+    val question: List<QuizQuestionDto>
+)

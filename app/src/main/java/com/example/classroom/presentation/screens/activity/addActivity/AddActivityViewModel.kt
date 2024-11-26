@@ -45,7 +45,7 @@ class AddActivityViewModel(
 
     var title = mutableStateOf("")
     var description = mutableStateOf("")
-    var grade = mutableStateOf(1)
+    var grade = mutableStateOf(1.0)
     var email = mutableStateOf("")
     var startDate = mutableStateOf("")
     var endDate = mutableStateOf("")
@@ -111,7 +111,7 @@ class AddActivityViewModel(
     fun resetForm() {
         title.value = ""
         description.value = ""
-        grade.value = 0
+        grade.value = 0.0
         email.value = ""
         startDate.value = ""
         endDate.value = ""

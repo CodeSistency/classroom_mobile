@@ -313,7 +313,7 @@ fun Navigation(
                         activityId = idActivity,
                         studentId = idStudent,
                         courseId = idCourse,
-//                        navController = navController,
+                        navController = navController,
                     )
                 }
             }
@@ -335,7 +335,8 @@ fun Navigation(
                             viewModel = App.appModule.submissionViewModel,
                         activityId = idActivity,
                         studentId = idStudent,
-                        courseId = idCourse
+                        courseId = idCourse,
+                        navController = navController
 //                        navController = navController,
                     )
                 }
@@ -352,8 +353,9 @@ fun Navigation(
 
                     CreateQuizzScreen(
                         viewModel = App.appModule.quizzViewModel,
-                        activityId = 0,
-                        navController = navController
+                        navController = navController,
+                        courseId = idCourse,
+                        focusManager = focusManager
                     )
                 }
             }
@@ -361,15 +363,16 @@ fun Navigation(
             composable(
                 route = "${Destination.ANSWER_QUIZZ.screenRoute}?quizzId={quizzId}",
                 arguments = listOf(
-                    navArgument("quizzId") { type = NavType.IntType; nullable = false },
+                    navArgument("quizzId") { type = NavType.StringType; nullable = false },
                 )
             ) { backStackEntry ->
-                val quizzId = backStackEntry.arguments?.getInt("quizzId")
+                val quizzId = backStackEntry.arguments?.getString("quizzId")
                 if (quizzId != null ) {
 
                     AnswerQuizScreen(
                         viewModel = App.appModule.quizzViewModel,
-                        quizId = quizzId
+                        quizId = quizzId,
+                        navController = navController
                         )
                 }
             }

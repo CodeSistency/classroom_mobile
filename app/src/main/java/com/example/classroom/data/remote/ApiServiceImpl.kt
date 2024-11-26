@@ -40,6 +40,7 @@ import proyecto.person.appconsultapopular.common.HttpRoutes
 import com.example.classroom.common.ResponseGenericAPi
 import com.example.classroom.common.json
 import com.example.classroom.common.parseResponseToGenericObject
+import com.example.classroom.data.remote.dto.activities.GetActivitiesWithQuizzResponseDto
 import com.example.classroom.data.remote.dto.cloud.CloudResposeDto
 import com.example.classroom.data.remote.dto.courses.GetUsersByCourseResponse
 import com.example.classroom.data.remote.dto.evaluations.evaluationsSent.EvaluationsSentResponseDto
@@ -51,7 +52,9 @@ import com.example.classroom.data.remote.dto.posts.GetPostsResponseDto
 import com.example.classroom.data.remote.dto.posts.PostRequestDto
 import com.example.classroom.data.remote.dto.posts.PostResponseDto
 import com.example.classroom.data.remote.dto.quizz.AnswerQuizzDto
+import com.example.classroom.data.remote.dto.quizz.AnswerQuizzResponseDto
 import com.example.classroom.data.remote.dto.quizz.CreateQuizzDto
+import com.example.classroom.data.remote.dto.quizz.CreateQuizzResponseDto
 import com.example.classroom.data.remote.dto.quizz.QuizzResponseDto
 import com.example.classroom.domain.model.entity.areatoInt
 import io.ktor.client.request.delete
@@ -190,7 +193,7 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
     override suspend fun getCoursesRemote(id: String): ResponseGenericAPi<GetCoursesResponseDto> = withContext(
     Dispatchers.IO)  {
         val response = client.get{
-            url("${Constants.BASE_URL}${HttpRoutes.COURSES_ENDPOINT}/mine/${id}")
+            url("${Constants.BASE_URL}${HttpRoutes.COURSES_ENDPOINT}/find/course/users/${id}")
 //            url("${Constants.BASE_URL}${HttpRoutes.COURSES_ENDPOINT}/find/course/users/${id}")
             contentType(ContentType.Application.Json)
         }
@@ -323,7 +326,7 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
 
     }
 
-    override suspend fun getActivitiesByCourseRemote(id: String): ResponseGenericAPi<GetActivitiesResponseDto> = withContext(
+    override suspend fun getActivitiesByCourseRemote(id: String): ResponseGenericAPi<GetActivitiesWithQuizzResponseDto> = withContext(
         Dispatchers.IO)  {
         val response = client.get{
             url("${Constants.BASE_URL}${HttpRoutes.ACTIVITIES_ENDPOINT}/course/${id}")
@@ -449,12 +452,30 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
 
     }
 
-    override suspend fun createQuizzRemote(body: CreateQuizzDto): ResponseGenericAPi<QuizzResponseDto> {
-        TODO("Not yet implemented")
+    override suspend fun createQuizzRemote(body: CreateQuizzDto): ResponseGenericAPi<CreateQuizzResponseDto> = withContext(
+        Dispatchers.IO)  {
+        val response = client.post{
+            url("${Constants.BASE_URL}${HttpRoutes.QUIZZ_ENDPOINT}/new")
+            contentType(ContentType.Application.Json)
+            setBody(body)
+
+
+        }
+        return@withContext parseResponseToGenericObject(response, true)
+
     }
 
-    override suspend fun answerQuizzRemote(body: AnswerQuizzDto): ResponseGenericAPi<QuizzResponseDto> {
-        TODO("Not yet implemented")
+    override suspend fun answerQuizzRemote(body: AnswerQuizzDto, idQuizz: String): ResponseGenericAPi<AnswerQuizzResponseDto> = withContext(
+        Dispatchers.IO)  {
+        val response = client.post{
+            url("${Constants.BASE_URL}${HttpRoutes.QUIZZ_ENDPOINT}/${idQuizz}/answer")
+            contentType(ContentType.Application.Json)
+            setBody(body)
+
+
+        }
+        return@withContext parseResponseToGenericObject(response, true)
+
     }
 
 

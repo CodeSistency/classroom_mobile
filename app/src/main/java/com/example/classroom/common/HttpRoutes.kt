@@ -10,6 +10,9 @@ object HttpRoutes {
 
     val POSTS_ENDPOINT = "/post"
 
+    val QUIZZ_ENDPOINT = "/quizzes"
+
+
     val UPLOAD_FILE = "/cloud/send/file"
 
     val STUDENT_SEND_ACTIVITY = "/activities/send/course/user"
