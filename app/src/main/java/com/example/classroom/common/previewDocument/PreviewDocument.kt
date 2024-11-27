@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.example.classroom.common.getSupabaseFileUrl
 
 @Composable
 fun DocumentPreviewComponent(
@@ -60,12 +61,12 @@ fun DocumentPreviewComponent(
             ) {
                 Icon(
                     imageVector = Icons.Default.Error,
-                    contentDescription = "Error loading file",
+                    contentDescription = "Error cargando archivo",
                     modifier = Modifier.size(40.dp),
                     tint = Color.Red
                 )
                 Text(
-                    text = "Error loading file",
+                    text = "Error cargando archivo",
                     color = Color.Red,
                     style = MaterialTheme.typography.body2
                 )
@@ -73,9 +74,11 @@ fun DocumentPreviewComponent(
         } else {
             when (fileType) {
                 "image" -> {
+                    val mediaUrl = getSupabaseFileUrl(documentUrl, true)
+
                     AsyncImage(
-                        model = documentUrl,
-                        contentDescription = "Image preview",
+                        model = mediaUrl,
+                        contentDescription = "Imagen preview",
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(150.dp)
@@ -93,12 +96,12 @@ fun DocumentPreviewComponent(
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(
                             imageVector = Icons.Default.PictureAsPdf,
-                            contentDescription = "PDF File",
+                            contentDescription = "PDF Archivo",
                             modifier = Modifier.size(40.dp),
                             tint = MaterialTheme.colors.primary
                         )
                         Text(
-                            text = "PDF Document",
+                            text = "PDF Documento",
                             style = MaterialTheme.typography.body1,
                             color = MaterialTheme.colors.primary
                         )
@@ -108,12 +111,12 @@ fun DocumentPreviewComponent(
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(
                             imageVector = Icons.Default.InsertDriveFile,
-                            contentDescription = "Unknown File",
+                            contentDescription = "Documento desconocido",
                             modifier = Modifier.size(40.dp),
                             tint = MaterialTheme.colors.primary
                         )
                         Text(
-                            text = "Download File",
+                            text = "Descargar archivo",
                             style = MaterialTheme.typography.body1,
                             color = MaterialTheme.colors.primary
                         )

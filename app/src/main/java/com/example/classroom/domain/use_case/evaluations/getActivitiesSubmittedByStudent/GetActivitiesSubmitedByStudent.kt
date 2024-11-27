@@ -18,7 +18,7 @@ class GetActivitiesSubmitedByStudent(
         return handlingError<List<LocalActivitySubmission>> {
             val data = repositoryBundle.submissionsRepository.getActivitiesSubmited(courseId, userId)
             if (data.statusCode.value == 200 || data.statusCode.value == 201) { // Allow both 200 and 201
-                data.responseData?.toActivitiesSubmission()!!
+                data.responseData?.toActivitiesSubmission(courseId)!!
             }else{
                 throw catchError(data.statusCode.value, null, message = data.messageError?.message)
             }

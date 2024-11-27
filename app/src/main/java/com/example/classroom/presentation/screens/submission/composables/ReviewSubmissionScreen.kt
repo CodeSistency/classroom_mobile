@@ -153,7 +153,7 @@ fun ReviewSubmissionScreen(
                     onValueChange = { value ->
                         val newGrade = value.toFloatOrNull()
                         if (newGrade != null && newGrade in 0f..100f) {
-                            viewModel.grade.value = newGrade.toFloat()
+                            viewModel.grade.value = newGrade.toDouble()
                         }
                     }, label = "Calificación (0-100)") {
 
@@ -195,7 +195,7 @@ fun ReviewSubmissionScreen(
 
             else -> {
                 if (state.value.info != null){
-                    dialogState = SetupCustomDialogState.Success(message = "Se ha hecho la evaluacion exitosamente")
+                    dialogState = SetupCustomDialogState.Success(message = "Se ha calificado la evaluacion exitosamente")
                     delay(1000)
 
 

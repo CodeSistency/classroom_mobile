@@ -15,7 +15,7 @@ object HttpRoutes {
 
     val UPLOAD_FILE = "/cloud/send/file"
 
-    val STUDENT_SEND_ACTIVITY = "/activities/send/course/user"
+    val STUDENT_SEND_ACTIVITY = "/activities/send/activity"
 
     val PROFFESOR_REVIEW_ACTIVITY = "/activities"
 

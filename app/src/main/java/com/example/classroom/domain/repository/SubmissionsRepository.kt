@@ -7,8 +7,7 @@ import com.example.classroom.data.remote.dto.evaluations.reviewEvaluationDto.Rev
 import com.example.classroom.data.remote.dto.evaluations.sendEvaluationRequestDto.SendEvaluationRequestDto
 import com.example.classroom.data.remote.dto.evaluations.sendEvaluationRequestDto.SendEvaluationResponseDto
 import com.example.classroom.domain.model.entity.LocalActivitySubmission
-import com.example.classroom.domain.model.entity.LocalStudentEvaluation
-import io.ktor.client.statement.HttpResponse
+
 import kotlinx.coroutines.flow.Flow
 import okhttp3.Response
 import java.io.File
@@ -19,16 +18,12 @@ interface SubmissionsRepository {
 
     suspend fun getSubmissionsForStudent(activityId: String, studentId: String): Flow<List<LocalActivitySubmission>> // Return as Flow
 
-    suspend fun getSubmissionsForStudentAndCourse(courseId: String, studentId: String): Flow<List<LocalActivitySubmission>> // Return as Flow
+    suspend fun getSubmissionsForStudentByCourse(studentId: String, courseId: String): Flow<List<LocalActivitySubmission>> // Return as Flow
+
+    suspend fun addSubmissionsWithoutDuplicates(submissions: List<LocalActivitySubmission>)
 
     suspend fun getAllSubmissionsForActivity(activityId: String): Flow<List<LocalActivitySubmission>> // Return as Flow
 
-
-    suspend fun addOrUpdateEvaluation(evaluation: LocalStudentEvaluation)
-
-    suspend fun getEvaluationsForStudent(activityId: String, studentId: String): Flow<List<LocalStudentEvaluation>> // Return as Flow
-
-    suspend fun getAllEvaluationsForCourse(courseId: String): Flow<List<LocalStudentEvaluation>> // Return as Flow
 
     //REMOTE
 

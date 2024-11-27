@@ -11,7 +11,6 @@ import com.example.classroom.domain.model.entity.LocalActivities
 import com.example.classroom.domain.model.entity.LocalActivitySubmission
 import com.example.classroom.domain.model.entity.LocalCourses
 import com.example.classroom.domain.model.entity.LocalPost
-import com.example.classroom.domain.model.entity.LocalStudentEvaluation
 import com.example.classroom.domain.model.entity.LocalStudents
 import com.example.classroom.domain.model.entity.LocalUser
 import com.example.classroom.domain.model.entity.OptionEntity
@@ -24,7 +23,7 @@ import com.example.classroom.domain.model.typeConverter.UsersInCourseConverter
 
 @Database(
     entities = [LocalUser::class, LocalCourses::class, LocalActivities::class, LocalStudents::class,
-        QuizEntity::class, QuestionEntity::class, OptionEntity::class, AnswerEntity::class, LocalActivitySubmission::class, LocalStudentEvaluation::class, LocalPost::class],
+        QuizEntity::class, QuestionEntity::class, OptionEntity::class, AnswerEntity::class, LocalActivitySubmission::class, LocalPost::class],
     version = 1,
     //autoMigrations = [AutoMigration(from = 1 , to = 2)],
     exportSchema = false

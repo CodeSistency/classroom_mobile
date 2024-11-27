@@ -65,7 +65,7 @@ fun FileUploadComponent(
             .fillMaxWidth()
     ) {
         Text(
-            text = "Attach File",
+            text = "Adjuntar archivo",
             style = MaterialTheme.typography.h6,
             modifier = Modifier.padding(bottom = 8.dp)
         )
@@ -84,7 +84,7 @@ fun FileUploadComponent(
             when {
                 selectedFileUri == null -> {
                     Text(
-                        text = "Tap to select a file",
+                        text = "Selecciona un archivo",
                         style = MaterialTheme.typography.body1,
                         color = Color.Gray
                     )
@@ -115,7 +115,7 @@ fun FileUploadComponent(
                                     tint = MaterialTheme.colors.primary
                                 )
                                 Text(
-                                    text = "PDF File",
+                                    text = "PDF Archivo",
                                     style = MaterialTheme.typography.body1,
                                     color = MaterialTheme.colors.primary
                                 )
@@ -133,7 +133,7 @@ fun FileUploadComponent(
                                     tint = MaterialTheme.colors.primary
                                 )
                                 Text(
-                                    text = selectedFileUri?.lastPathSegment ?: "Unknown File",
+                                    text = selectedFileUri?.lastPathSegment ?: "Archivo desconocido",
                                     style = MaterialTheme.typography.body2,
                                     color = MaterialTheme.colors.onSurface
                                 )
@@ -154,7 +154,7 @@ fun FileUploadComponent(
                 },
                 modifier = Modifier.align(Alignment.End)
             ) {
-                Text("Clear File")
+                Text("Limpiar")
             }
         }
     }

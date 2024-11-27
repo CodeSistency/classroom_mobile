@@ -1,6 +1,7 @@
 package com.example.classroom.presentation.screens.activity.studentEvaluations
 
 import android.annotation.SuppressLint
+import android.service.voice.VoiceInteractionSession.ActivityId
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -34,7 +35,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.classroom.common.uiState.UiState
 import com.example.classroom.domain.model.entity.LocalActivitySubmission
-import com.example.classroom.domain.model.entity.LocalStudentEvaluation
 import com.example.classroom.presentation.screens.activity.studentEvaluations.composable.EvaluationItem
 import com.example.classroom.presentation.theme.Azul
 
@@ -42,15 +42,16 @@ import com.example.classroom.presentation.theme.Azul
 @Composable
 fun StudentsEvaluationsScreen(
     viewModel: StudentEvaluationsViewModel,
-    courseId: String,
+    activityId: String = "",
     studentId: String,
+    courseId: String,
     navController: NavController
 ) {
     // Trigger data loading when the screen is first displayed
     LaunchedEffect(true) {
         Log.e("triggers", "triggers")
 
-        viewModel.observeLocalEvaluations(courseId, studentId)
+        viewModel.observeLocalEvaluationsList(activityId, studentId)
         viewModel.getActivitiesByStudent(courseId, studentId)
     }
 

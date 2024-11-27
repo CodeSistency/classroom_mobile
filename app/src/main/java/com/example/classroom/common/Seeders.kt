@@ -211,24 +211,24 @@ class Seeders(
         // Submission in a joined course by the user
         val submissions = listOf(
             LocalActivitySubmission(
-                idApi = "sub1",
+//                idApi = "sub1",
                 activityId = "activity2", // Activity in joined course
-                courseId = "course2",
+//                courseId = "course2",
                 studentId = "user1", // Logged-in user
                 submissionDate = "2023-02-03",
                 comment = "Completed the lab report with findings",
                 documentUrl = "https://example.com/doc1",
-                grade = 90f
+                grade = 90.0
             ),
             LocalActivitySubmission(
-                idApi = "sub2",
+//                idApi = "sub2",
                 activityId = "activity1", // Activity in owned course
-                courseId = "course1",
+//                courseId = "course1",
                 studentId = "stu1", // Student enrolled in created course
                 submissionDate = "2023-01-05",
                 comment = "Finished the math homework",
                 documentUrl = "https://example.com/doc2",
-                grade = 85f
+                grade = 85.0
             )
         )
         submissions.forEach { dao.insertOrUpdateSubmission(it) }

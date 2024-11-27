@@ -33,8 +33,7 @@ import com.example.classroom.presentation.theme.PaddingCustom
 @Composable
 fun CardActivitySubmitted(
     evaluation: LocalActivitySubmission,
-    idStudent: String,
-    idCourse: String,
+
     navController: NavController
 ) {
     val shape = RoundedCornerShape(PaddingCustom.MEDIUM.size)

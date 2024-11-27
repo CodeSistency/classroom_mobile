@@ -12,7 +12,6 @@ import com.example.classroom.domain.model.entity.LocalActivities
 import com.example.classroom.domain.model.entity.LocalActivitySubmission
 import com.example.classroom.domain.model.entity.LocalCourses
 import com.example.classroom.domain.model.entity.LocalPost
-import com.example.classroom.domain.model.entity.LocalStudentEvaluation
 import com.example.classroom.domain.model.entity.LocalStudents
 import com.example.classroom.domain.model.entity.LocalUser
 
@@ -98,8 +97,25 @@ interface AppDao {
     //Activities
     @Insert
     suspend fun insertLocalActivity(localActivity: LocalActivities)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAllLocalActivities(course: List<LocalActivities>)
+    suspend fun insert(activity: LocalActivities)
+
+    @Transaction
+    suspend fun insertAllLocalActivities(course: List<LocalActivities>) {
+        course.forEach { activity ->
+            // Check if an activity with the same idApi and idCourse already exists
+            val existingActivity = getActivityByApiAndCourse(activity.idApi, activity.idCourse)
+            if (existingActivity == null) {
+                // Insert only if it doesn't already exist
+                insert(activity)
+            }
+        }
+    }
+
+    @Query("SELECT * FROM localActivities_table WHERE idApi = :idApi AND idCourse = :idCourse LIMIT 1")
+    suspend fun getActivityByApiAndCourse(idApi: String, idCourse: String): LocalActivities?
+
     @Update
     suspend fun updateLocalActivity(localActivity: LocalActivities)
 
@@ -144,30 +160,46 @@ interface AppDao {
     @Delete
     suspend fun deleteStudent(student: LocalStudents)
 
-    // STUDENTS EVALUATIONS
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertOrUpdateEvaluation(evaluation: LocalStudentEvaluation)
-
-    @Query("SELECT * FROM localStudentEvaluation_table WHERE student_id = :studentId AND activity_id = :activityId")
-    fun getEvaluationsForStudent(activityId: String, studentId: String): Flow<List<LocalStudentEvaluation>> // Return as Flow
-
-    @Query("SELECT * FROM localStudentEvaluation_table WHERE student_id = :courseId")
-    fun getAllEvaluationsForCourse(courseId: String): Flow<List<LocalStudentEvaluation>> // Return as Flow
-
-    @Delete
-    suspend fun deleteEvaluation(evaluation: LocalStudentEvaluation)
 
     // SUBMISSIONS
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrUpdateSubmission(submission: LocalActivitySubmission)
 
-    @Query("SELECT * FROM localActivitySubmission_table WHERE idApi = :activityId AND student_id = :studentId")
+    @Query("SELECT * FROM localActivitySubmission_table WHERE activity_id = :activityId AND student_id = :studentId")
     fun getSubmissionsForStudent(activityId: String, studentId: String): Flow<List<LocalActivitySubmission>> // Return as Flow
 
     @Query("SELECT * FROM localActivitySubmission_table WHERE student_id = :studentId AND course_id = :courseId")
-    fun getSubmissionsForStudentAndCourse(studentId: String, courseId: String): Flow<List<LocalActivitySubmission>> // Return as Flow
+    fun getSubmissionsForStudentByCourse(studentId: String, courseId: String): Flow<List<LocalActivitySubmission>> // Return as Flow
+
+    @Query(
+        "SELECT * FROM localActivitySubmission_table " +
+                "WHERE activity_id = :activityId AND student_id = :studentId"
+    )
+    suspend fun getSubmission(activityId: String, studentId: String): LocalActivitySubmission?
+
+    // Insert a single submission
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertSubmission(submission: LocalActivitySubmission)
+
+    // Insert a list of submissions (fallback for batch operations)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertSubmissions(submissions: List<LocalActivitySubmission>)
+
+    // Define a transaction for adding non-duplicate submissions
+    @Transaction
+    suspend fun addSubmissionsWithoutDuplicates(submissions: List<LocalActivitySubmission>) {
+        for (submission in submissions) {
+            // Check if the submission already exists
+            val existing = getSubmission(submission.activityId, submission.studentId)
+            if (existing == null) {
+                // Insert only if it doesn't already exist
+                insertSubmission(submission)
+            }
+        }
+    }
+
 
     @Query("SELECT * FROM localActivitySubmission_table WHERE activity_id = :activityId")
     fun getAllSubmissionsForActivity(activityId: String): Flow<List<LocalActivitySubmission>> // Return as Flow

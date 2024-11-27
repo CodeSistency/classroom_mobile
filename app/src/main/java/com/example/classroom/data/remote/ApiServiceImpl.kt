@@ -421,9 +421,9 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
 
 
             // Log response details
-            val rawResponse = response.bodyAsText()
-            Log.d("FILE_UPLOAD", "Response code: ${response.status.value}")
-            Log.d("FILE_UPLOAD", "Response body: $rawResponse")
+//            val rawResponse = response.bodyAsText()
+//            Log.d("FILE_UPLOAD", "Response code: ${response.status.value}")
+//            Log.d("FILE_UPLOAD", "Response body: $rawResponse")
 
             return@withContext parseResponseToGenericObject(response, true)
         }

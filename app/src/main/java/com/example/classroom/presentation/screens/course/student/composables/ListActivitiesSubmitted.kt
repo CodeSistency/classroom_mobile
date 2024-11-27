@@ -23,17 +23,18 @@ import com.example.classroom.presentation.screens.course.CourseViewmodel
 fun ListActivitiesSubmitted(
     viewModel: CourseViewmodel,
     navController: NavController,
-    courseId: String,
-    studentId: String
+//    activtyId: String,
+    studentId: String,
+    courseId: String
 ){
 
     // Trigger data loading when the screen is first displayed
 
-//    LaunchedEffect(true) {
-//
-//        viewModel.observeLocalEvaluations(courseId, studentId)
-//        viewModel.getActivitiesByStudent(courseId, studentId)
-//    }
+    LaunchedEffect(true) {
+
+        viewModel.observeLocalEvaluations(courseId, studentId)
+        viewModel.getActivitiesByStudent(courseId, studentId)
+    }
 
     val uiState = viewModel.stateStudentEvaluations.value
 
@@ -41,6 +42,10 @@ fun ListActivitiesSubmitted(
         Log.e("uiState", uiState.toString())
 
     }
+
+//    LaunchedEffect(key1 = true, block = {
+//        viewModel.getActivitiesSubmitted(activtyId, studentId)
+//    })
 
 
     when {
@@ -86,8 +91,7 @@ fun ListActivitiesSubmitted(
                         CardActivitySubmitted(
                             evaluation = evaluation,
                             navController = navController,
-                            idCourse = courseId,
-                            idStudent = studentId
+
                         )
                     }
                 }

@@ -110,7 +110,7 @@ fun AddPostForm(viewModel: AddPostViewModel, focusManager: FocusManager, courseI
                         viewModel.title.value = it
                         viewModel.validateTitle()
                     },
-                    label = "Title",
+                    label = "Titulo",
                     errorMessage = viewModel.titleError.value ?: "",
                     onNextClick = {
                         focusManager.moveFocus(FocusDirection.Down)
@@ -123,7 +123,7 @@ fun AddPostForm(viewModel: AddPostViewModel, focusManager: FocusManager, courseI
                         viewModel.content.value = it
                         viewModel.validateContent()
                     },
-                    label = "Content",
+                    label = "Contenido",
                     errorMessage = viewModel.contentError.value ?: "",
                     onNextClick = {
                         focusManager.moveFocus(FocusDirection.Down)
@@ -144,7 +144,7 @@ fun AddPostForm(viewModel: AddPostViewModel, focusManager: FocusManager, courseI
                         }
                     )
                     Text(
-                        text = "Attach a file",
+                        text = "Adjuntar archivo",
                         style = MaterialTheme.typography.body1
                     )
                 }

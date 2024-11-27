@@ -96,7 +96,7 @@ fun CourseStudentPresentation(
         userInfo.value?.let {
             courseViewmodel.observeLocalEvaluations(id, it.first().idApi)
             courseViewmodel.getActivitiesByStudent(id, it.first().idApi)
-            courseViewmodel.getActivitiesSubmitted(id, it.first().idApi)
+//            courseViewmodel.getActivitiesSubmitted(id, it.first().idApi)
         }
 
     })

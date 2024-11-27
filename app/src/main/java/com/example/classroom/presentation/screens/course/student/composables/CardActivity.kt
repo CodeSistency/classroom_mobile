@@ -63,20 +63,7 @@ fun CardActivity(
                 .shadow(8.dp, shape)
                 .background(Color.White, shape)
                 .padding(16.dp)
-                .clickable {
 
-                    if (activity.isQuizz){
-                        navController.navigate(
-                            "${Destination.ANSWER_QUIZZ.screenRoute}?quizzId=${activity.quizzId}"
-                        )
-                    }else{
-                        navController.navigate(
-                            "${Destination.STUDENT_UPLOAD_EVALUATION.screenRoute}?idStudent=${userId}&idActivity=${activity.idApi}&idCourse=${courseId}"
-                        )
-                    }
-
-
-                }
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -149,7 +136,16 @@ fun CardActivity(
                     Status.LATE -> TODO()
                     Status.OPEN -> {
                         IconButton(onClick = {
-                            isSendActivityOpen = true
+                            if (activity.isQuizz){
+                                navController.navigate(
+                                    "${Destination.ANSWER_QUIZZ.screenRoute}?quizzId=${activity.quizzId}"
+                                )
+                            }else{
+                                navController.navigate(
+                                    "${Destination.STUDENT_UPLOAD_EVALUATION.screenRoute}?idStudent=${userId}&idActivity=${activity.idApi}&idCourse=${courseId}"
+                                )
+                            }
+//                            isSendActivityOpen = true
                         }) {
                             Icon(
                                 Icons.Default.Send,

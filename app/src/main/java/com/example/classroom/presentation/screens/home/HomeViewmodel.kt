@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
@@ -49,22 +50,40 @@ class HomeViewmodel(
     val userInfo: StateFlow<LocalUser?> = _userInfo
 
     // Courses not owned by the user (joined courses)
-    val listCoursesFlow: StateFlow<List<LocalCourses>> = _userInfo.filterNotNull()
-        .flatMapLatest { user ->
-            repositoryBundle.coursesRepository.getCoursesWithFlow().map { courses ->
-                courses.filter { it.owner != user.idApi }
-            }
-        }
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+//    val listCoursesFlow: StateFlow<List<LocalCourses>> = _userInfo.filterNotNull()
+//        .flatMapLatest { user ->
+//            repositoryBundle.coursesRepository.getCoursesWithFlow().map { courses ->
+//                courses.filter { it.owner != user.idApi }
+//            }
+//        }
+//        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+//
+//    // Courses owned by the user
+//    val listMyCoursesFlow: StateFlow<List<LocalCourses>> = _userInfo.filterNotNull()
+//        .flatMapLatest { user ->
+//            repositoryBundle.coursesRepository.getCoursesWithFlow().map { courses ->
+//                courses.filter { it.owner == user.idApi }
+//            }
+//        }
+//        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
-    // Courses owned by the user
-    val listMyCoursesFlow: StateFlow<List<LocalCourses>> = _userInfo.filterNotNull()
-        .flatMapLatest { user ->
-            repositoryBundle.coursesRepository.getCoursesWithFlow().map { courses ->
-                courses.filter { it.owner == user.idApi }
+    val listCoursesFlow: StateFlow<List<LocalCourses>> = channelFlow {
+        _userInfo.filterNotNull().collectLatest { user ->
+            repositoryBundle.coursesRepository.getCoursesWithFlow().collect { courses ->
+                send(courses.filter { it.owner != user.idApi })
             }
         }
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+    }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    val listMyCoursesFlow: StateFlow<List<LocalCourses>> = channelFlow {
+        _userInfo.filterNotNull().collectLatest { user ->
+            repositoryBundle.coursesRepository.getCoursesWithFlow().collect { courses ->
+                send(courses.filter { it.owner == user.idApi })
+            }
+        }
+    }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+
 
     // Mutable states for filtering course lists
     private val _filteredListCoursesFlow = MutableStateFlow<List<LocalCourses>>(emptyList())

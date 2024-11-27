@@ -12,21 +12,19 @@ import com.example.classroom.data.remote.dto.login.signIn.SignInResponseDto
 @Entity(tableName = "localActivitySubmission_table")
 data class LocalActivitySubmission(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    @ColumnInfo(name = "idApi") val idApi: String,
     @ColumnInfo(name = "activity_id") val activityId: String,
     @ColumnInfo(name = "course_id") val courseId: String,
     @ColumnInfo(name = "student_id") val studentId: String,
     @ColumnInfo(name = "submission_date") val submissionDate: String,
     @ColumnInfo(name = "comment") val comment: String?,
     @ColumnInfo(name = "document_url") val documentUrl: String?, // Link to the submitted document
-    @ColumnInfo(name = "grade") val grade: Float = 0f // Grade given by the professor
+    @ColumnInfo(name = "grade") val grade: Double = 0.0 // Grade given by the professor
 )
 
 fun ReviewEvaluationsResponseDto.toActivitySubmission(): LocalActivitySubmission {
     return LocalActivitySubmission(
-        idApi = "",
         activityId = "",
-        grade = 0f,
+        grade = 0.0,
         courseId = "",
         id = 0,
         comment = "",
@@ -37,33 +35,31 @@ fun ReviewEvaluationsResponseDto.toActivitySubmission(): LocalActivitySubmission
     )
 }
 
-fun SendEvaluationResponseDto.toActivitySubmission(): LocalActivitySubmission {
+fun SendEvaluationResponseDto.toActivitySubmission(idCourse: String): LocalActivitySubmission {
     return LocalActivitySubmission(
-        idApi = "",
-        activityId = "",
-        grade = 0f,
-        courseId = "",
+        activityId = data.activityId.toString(),
+        grade = data.grade,
+        courseId = idCourse,
         id = 0,
-        comment = "",
-        submissionDate = "",
-        documentUrl = "",
-        studentId = "",
+        comment = data.message,
+        submissionDate = data.createDate,
+        documentUrl = data.document,
+        studentId = data.userId.toString(),
 
         )
 }
 
-fun EvaluationsSentResponseDto.toActivitiesSubmission(): List<LocalActivitySubmission> {
+fun EvaluationsSentResponseDto.toActivitiesSubmission(idCourse: String): List<LocalActivitySubmission> {
     return data.map {
-        LocalActivitySubmission(
-            idApi = "",
-            activityId = "",
-            grade = 0f,
-            courseId = "",
+            LocalActivitySubmission(
+            activityId = it.activityId.toString(),
+            grade = it.grade,
+                courseId = idCourse,
             id = 0,
-            comment = "",
-            submissionDate = "",
-            documentUrl = "",
-            studentId = "",
+            comment = it.message,
+            submissionDate = it.createDate,
+            documentUrl = it.document,
+            studentId = it.userId.toString(),
 
             )
     }

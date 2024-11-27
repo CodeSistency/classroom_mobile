@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.classroom.common.uiState.UiState
 import com.example.classroom.data.repository.RepositoryBundle
 import com.example.classroom.domain.model.entity.LocalActivitySubmission
-import com.example.classroom.domain.model.entity.LocalStudentEvaluation
 import com.example.classroom.domain.model.entity.toLocal
 import com.example.classroom.domain.use_case.evaluations.getActivitiesSubmittedByStudent.GetActivitiesSubmitedByStudent
 import com.example.classroom.presentation.screens.activity.addActivity.states.GetActivitiesState
@@ -30,14 +29,40 @@ class StudentEvaluationsViewModel(
     private val getActivitiesSubmitedByStudent: GetActivitiesSubmitedByStudent,
 ) : ViewModel() {
 
+    private val _statetEvaluationsList = mutableStateOf(StudentEvaluationsState())
+    val stateEvaluationsList: State<StudentEvaluationsState> = _statetEvaluationsList
+
     private val _stateStudentEvaluations = mutableStateOf(StudentEvaluationsState())
     val stateStudentEvaluations: State<StudentEvaluationsState> = _stateStudentEvaluations
+
+
+    fun observeLocalEvaluationsList(activityId: String, studentId: String) {
+        viewModelScope.launch {
+            repositoryBundle.submissionsRepository
+                .getSubmissionsForStudent(activityId, studentId)
+                .distinctUntilChanged() // Only emit new data if it's actually different
+                .collect { evaluations ->
+                    Log.e("observeLocalEvaluations", "Received local data: $evaluations")
+
+                    if (!evaluations.isNullOrEmpty()) {
+                        // Only update if evaluations is non-null and non-empty
+                        _stateStudentEvaluations.value = _stateStudentEvaluations.value.copy(
+                            info = evaluations,
+                            isLoading = false,
+                            error = null
+                        )
+                    }
+                }
+        }
+    }
+    // Fetch evaluations remotely and sync with the local database
+
 
     // Load evaluations from the local database only
     fun observeLocalEvaluations(courseId: String, studentId: String) {
         viewModelScope.launch {
             repositoryBundle.submissionsRepository
-                .getSubmissionsForStudentAndCourse(courseId, studentId)
+                .getSubmissionsForStudent(courseId, studentId)
                 .distinctUntilChanged() // Only emit new data if it's actually different
                 .collect { evaluations ->
                     Log.e("observeLocalEvaluations", "Received local data: $evaluations")

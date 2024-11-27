@@ -204,171 +204,114 @@ import kotlinx.coroutines.delay
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun CreateQuizzScreen(viewModel: QuizzViewModel, courseId: String, navController: NavController, focusManager: FocusManager) {
-    var title by remember { mutableStateOf("") }
-    var questions by remember { mutableStateOf(mutableListOf<QuestionDto>()) }
+    val questions by viewModel.questions
 
-    Box(modifier = Modifier.fillMaxSize()){
-        Scaffold(
-            topBar = {
-                Row(
-                    modifier= Modifier
-                        .background(Azul)
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = null,
-                            tint = Color.White)
-                    }
-                    Spacer(modifier = Modifier.width(3.dp))
-                    Text(text = "Crear quizz", color = Color.White, fontSize = 16.sp)
+    Scaffold(
+        topBar = {
+            Row(
+                modifier = Modifier
+                    .background(Azul)
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = null,
+                        tint = Color.White
+                    )
                 }
+                Spacer(modifier = Modifier.width(3.dp))
+                Text(text = "Crear Quizz", color = Color.White, fontSize = 16.sp)
             }
-        ){
-            LazyColumn() {
+        }
+    ) {
+        LazyColumn(modifier = Modifier.padding(horizontal = 6.dp)) {
+            item {
+                // Title
+                CustomTextField(
+                    value = viewModel.title.value,
+                    onValueChange = { viewModel.title.value = it },
+                    label = "Título",
+                    errorMessage = viewModel.titleError.value ?: "",
+                    onNextClick = { focusManager.moveFocus(FocusDirection.Down) }
+                )
 
-                item {
+                Spacer(modifier = Modifier.height(6.dp))
 
-                    Spacer(modifier = Modifier.padding(top = 10.dp))
-                    Box(modifier = Modifier.fillMaxWidth()) {
-                        Image(
-                            modifier = Modifier
-                                .size(width = 70.dp, height = 70.dp)
-                                .align(Alignment.Center)
-                                .padding(vertical = 10.dp),
-                            painter = painterResource(id = R.drawable.ic_logo),
-                            contentDescription = "logo"
-                        )
+                // Description
+                CustomTextField(
+                    value = viewModel.description.value,
+                    onValueChange = { viewModel.description.value = it },
+                    label = "Descripción",
+                    errorMessage = viewModel.descriptionError.value ?: "",
+                    onNextClick = { focusManager.moveFocus(FocusDirection.Down) }
+                )
 
+                Spacer(modifier = Modifier.height(6.dp))
+
+                questions.forEachIndexed { index, question ->
+                    Text("Pregunta ${index + 1}", style = MaterialTheme.typography.h6)
+
+                    // Question text
+                    CustomTextField(
+                        value = question.text,
+                        onValueChange = { viewModel.updateQuestionText(index, it) },
+                        label = "Texto de la pregunta",
+                        errorMessage = if (question.text.isBlank()) "La pregunta no puede estar vacía" else "",
+                        onNextClick = { focusManager.moveFocus(FocusDirection.Down) }
+                    )
+
+                    // Options
+                    question.options.forEachIndexed { optIndex, option ->
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(modifier = Modifier.fillMaxWidth(0.8f)) {
+                                CustomTextField(
+                                    value = option,
+                                    onValueChange = { viewModel.updateOptionText(index, optIndex, it) },
+                                    label = "Opción ${optIndex + 1}",
+                                    errorMessage = if (option.isBlank()) "La opción no puede estar vacía" else "",
+                                    onNextClick = { focusManager.moveFocus(FocusDirection.Down) }
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Checkbox(
+                                checked = question.answer == optIndex,
+                                onCheckedChange = {
+                                    viewModel.setCorrectAnswer(index, optIndex)
+                                }
+                            )
+                            Text("Correcta")
+                        }
                     }
-                    // Title
-                    CustomTextField(
-                        value = viewModel.title.value,
-                        onValueChange = {
-                            viewModel.title.value = it
-                            viewModel.validateTitle()
-                        },
-                        label = "Título",
-                        errorMessage = viewModel.titleError.value ?: "",
-                        onNextClick = { focusManager.moveFocus(FocusDirection.Down) }
-                    )
 
-                    Spacer(modifier = Modifier.height(6.dp))
-
-
-                    // Description
-                    CustomTextField(
-                        value = viewModel.description.value,
-                        onValueChange = {
-                            viewModel.description.value = it
-                            viewModel.validateDescription()
-                        },
-                        label = "Descripción",
-                        errorMessage = viewModel.descriptionError.value ?: "",
-                        onNextClick = { focusManager.moveFocus(FocusDirection.Down) }
-                    )
-
-                    Spacer(modifier = Modifier.height(6.dp))
-
-
-
-                    // Start Date
-                    CustomTextField(
-                        value = viewModel.startDate.value,
-                        onValueChange = {
-                            viewModel.startDate.value = it
-                            viewModel.validateStartDate()
-                        },
-                        label = "Fecha de Inicio",
-                        errorMessage = viewModel.startDateError.value ?: "",
-                        onNextClick = { focusManager.moveFocus(FocusDirection.Down) }
-                    )
-
-                    Spacer(modifier = Modifier.height(6.dp))
-
-                    // Fecha de Inicio
-                    CustomDatePicker(
-                        label = "Fecha de Inicio",
-                        selectedDate = viewModel.startDate.value,
-                        onDateSelected = {
-                            viewModel.startDate.value = it
-                            viewModel.validateStartDate()
-                        }
-                    )
-                    Spacer(modifier = Modifier.height(6.dp))
-
-                    // Fecha de Finalización
-                    CustomDatePicker(
-                        label = "Fecha de Finalización",
-                        selectedDate = viewModel.endDate.value,
-                        onDateSelected = {
-                            viewModel.endDate.value = it
-                            viewModel.validateEndDate()
-                        }
-                    )
-                    Spacer(modifier = Modifier.height(6.dp))
-
-
-
-
-
-//                CustomSelect(
-//                    label = "Status",
-//                    options = Status.values().toList(),
-//                    selectedOption = listOf(viewModel.status.value),
-//                    onOptionSelected = { selected ->
-//                        if (selected.isNotEmpty()) viewModel.status.value = selected.first()
-//                        viewModel.validateStatus()
-//                    },
-//                    multiple = false,
-//                    optionDisplay = { it.displayName }
-//                )
-
-
-//                Spacer(modifier = Modifier.height(6.dp))
-
-
-
-
-                    questions.forEachIndexed { index, question ->
-
-                        CustomTextField(
-                            value = question.text,
-                            onValueChange = { newText ->
-                                questions[index] = question.copy(text = newText)
-                            },
-                            label = "Pregunta ${index + 1}"
-                        ){}
-                        question.options.forEachIndexed { optIndex, option ->
-                            CustomTextField(
-                                value = option,
-                                onValueChange = { newOption ->
-                                    // Modify the option in a mutable way
-                                    val updatedOptions = question.options.toMutableList()
-                                    updatedOptions[optIndex] = newOption
-                                    questions[index] = question.copy(options = updatedOptions)
-                                },
-                                label = "Opción ${optIndex + 1}"
-                            ){}
-                        }
+                    // Add Option Button
+                    Button(onClick = { viewModel.addOption(index) }) {
+                        Text("Añadir Opción")
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
-
-                    CustomButton(
-                        text = "Crear Quizz",
-                        color1 = Azul,
-                        color2 = AzulGradient,
-                        style = NavigationButtonStyle.SolidGradient,
-                        onClick = {
-                            viewModel.createQuizRemote(idCourse = courseId, questions)
-                        })
                 }
-            }
 
+                // Add Question Button
+                Button(onClick = { viewModel.addQuestion() }) {
+                    Text("Añadir Pregunta")
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                val questions = viewModel.questions.value.toList()
+                // Submit Button
+                CustomButton(
+                    text = "Crear Quizz",
+                    color1 = Azul,
+                    color2 = AzulGradient,
+                    style = NavigationButtonStyle.SolidGradient,
+                    onClick = {
+                        viewModel.createQuizRemote(idCourse = courseId, questions = questions)
+                    }
+                )
+            }
         }
     }
-
 }

@@ -9,7 +9,6 @@ import com.example.classroom.data.remote.dto.evaluations.reviewEvaluationDto.Rev
 import com.example.classroom.data.remote.dto.evaluations.sendEvaluationRequestDto.SendEvaluationRequestDto
 import com.example.classroom.data.remote.dto.evaluations.sendEvaluationRequestDto.SendEvaluationResponseDto
 import com.example.classroom.domain.model.entity.LocalActivitySubmission
-import com.example.classroom.domain.model.entity.LocalStudentEvaluation
 import com.example.classroom.domain.repository.SubmissionsRepository
 import io.ktor.client.statement.HttpResponse
 import kotlinx.coroutines.flow.Flow
@@ -29,28 +28,19 @@ class SubmissionsRepositoryImpl(
         return dao.getSubmissionsForStudent(activityId, studentId)
     }
 
-    override suspend fun getSubmissionsForStudentAndCourse(
-        courseId: String,
-        studentId: String
-    ): Flow<List<LocalActivitySubmission>> {
-        return dao.getSubmissionsForStudentAndCourse(studentId, courseId)
+    override suspend fun getSubmissionsForStudentByCourse(studentId: String, courseId: String): Flow<List<LocalActivitySubmission>> {
+        return dao.getSubmissionsForStudentByCourse(studentId, courseId)
     }
+
+    override suspend fun addSubmissionsWithoutDuplicates(submissions: List<LocalActivitySubmission>) {
+        return dao.addSubmissionsWithoutDuplicates(submissions)
+    }
+
 
     override suspend fun getAllSubmissionsForActivity(activityId: String): Flow<List<LocalActivitySubmission>> {
         return dao.getAllSubmissionsForActivity(activityId)
     }
 
-    override suspend fun addOrUpdateEvaluation(evaluation: LocalStudentEvaluation) {
-        dao.insertOrUpdateEvaluation(evaluation)
-    }
-
-    override suspend fun getEvaluationsForStudent(activityId: String, studentId: String): Flow<List<LocalStudentEvaluation>> {
-        return dao.getEvaluationsForStudent(activityId, studentId)
-    }
-
-    override suspend fun getAllEvaluationsForCourse(courseId: String): Flow<List<LocalStudentEvaluation>> {
-        return dao.getAllEvaluationsForCourse(courseId)
-    }
 
     override suspend fun getActivitiesSubmited(
         courseId: String,

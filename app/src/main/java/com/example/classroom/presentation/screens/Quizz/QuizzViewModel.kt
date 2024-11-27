@@ -64,6 +64,44 @@ class QuizzViewModel(
 
     val quizState = mutableStateOf<QuizWithQuestions?>(null)
 
+    val questions = mutableStateOf(mutableListOf<QuestionDto>())
+
+
+    fun addQuestion() {
+        questions.value = (questions.value + QuestionDto(
+            text = "",
+            options = mutableListOf("", ""),
+            answer = -1
+        )).toMutableList()
+    }
+
+    fun addOption(questionIndex: Int) {
+        val updatedQuestions = questions.value.toMutableList()
+        if (updatedQuestions[questionIndex].options.size < 4) {
+            updatedQuestions[questionIndex].options.add("")
+        }
+        questions.value = updatedQuestions
+    }
+
+    fun updateQuestionText(questionIndex: Int, newText: String) {
+        val updatedQuestions = questions.value.toMutableList()
+        updatedQuestions[questionIndex] = updatedQuestions[questionIndex].copy(text = newText)
+        questions.value = updatedQuestions
+    }
+
+    fun updateOptionText(questionIndex: Int, optionIndex: Int, newText: String) {
+        val updatedQuestions = questions.value.toMutableList()
+        val updatedOptions = updatedQuestions[questionIndex].options.toMutableList()
+        updatedOptions[optionIndex] = newText
+        updatedQuestions[questionIndex] = updatedQuestions[questionIndex].copy(options = updatedOptions)
+        questions.value = updatedQuestions
+    }
+
+    fun setCorrectAnswer(questionIndex: Int, answerIndex: Int) {
+        val updatedQuestions = questions.value.toMutableList()
+        updatedQuestions[questionIndex] = updatedQuestions[questionIndex].copy(answer = answerIndex)
+        questions.value = updatedQuestions
+    }
 
     // State for form fields
     val title = mutableStateOf("")
@@ -86,7 +124,7 @@ class QuizzViewModel(
     val statusError = mutableStateOf<String?>(null)
     val courseIdError = mutableStateOf<String?>(null)
 
-    val questions = mutableStateOf(mutableListOf<Question>())
+//    val questions = mutableStateOf(mutableListOf<Question>())
 
     // Validation logic
     fun validateTitle() {

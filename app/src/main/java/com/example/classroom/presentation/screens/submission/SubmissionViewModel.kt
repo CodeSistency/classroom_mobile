@@ -14,6 +14,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.classroom.common.apiUtils.retryOperation
 import com.example.classroom.common.uiState.UiState
 import com.example.classroom.data.remote.dto.evaluations.reviewEvaluationDto.ReviewEvaluationRequestDto
 import com.example.classroom.data.remote.dto.evaluations.sendEvaluationRequestDto.SendEvaluationRequestDto
@@ -30,6 +31,7 @@ import com.example.classroom.presentation.screens.home.states.CourseState
 import com.example.classroom.presentation.screens.submission.states.ReviewActivityState
 import com.example.classroom.presentation.screens.submission.states.SendActivityState
 import io.ktor.client.statement.bodyAsText
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
@@ -52,7 +54,7 @@ class SubmissionViewModel(
 ) : ViewModel() {
 
     var message = mutableStateOf("")
-    var grade = mutableStateOf(0f)
+    var grade = mutableStateOf(0.0)
 
 
     // Estados de validación
@@ -88,7 +90,7 @@ class SubmissionViewModel(
     }
 
     // Update the grade locally
-    fun updateGrade(newGrade: Float) {
+    fun updateGrade(newGrade: Double) {
         _currentSubmission.value = _currentSubmission.value?.copy(grade = newGrade)
     }
 
@@ -139,69 +141,77 @@ class SubmissionViewModel(
     ) {
         viewModelScope.launch {
             try {
-                // Step 1: Convert URI to File
-                val file = getFileFromUri(context, fileUri)
-                if (file == null) {
-                    onSubmissionFailure("Error: Failed to process file URI.")
-                    return@launch
-                }
-
-                // Step 2: Upload File and Retrieve URL
                 var fileUrl: String? = null
-                uploadFileUseCase(fileUri, context).collect { result ->
-                    when (result) {
-                        is Resource.Error -> {
-                            onSubmissionFailure("File upload error: ${result.message?.uiMessage}")
-                            Log.e("submitStudentResponse", "File upload error: ${result.message?.uiMessage}")
-                            return@collect
-                        }
-                        is Resource.Loading -> {
-                            // Handle optional loading state here if needed
-                        }
-                        is Resource.Success -> {
-                            result.data.let {
-                                fileUrl =
-                                    result.data?.data?.fullPath // Assuming data contains the file URL
 
+                // Step 1: Retry File Upload
+                try {
+                    fileUrl = retryOperation(times = 3, delayMillis = 2000L) {
+                        var resultUrl: String? = null
+                        uploadFileUseCase(fileUri, context).collect { result ->
+                            when (result) {
+                                is Resource.Loading -> {
+
+                                    _stateSendActivity.value = SendActivityState(isLoading = true)
+                                }
+                                is Resource.Error -> {
+                                    throw Exception("${result.message?.uiMessage}")
+                                }
+                                is Resource.Success -> {
+                                    resultUrl = result.data?.data?.fullPath
+                                }
+                                else -> {}
                             }
-                            Log.d("submitStudentResponse", "File uploaded successfully: $fileUrl")
                         }
+                        resultUrl ?: throw Exception("File upload failed: URL is null or empty")
                     }
-                }
-
-                if (fileUrl.isNullOrEmpty()) {
-                    onSubmissionFailure("Error: Unable to retrieve uploaded file URL.")
+                    Log.d("submitStudentResponse", "File uploaded successfully: $fileUrl")
+                } catch (e: Exception) {
+                    onSubmissionFailure("File upload failed after retries: ${e.message}")
                     return@launch
                 }
 
-                // Step 3: Prepare Submission Request
-                val submission = SendEvaluationRequestDto(
-                    userId = userId.toInt(),  // Replace with actual user ID retrieval
-                    activityId = activityId.toInt(),
-                    message = message,
-                    document = fileUrl!!
-                )
+                // Step 2: Retry Activity Submission
+                try {
+                    retryOperation(times = 3, delayMillis = 2000L) {
+                        studentSendActivityUseCase(
+                            SendEvaluationRequestDto(
+                                userId = userId.toInt(),
+                                activityId = activityId.toInt(),
+                                message = message,
+                                document = fileUrl!!
+                            )
+                        ).collect { result ->
+                            when (result) {
+                                is Resource.Error -> {
+                                    _stateSendActivity.value = SendActivityState(info = null, isLoading = false, error = result.message)
 
-                // Step 4: Send Activity Submission
-                studentSendActivityUseCase(submission).onEach { result ->
-                    when (result) {
-                        is Resource.Success -> {
-                            onSubmissionSuccess()
-                            Log.d("submitStudentResponse", "Activity submitted successfully.")
-                        }
-                        is Resource.Error -> {
-                            onSubmissionFailure("Submission error: ${result.message?.uiMessage}")
-                            Log.e("submitStudentResponse", "Submission error: ${result.message?.uiMessage}")
-                        }
-                        is Resource.Loading -> {
-                            // Optional loading state handling if needed
+                                    throw Exception("${result.message?.uiMessage}")
+                                }
+                                is Resource.Loading -> {
+//                                    _stateSendActivity.value = SendActivityState(isLoading = true)
+                                }
+                                is Resource.Success -> {
+                                    Log.d("submitStudentResponse", "Activity submitted successfully.")
+                                    result.data?.let {
+                                        _stateSendActivity.value = SendActivityState(info = result.data, isLoading = false, error = null)
+                                        repositoryBundle.submissionsRepository.addOrUpdateSubmission(submission = result.data)
+                                        delay(500)
+                                        onSubmissionSuccess()
+
+                                    }
+                                }
+                                else -> {}
+                            }
                         }
                     }
-                }.launchIn(viewModelScope)
+                } catch (e: Exception) {
+                    onSubmissionFailure("Submission failed after retries: ${e.message}")
+                    return@launch
+                }
 
             } catch (e: Exception) {
                 e.printStackTrace()
-                onSubmissionFailure("An error occurred: ${e.message}")
+                onSubmissionFailure("An unexpected error occurred: ${e.message}")
             }
         }
     }
@@ -301,6 +311,7 @@ class SubmissionViewModel(
                     _stateReviewActivity.value = ReviewActivityState(info = result.data)
                     Log.e("HOME_VM:", "${_stateReviewActivity.value.info}")
                     _stateReviewActivity.value.info?.let {
+                        repositoryBundle.submissionsRepository.addOrUpdateSubmission(it)
 //                        repositoryBundle.activitiesRepository.insertAllActivities(it)
 //                        delay(1000)
                     }
