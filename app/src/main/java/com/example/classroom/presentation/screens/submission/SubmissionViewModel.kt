@@ -108,7 +108,7 @@ class SubmissionViewModel(
         val file = getFileFromUri(context, fileUri)
 
         if (file!= null){
-            uploadFileUseCase(file).onEach { result ->
+            uploadFileUseCase(fileUri, context).onEach { result ->
                 when (result) {
                     is Resource.Error -> {
                         Log.e("HOME_VM:", "Error ${result.message?.uiMessage}")
@@ -148,7 +148,7 @@ class SubmissionViewModel(
 
                 // Step 2: Upload File and Retrieve URL
                 var fileUrl: String? = null
-                uploadFileUseCase(file).collect { result ->
+                uploadFileUseCase(fileUri, context).collect { result ->
                     when (result) {
                         is Resource.Error -> {
                             onSubmissionFailure("File upload error: ${result.message?.uiMessage}")

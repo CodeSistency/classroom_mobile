@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Button
 import androidx.compose.material.Checkbox
 import androidx.compose.material.IconButton
@@ -57,309 +58,317 @@ import com.example.classroom.presentation.theme.AzulGradient
 import kotlinx.coroutines.delay
 
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
-@Composable
-fun CreateQuizzScreen(viewModel: QuizzViewModel, courseId: String, navController: NavController, focusManager: FocusManager) {
-    var questions by remember { mutableStateOf(mutableListOf<QuestionDto>()) }
-    val state = viewModel.stateCreateQuizz.collectAsState()
-    var dialogState: SetupCustomDialogState by remember {
-        mutableStateOf(SetupCustomDialogState.Default())
-    }
-
-    Scaffold(
-        topBar = {
-            Row(
-                modifier = Modifier
-                    .background(Azul)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = null,
-                        tint = Color.White
-                    )
-                }
-                Spacer(modifier = Modifier.width(3.dp))
-                Text(text = "Crear Quizz", color = Color.White, fontSize = 16.sp)
-            }
-        }
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            // Title
-            CustomTextField(
-                value = viewModel.title.value,
-                onValueChange = { viewModel.title.value = it },
-                label = "Título",
-                errorMessage = viewModel.titleError.value ?: "",
-                onNextClick = { focusManager.moveFocus(FocusDirection.Down) }
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Questions
-            questions.forEachIndexed { index, question ->
-                Text("Pregunta ${index + 1}", style = MaterialTheme.typography.h6)
-
-                // Question text
-                CustomTextField(
-                    value = question.text,
-                    onValueChange = { newText ->
-                        questions[index] = question.copy(text = newText)
-                    },
-                    label = "Texto de la pregunta",
-                    errorMessage = if (question.text.isBlank()) "La pregunta no puede estar vacía" else "",
-                    onNextClick = { focusManager.moveFocus(FocusDirection.Down) }
-
-                )
-
-                // Options
-                question.options.forEachIndexed { optIndex, option ->
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        CustomTextField(
-                            value = option,
-                            onValueChange = { newOption ->
-                                questions[index].options[optIndex] = newOption
-                            },
-                            label = "Opción ${optIndex + 1}",
-                            errorMessage = if (question.text.isBlank()) "La pregunta no puede estar vacía" else "",
-                            onNextClick = { focusManager.moveFocus(FocusDirection.Down) }
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Checkbox(
-                            checked = question.answer == optIndex,
-                            onCheckedChange = {
-                                questions[index] = question.copy(answer = optIndex)
-                            }
-                        )
-                        Text("Correcta")
-                    }
-                }
-
-                // Add Option Button
-                Button(onClick = {
-                    if (question.options.size < 4) {
-                        questions[index].options.add("")
-                    }
-                }) {
-                    Text("Añadir Opción")
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-
-            // Add Question Button
-            Button(onClick = {
-                questions.add(QuestionDto(text = "", options = mutableListOf("", ""), answer = -1))
-            }) {
-                Text("Añadir Pregunta")
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Create Quiz Button
-            CustomButton(
-                    text = "Crear Quizz",
-                    color1 = Azul,
-                    color2 = AzulGradient,
-                    style = NavigationButtonStyle.SolidGradient,
-                    onClick = {
-                    viewModel.createQuizRemote(idCourse = courseId, questions)
-                })
-        }
-    }
-
-    LaunchedEffect(key1 = state.value, block = {
-        when{
-            state.value.isLoading -> {
-                dialogState = SetupCustomDialogState.Loading()
-            }
-            state.value.error != null -> {
-                dialogState = SetupCustomDialogState.Error(state.value.error?.uiMessage)
-            }
-
-            else -> {
-                if (state.value.info != null){
-                    dialogState = SetupCustomDialogState.Success(message = "Se ha creado la actividad exitosamente")
-                    delay(1000)
-                    navController.popBackStack()
-//                    viewModel.resetForm()
-                }
-            }
-        }
-    })
-
-    SetupCustomDialog(setupCustomDialogState = dialogState, showDialog = dialogState != SetupCustomDialogState.Default()) {
-        dialogState = SetupCustomDialogState.Default()
-    }
-}
-
-
 //@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 //@Composable
 //fun CreateQuizzScreen(viewModel: QuizzViewModel, courseId: String, navController: NavController, focusManager: FocusManager) {
-//    var title by remember { mutableStateOf("") }
 //    var questions by remember { mutableStateOf(mutableListOf<QuestionDto>()) }
+//    val state = viewModel.stateCreateQuizz.collectAsState()
+//    var dialogState: SetupCustomDialogState by remember {
+//        mutableStateOf(SetupCustomDialogState.Default())
+//    }
 //
-//    Box(modifier = Modifier.fillMaxSize()){
-//        Scaffold(
-//            topBar = {
-//                Row(
-//                    modifier= Modifier
-//                        .background(Azul)
-//                        .fillMaxWidth(),
-//                    verticalAlignment = Alignment.CenterVertically
-//                ) {
-//                    IconButton(onClick = { navController.popBackStack() }) {
-//                        Icon(
-//                            imageVector = Icons.Default.ArrowBack,
-//                            contentDescription = null,
-//                            tint = Color.White)
-//                    }
-//                    Spacer(modifier = Modifier.width(3.dp))
-//                    Text(text = "Crear quizz", color = Color.White, fontSize = 16.sp)
-//                }
-//            }
-//        ){
-//            Column {
-//                Spacer(modifier = Modifier.padding(top = 10.dp))
-//                Box(modifier = Modifier.fillMaxWidth()) {
-//                    Image(
-//                        modifier = Modifier
-//                            .size(width = 70.dp, height = 70.dp)
-//                            .align(Alignment.Center)
-//                            .padding(vertical = 10.dp),
-//                        painter = painterResource(id = R.drawable.ic_logo),
-//                        contentDescription = "logo"
+//    Scaffold(
+//        topBar = {
+//            Row(
+//                modifier = Modifier
+//                    .background(Azul)
+//                    .fillMaxWidth(),
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                IconButton(onClick = { navController.popBackStack() }) {
+//                    Icon(
+//                        imageVector = Icons.Default.ArrowBack,
+//                        contentDescription = null,
+//                        tint = Color.White
 //                    )
-//
 //                }
+//                Spacer(modifier = Modifier.width(3.dp))
+//                Text(text = "Crear Quizz", color = Color.White, fontSize = 16.sp)
+//            }
+//        }
+//    ) {
+//        LazyColumn(modifier = Modifier.padding(16.dp)) {
+//
+//            item {
 //                // Title
 //                CustomTextField(
 //                    value = viewModel.title.value,
-//                    onValueChange = {
-//                        viewModel.title.value = it
-//                        viewModel.validateTitle()
-//                    },
+//                    onValueChange = { viewModel.title.value = it },
 //                    label = "Título",
 //                    errorMessage = viewModel.titleError.value ?: "",
 //                    onNextClick = { focusManager.moveFocus(FocusDirection.Down) }
 //                )
 //
-//                Spacer(modifier = Modifier.height(6.dp))
+//                Spacer(modifier = Modifier.height(8.dp))
 //
-//
-//                // Description
-//                CustomTextField(
-//                    value = viewModel.description.value,
-//                    onValueChange = {
-//                        viewModel.description.value = it
-//                        viewModel.validateDescription()
-//                    },
-//                    label = "Descripción",
-//                    errorMessage = viewModel.descriptionError.value ?: "",
-//                    onNextClick = { focusManager.moveFocus(FocusDirection.Down) }
-//                )
-//
-//                Spacer(modifier = Modifier.height(6.dp))
-//
-//
-//
-//                // Start Date
-//                CustomTextField(
-//                    value = viewModel.startDate.value,
-//                    onValueChange = {
-//                        viewModel.startDate.value = it
-//                        viewModel.validateStartDate()
-//                    },
-//                    label = "Fecha de Inicio",
-//                    errorMessage = viewModel.startDateError.value ?: "",
-//                    onNextClick = { focusManager.moveFocus(FocusDirection.Down) }
-//                )
-//
-//                Spacer(modifier = Modifier.height(6.dp))
-//
-//                // Fecha de Inicio
-//                CustomDatePicker(
-//                    label = "Fecha de Inicio",
-//                    selectedDate = viewModel.startDate.value,
-//                    onDateSelected = {
-//                        viewModel.startDate.value = it
-//                        viewModel.validateStartDate()
-//                    }
-//                )
-//                Spacer(modifier = Modifier.height(6.dp))
-//
-//                // Fecha de Finalización
-//                CustomDatePicker(
-//                    label = "Fecha de Finalización",
-//                    selectedDate = viewModel.endDate.value,
-//                    onDateSelected = {
-//                        viewModel.endDate.value = it
-//                        viewModel.validateEndDate()
-//                    }
-//                )
-//                Spacer(modifier = Modifier.height(6.dp))
-//
-//
-//
-//
-//
-////                CustomSelect(
-////                    label = "Status",
-////                    options = Status.values().toList(),
-////                    selectedOption = listOf(viewModel.status.value),
-////                    onOptionSelected = { selected ->
-////                        if (selected.isNotEmpty()) viewModel.status.value = selected.first()
-////                        viewModel.validateStatus()
-////                    },
-////                    multiple = false,
-////                    optionDisplay = { it.displayName }
-////                )
-//
-//
-////                Spacer(modifier = Modifier.height(6.dp))
-//
-//
-//
-//
+//                // Questions
 //                questions.forEachIndexed { index, question ->
+//                    Text("Pregunta ${index + 1}", style = MaterialTheme.typography.h6)
 //
+//                    // Question text
 //                    CustomTextField(
 //                        value = question.text,
 //                        onValueChange = { newText ->
 //                            questions[index] = question.copy(text = newText)
 //                        },
-//                        label = "Pregunta ${index + 1}"
-//                    ){}
+//                        label = "Texto de la pregunta",
+//                        errorMessage = if (question.text.isBlank()) "La pregunta no puede estar vacía" else "",
+//                        onNextClick = { focusManager.moveFocus(FocusDirection.Down) }
+//
+//                    )
+//
+//                    // Options
 //                    question.options.forEachIndexed { optIndex, option ->
-//                        CustomTextField(
-//                            value = option,
-//                            onValueChange = { newOption ->
-//                                // Modify the option in a mutable way
-//                                val updatedOptions = question.options.toMutableList()
-//                                updatedOptions[optIndex] = newOption
-//                                questions[index] = question.copy(options = updatedOptions)
-//                            },
-//                            label = "Opción ${optIndex + 1}"
-//                        ){}
+//                        Row(verticalAlignment = Alignment.CenterVertically) {
+//                            CustomTextField(
+//                                value = option,
+//                                onValueChange = { newOption ->
+//                                    questions[index].options[optIndex] = newOption
+//                                },
+//                                label = "Opción ${optIndex + 1}",
+//                                errorMessage = if (question.text.isBlank()) "La pregunta no puede estar vacía" else "",
+//                                onNextClick = { focusManager.moveFocus(FocusDirection.Down) }
+//                            )
+//                            Spacer(modifier = Modifier.width(8.dp))
+//                            Checkbox(
+//                                checked = question.answer == optIndex,
+//                                onCheckedChange = {
+//                                    questions[index] = question.copy(answer = optIndex)
+//                                }
+//                            )
+//                            Text("Correcta")
+//                        }
 //                    }
+//
+//                    // Add Option Button
+//                    Button(onClick = {
+//                        if (question.options.size < 4) {
+//                            questions[index].options.add("")
+//                        }
+//                    }) {
+//                        Text("Añadir Opción")
+//                    }
+//
+//                    Spacer(modifier = Modifier.height(16.dp))
+//                }
+//
+//                // Add Question Button
+//                Button(onClick = {
+//                    questions.add(QuestionDto(text = "", options = mutableListOf("", ""), answer = -1))
+//                }) {
+//                    Text("Añadir Pregunta")
 //                }
 //
 //                Spacer(modifier = Modifier.height(16.dp))
 //
+//                // Create Quiz Button
 //                CustomButton(
 //                    text = "Crear Quizz",
 //                    color1 = Azul,
 //                    color2 = AzulGradient,
 //                    style = NavigationButtonStyle.SolidGradient,
 //                    onClick = {
-//                    viewModel.createQuizRemote(idCourse = courseId)
-//                })
+//                        viewModel.createQuizRemote(idCourse = courseId, questions)
+//                    })
 //            }
 //
 //        }
 //    }
 //
+//    LaunchedEffect(key1 = state.value, block = {
+//        when{
+//            state.value.isLoading -> {
+//                dialogState = SetupCustomDialogState.Loading()
+//            }
+//            state.value.error != null -> {
+//                dialogState = SetupCustomDialogState.Error(state.value.error?.uiMessage)
+//            }
+//
+//            else -> {
+//                if (state.value.info != null){
+//                    dialogState = SetupCustomDialogState.Success(message = "Se ha creado la actividad exitosamente")
+//                    delay(1000)
+//                    navController.popBackStack()
+////                    viewModel.resetForm()
+//                }
+//            }
+//        }
+//    })
+//
+//    SetupCustomDialog(setupCustomDialogState = dialogState, showDialog = dialogState != SetupCustomDialogState.Default()) {
+//        dialogState = SetupCustomDialogState.Default()
+//    }
 //}
+
+
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@Composable
+fun CreateQuizzScreen(viewModel: QuizzViewModel, courseId: String, navController: NavController, focusManager: FocusManager) {
+    var title by remember { mutableStateOf("") }
+    var questions by remember { mutableStateOf(mutableListOf<QuestionDto>()) }
+
+    Box(modifier = Modifier.fillMaxSize()){
+        Scaffold(
+            topBar = {
+                Row(
+                    modifier= Modifier
+                        .background(Azul)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = null,
+                            tint = Color.White)
+                    }
+                    Spacer(modifier = Modifier.width(3.dp))
+                    Text(text = "Crear quizz", color = Color.White, fontSize = 16.sp)
+                }
+            }
+        ){
+            LazyColumn() {
+
+                item {
+
+                    Spacer(modifier = Modifier.padding(top = 10.dp))
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        Image(
+                            modifier = Modifier
+                                .size(width = 70.dp, height = 70.dp)
+                                .align(Alignment.Center)
+                                .padding(vertical = 10.dp),
+                            painter = painterResource(id = R.drawable.ic_logo),
+                            contentDescription = "logo"
+                        )
+
+                    }
+                    // Title
+                    CustomTextField(
+                        value = viewModel.title.value,
+                        onValueChange = {
+                            viewModel.title.value = it
+                            viewModel.validateTitle()
+                        },
+                        label = "Título",
+                        errorMessage = viewModel.titleError.value ?: "",
+                        onNextClick = { focusManager.moveFocus(FocusDirection.Down) }
+                    )
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+
+                    // Description
+                    CustomTextField(
+                        value = viewModel.description.value,
+                        onValueChange = {
+                            viewModel.description.value = it
+                            viewModel.validateDescription()
+                        },
+                        label = "Descripción",
+                        errorMessage = viewModel.descriptionError.value ?: "",
+                        onNextClick = { focusManager.moveFocus(FocusDirection.Down) }
+                    )
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+
+
+                    // Start Date
+                    CustomTextField(
+                        value = viewModel.startDate.value,
+                        onValueChange = {
+                            viewModel.startDate.value = it
+                            viewModel.validateStartDate()
+                        },
+                        label = "Fecha de Inicio",
+                        errorMessage = viewModel.startDateError.value ?: "",
+                        onNextClick = { focusManager.moveFocus(FocusDirection.Down) }
+                    )
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    // Fecha de Inicio
+                    CustomDatePicker(
+                        label = "Fecha de Inicio",
+                        selectedDate = viewModel.startDate.value,
+                        onDateSelected = {
+                            viewModel.startDate.value = it
+                            viewModel.validateStartDate()
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    // Fecha de Finalización
+                    CustomDatePicker(
+                        label = "Fecha de Finalización",
+                        selectedDate = viewModel.endDate.value,
+                        onDateSelected = {
+                            viewModel.endDate.value = it
+                            viewModel.validateEndDate()
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+
+
+
+
+
+//                CustomSelect(
+//                    label = "Status",
+//                    options = Status.values().toList(),
+//                    selectedOption = listOf(viewModel.status.value),
+//                    onOptionSelected = { selected ->
+//                        if (selected.isNotEmpty()) viewModel.status.value = selected.first()
+//                        viewModel.validateStatus()
+//                    },
+//                    multiple = false,
+//                    optionDisplay = { it.displayName }
+//                )
+
+
+//                Spacer(modifier = Modifier.height(6.dp))
+
+
+
+
+                    questions.forEachIndexed { index, question ->
+
+                        CustomTextField(
+                            value = question.text,
+                            onValueChange = { newText ->
+                                questions[index] = question.copy(text = newText)
+                            },
+                            label = "Pregunta ${index + 1}"
+                        ){}
+                        question.options.forEachIndexed { optIndex, option ->
+                            CustomTextField(
+                                value = option,
+                                onValueChange = { newOption ->
+                                    // Modify the option in a mutable way
+                                    val updatedOptions = question.options.toMutableList()
+                                    updatedOptions[optIndex] = newOption
+                                    questions[index] = question.copy(options = updatedOptions)
+                                },
+                                label = "Opción ${optIndex + 1}"
+                            ){}
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    CustomButton(
+                        text = "Crear Quizz",
+                        color1 = Azul,
+                        color2 = AzulGradient,
+                        style = NavigationButtonStyle.SolidGradient,
+                        onClick = {
+                            viewModel.createQuizRemote(idCourse = courseId, questions)
+                        })
+                }
+            }
+
+        }
+    }
+
+}

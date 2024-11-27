@@ -1,5 +1,7 @@
 package com.example.classroom.data.remote
 
+import android.content.Context
+import android.net.Uri
 import com.example.classroom.data.remote.dto.activities.ActivityRequestDto
 import com.example.classroom.data.remote.dto.activities.ActivityResponseDto
 import com.example.classroom.data.remote.dto.activities.GetActivitiesResponseDto
@@ -68,7 +70,7 @@ interface ApiService {
     suspend fun professorReviewsEvaluation(body: ReviewEvaluationRequestDto): ResponseGenericAPi<ReviewEvaluationsResponseDto>
 
     //CLOUD
-    suspend fun uploadFile(file: File): ResponseGenericAPi<CloudResposeDto>
+    suspend fun uploadFile(fileUri: Uri, context: Context): ResponseGenericAPi<CloudResposeDto>
 
     //POSTS
     suspend fun getPostByCourseRemote(id: String): ResponseGenericAPi<GetPostsResponseDto>

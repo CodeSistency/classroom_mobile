@@ -1,5 +1,7 @@
 package com.example.classroom.data.repository
 
+import android.content.Context
+import android.net.Uri
 import com.example.classroom.common.ResponseGenericAPi
 import com.example.classroom.data.local.db.AppDao
 import com.example.classroom.data.remote.ApiService
@@ -12,7 +14,7 @@ class CloudRepositoryImpl(
     private val apiService: ApiService,
     private val dao: AppDao
 ): CloudRepository {
-    override suspend fun uploadFile(file: File): ResponseGenericAPi<CloudResposeDto> {
-        return apiService.uploadFile(file)
+    override suspend fun uploadFile(fileUri: Uri, context: Context): ResponseGenericAPi<CloudResposeDto> {
+        return apiService.uploadFile(fileUri, context)
     }
 }

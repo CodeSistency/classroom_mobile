@@ -14,8 +14,8 @@ data class CloudResposeDto(
 ) {
     @Serializable
     data class Data(
-        @SerialName("data")
-        val data: String,
+        @SerialName("path")
+        val path: String,
         @SerialName("id")
         val id: String,
         @SerialName("fullPath")

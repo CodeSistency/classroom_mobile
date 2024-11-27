@@ -1,5 +1,7 @@
 package com.example.classroom.domain.use_case.cloud
 
+import android.content.Context
+import android.net.Uri
 import com.example.classroom.data.remote.dto.cloud.CloudResposeDto
 import com.example.classroom.data.repository.RepositoryBundle
 import io.ktor.http.HttpStatusCode
@@ -14,9 +16,9 @@ import java.io.File
 class UploadFileUseCase(
     private val repositoryBundle: RepositoryBundle
 ) {
-    suspend operator fun invoke(file: File): Flow<Resource<CloudResposeDto>> {
+    suspend operator fun invoke(fileUri: Uri, context: Context): Flow<Resource<CloudResposeDto>> {
         return handlingError<CloudResposeDto> {
-            val data = repositoryBundle.cloudRepository.uploadFile(file)
+            val data = repositoryBundle.cloudRepository.uploadFile(fileUri, context)
             if (data.statusCode.value == 200 || data.statusCode.value == 201) { // Allow both 200 and 201
                 data.responseData!!
             }else{

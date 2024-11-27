@@ -104,7 +104,7 @@ fun CourseProfessorPresentation(
 
     val deleteStudentState = courseViewmodel.stateDeleteStudents.collectAsState()
     val deleteActivityState = viewModel.stateAddActivity.value
-    val deletePostState = postsViewModel.postsState.collectAsState()
+    val deletePostState = postsViewModel.deletePostState.collectAsState()
 
 
 
@@ -355,7 +355,7 @@ fun CourseProfessorPresentation(
     courseInfo.value.let {
         if (it != null){
             if (!it.verified){
-                Box(modifier = Modifier.fillMaxSize()){
+                Box(modifier = Modifier.fillMaxSize().background(Color.White)){
                     Text(
                         text = "Este curso no esta verificado, contacte un administrador para verificar este curso.",
                         modifier = Modifier.align(Alignment.Center)

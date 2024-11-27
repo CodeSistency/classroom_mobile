@@ -77,6 +77,10 @@ class AddCourseViewModel(
                 area.value != Area.NO_SELECTED
 
     // Lógica de validación
+
+    fun resetState(){
+        _stateCourse.value = AddCourseState(false, null, null)
+    }
     fun validateToken() {
         tokenError.value = if (token.value.isBlank()) "El token es obligatorio" else null
     }

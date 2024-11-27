@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.runtime.Composable
@@ -28,18 +29,19 @@ fun TopBarHome(viewmodel: HomeViewmodel, navController: NavController, scope: Co
     ) {
         IconButton(onClick = {
             scope.launch {
-                viewmodel.logout()
-                delay(200)
-                navController.popBackStack()
                 navController.navigate(Destination.LOGIN.screenRoute){
-                    popUpTo(Destination.HOME.screenRoute){
+                    popUpTo(Destination.LOGIN.screenRoute){
                         inclusive = true
                     }
                     launchSingleTop = true
                 }
+                delay(1000)
+                viewmodel.logout()
+//                navController.popBackStack()
+
             }
         }) {
-            Icon(imageVector = Icons.Default.Menu, contentDescription = null, tint = Color.White)
+            Icon(imageVector = Icons.Default.ArrowBackIos, contentDescription = null, tint = Color.White)
         }
         IconButton(onClick = {
 

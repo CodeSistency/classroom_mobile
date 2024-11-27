@@ -22,6 +22,8 @@ import kotlinx.serialization.Serializable
         val authorId: Int,
         @SerialName("title")
         val title: String,
+        @SerialName("file")
+        val file: String? = null,
         @SerialName("content")
         val content: String,
         @SerialName("createdAt")

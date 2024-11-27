@@ -268,6 +268,8 @@ fun AddCourseScreenNew(
                             }
                             launchSingleTop = true
                         }
+                        viewModel.resetState()
+
                     }else{
                         navController.popBackStack()
                     }

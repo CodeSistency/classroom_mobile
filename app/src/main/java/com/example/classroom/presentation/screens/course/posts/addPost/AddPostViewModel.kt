@@ -85,6 +85,10 @@ class AddPostViewModel(
 //                authorId.value > 0
 
     // Validation Methods
+
+    fun resetState(){
+        _statePost.value = AddPostState(info = null, error = null, isLoading = false)
+    }
     fun validateTitle() {
         titleError.value = if (title.value.isBlank()) "Title is required" else null
     }
@@ -148,14 +152,40 @@ class AddPostViewModel(
                 if (isFileUploadChecked && selectedFileUri != null) {
                     val file = getFileFromUri(context, selectedFileUri!!)
                     if (file != null) {
-                        uploadFileUseCase(file).collect { result ->
+
+                        Log.e("fileurl", file.toString())
+
+                        uploadFileUseCase(selectedFileUri!!, context).collect { result ->
                             when (result) {
                                 is Resource.Error -> {
+                                    Log.e("fileurl error", result.message?.uiMessage.toString())
+
                                     _statePost.value = AddPostState(error = "File upload error: ${result.message?.uiMessage}")
                                     return@collect
                                 }
                                 is Resource.Success -> {
+                                    Log.e("fileurl", result.toString())
                                     fileUrl = result.data?.data?.fullPath
+
+                                    result.data?.let {
+                                        val postRequest = PostRequestDto(
+                                            courseId = courseId.toInt(),
+                                            title = title.value,
+                                            content = content.value,
+                                            authorId = userInfo.value?.idApi?.toInt() ?: 0,
+                                            file = fileUrl // File URL if uploaded
+                                        )
+
+                                        if (idPost != null) {
+                                            updatePostUseCase(postRequest).collect { result ->
+                                                handleResult(result)
+                                            }
+                                        } else {
+                                            createPostUseCase(postRequest).collect { result ->
+                                                handleResult(result)
+                                            }
+                                        }
+                                    }
                                 }
                                 is Resource.Loading -> {
                                     _statePost.value = AddPostState(isLoading = true)
@@ -163,25 +193,27 @@ class AddPostViewModel(
                             }
                         }
                     }
+                }else{
+                    val postRequest = PostRequestDto(
+                        courseId = courseId.toInt(),
+                        title = title.value,
+                        content = content.value,
+                        authorId = userInfo.value?.idApi?.toInt() ?: 0,
+                        file = fileUrl // File URL if uploaded
+                    )
+
+                    if (idPost != null) {
+                        updatePostUseCase(postRequest).collect { result ->
+                            handleResult(result)
+                        }
+                    } else {
+                        createPostUseCase(postRequest).collect { result ->
+                            handleResult(result)
+                        }
+                    }
                 }
 
-                val postRequest = PostRequestDto(
-                    courseId = courseId.toInt(),
-                    title = title.value,
-                    content = content.value,
-                    authorId = userInfo.value?.idApi?.toInt() ?: 0,
-                    file = fileUrl // File URL if uploaded
-                )
 
-                if (idPost != null) {
-                    updatePostUseCase(postRequest).collect { result ->
-                        handleResult(result)
-                    }
-                } else {
-                    createPostUseCase(postRequest).collect { result ->
-                        handleResult(result)
-                    }
-                }
             } catch (e: Exception) {
                 e.printStackTrace()
                 _statePost.value = AddPostState(error = "Error: ${e.message}")

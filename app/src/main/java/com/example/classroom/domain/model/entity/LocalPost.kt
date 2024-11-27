@@ -27,6 +27,7 @@ fun PostResponseDto.toLocal(): LocalPost {
         courseId = data.courseId.toString(),
         content = data.content,
         title = data.title,
+        mediaUrl = data.file,
         authorId = data.authorId.toString(),
         createdAt = data.creation,
     )
@@ -39,6 +40,7 @@ fun GetPostsResponseDto.toLocal(): List<LocalPost> {
             id = 0,
             courseId = it.courseId.toString(),
             content = it.content,
+            mediaUrl = it.file,
             title = it.title,
             authorId = it.authorId.toString(),
             createdAt = it.createdAt,

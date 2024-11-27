@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.classroom.R
 import com.example.classroom.common.CustomDialog
+import com.example.classroom.common.getSupabaseFileUrl
 import com.example.classroom.domain.model.entity.LocalPost
 import com.example.classroom.presentation.theme.PaddingCustom
 import kotlinx.coroutines.CoroutineScope
@@ -189,28 +190,35 @@ fun CardPostItem(post: LocalPost, viewModel: PostsViewModel, scope: CoroutineSco
             Spacer(modifier = Modifier.height(8.dp))
 
             // Media preview
-            post.mediaUrl?.let { url ->
-                when {
-                    url.endsWith(".jpg") || url.endsWith(".jpeg") || url.endsWith(".png") -> {
-                        // Image preview using AsyncImage
-                        AsyncImage(
-                            model = url,
-                            contentDescription = "Post media image",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(200.dp)
-                                .clip(shape),
-                            contentScale = ContentScale.Crop
-                        )
+            if (!post.mediaUrl.isNullOrEmpty()){
+                post.mediaUrl.let { url ->
+                    val mediaUrl = getSupabaseFileUrl(url)
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    when {
+                        mediaUrl.endsWith(".jpg") || mediaUrl.endsWith(".jpeg") || mediaUrl.endsWith(".png") -> {
+                            // Image preview using AsyncImage
+                            AsyncImage(
+                                model = mediaUrl,
+                                contentDescription = "Post media image",
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(200.dp)
+                                    .clip(shape),
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+                        else -> {
+                            // File preview
+                            FilePreviewCard(url = mediaUrl, context = context, viewModel = viewModel)
+                        }
                     }
-                    else -> {
-                        // File preview
-                        FilePreviewCard(url = url, context = context, viewModel = viewModel)
-                    }
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
+
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+
         }
     }
 
@@ -277,7 +285,7 @@ fun FilePreviewCard(url: String, context: Context, viewModel: PostsViewModel) {
             Icon(
                 imageVector = Icons.Default.Download,
                 contentDescription = "Download",
-                tint = Color.Blue
+                tint = Color.DarkGray
             )
         }
     }

@@ -1,5 +1,8 @@
 package com.example.classroom.data.remote
 
+import android.content.Context
+import android.net.Uri
+import android.provider.OpenableColumns
 import android.util.Log
 import com.example.classroom.App
 import com.example.classroom.data.remote.dto.activities.ActivityRequestDto
@@ -58,12 +61,14 @@ import com.example.classroom.data.remote.dto.quizz.CreateQuizzResponseDto
 import com.example.classroom.data.remote.dto.quizz.QuizzResponseDto
 import com.example.classroom.domain.model.entity.areatoInt
 import io.ktor.client.request.delete
+import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData
 import io.ktor.client.request.forms.submitFormWithBinaryData
 import io.ktor.client.request.get
 import io.ktor.client.request.setBody
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
 import okhttp3.Response
 import java.io.File
 import java.util.UUID
@@ -379,7 +384,7 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
     override suspend fun professorReviewsEvaluation(body: ReviewEvaluationRequestDto): ResponseGenericAPi<ReviewEvaluationsResponseDto> = withContext(
         Dispatchers.IO)  {
         val response = client.post{
-            url("${Constants.BASE_URL}${HttpRoutes.ACTIVITIES_ENDPOINT}/sen")
+            url("${Constants.BASE_URL}${HttpRoutes.ACTIVITIES_ENDPOINT}/send")
             contentType(ContentType.Application.Json)
             setBody(body) // Ensure proper serialization of body
 
@@ -389,19 +394,54 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
 
     }
 
-    override suspend fun uploadFile(file: File): ResponseGenericAPi<CloudResposeDto> = withContext(Dispatchers.IO) {
-        val response = client.submitFormWithBinaryData(
-            url = "${Constants.BASE_URL}${HttpRoutes.UPLOAD_FILE}",
-            formData = formData {
-                append("file", file.readBytes(), Headers.build {
-                    append(HttpHeaders.ContentDisposition, "filename=\"${file.name}\"")
-                    append(HttpHeaders.ContentType, ContentType.Application.OctetStream.toString())
-                })
-            }
-        )
-        return@withContext parseResponseToGenericObject(response, true)
+    override suspend fun uploadFile(fileUri: Uri, context: Context): ResponseGenericAPi<CloudResposeDto> =
+        withContext(Dispatchers.IO) {
+            // Extract the original file name
+            val originalFileName = extractOriginalFileName(fileUri, context)
 
+            // Open the file as a stream and convert to bytes
+            val fileBytes = context.contentResolver.openInputStream(fileUri)?.use { inputStream ->
+                inputStream.readBytes()
+            } ?: throw IllegalArgumentException("Unable to read file from URI: $fileUri")
+
+            // Log file details
+            Log.d("FILE_UPLOAD", "File URI: $fileUri")
+            Log.d("FILE_UPLOAD", "Original file name: $originalFileName")
+            Log.d("FILE_UPLOAD", "File size: ${fileBytes.size} bytes")
+
+            // Make the POST request
+            val response = client.submitFormWithBinaryData(
+                url = "https://class-room-nest.onrender.com/cloud/send/file",
+                formData = formData {
+                    append("file", fileBytes, Headers.build {
+                        append(HttpHeaders.ContentDisposition, "filename=${originalFileName}")
+                    })
+                }
+            )
+
+
+            // Log response details
+            val rawResponse = response.bodyAsText()
+            Log.d("FILE_UPLOAD", "Response code: ${response.status.value}")
+            Log.d("FILE_UPLOAD", "Response body: $rawResponse")
+
+            return@withContext parseResponseToGenericObject(response, true)
+        }
+
+    // Helper function to extract the original filename from the URI
+    private fun extractOriginalFileName(fileUri: Uri, context: Context): String {
+        val cursor = context.contentResolver.query(fileUri, null, null, null, null)
+        cursor?.use {
+            val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            if (nameIndex != -1 && cursor.moveToFirst()) {
+                return cursor.getString(nameIndex)
+            }
+        }
+        return "uploaded_file_${System.currentTimeMillis()}.png" // Fallback if the filename cannot be determined
     }
+
+
+
 
     override suspend fun getPostByCourseRemote(id: String): ResponseGenericAPi<GetPostsResponseDto> = withContext(
     Dispatchers.IO)  {

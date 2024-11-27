@@ -23,6 +23,8 @@ data class PostData(
     val authorId: Int,
     @SerialName("title")
     val title: String,
+    @SerialName("file")
+    val file: String,
     @SerialName("content")
     val content: String,
     @SerialName("createdAt")
