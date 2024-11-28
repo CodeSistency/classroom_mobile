@@ -33,7 +33,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.classroom.R
 import com.example.classroom.domain.model.entity.LocalActivitySubmission
-import com.example.classroom.domain.model.entity.LocalStudentEvaluation
 import com.example.classroom.presentation.navigation.Destination
 import com.example.classroom.presentation.theme.Azul2
 import com.example.classroom.presentation.theme.PaddingCustom

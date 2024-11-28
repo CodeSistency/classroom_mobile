@@ -7,9 +7,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ReviewEvaluationRequestDto(
-    @SerialName("activity_id")
+    @SerialName("id")
     val activityId: Int,
     @SerialName("grade")
-    val grade: Int = 0,
+    val grade: Int,
 
 )

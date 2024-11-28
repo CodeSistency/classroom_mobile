@@ -384,7 +384,7 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
     override suspend fun professorReviewsEvaluation(body: ReviewEvaluationRequestDto): ResponseGenericAPi<ReviewEvaluationsResponseDto> = withContext(
         Dispatchers.IO)  {
         val response = client.post{
-            url("${Constants.BASE_URL}${HttpRoutes.ACTIVITIES_ENDPOINT}/send")
+            url("${Constants.BASE_URL}${HttpRoutes.ACTIVITIES_ENDPOINT}/assess/activity")
             contentType(ContentType.Application.Json)
             setBody(body) // Ensure proper serialization of body
 

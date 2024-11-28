@@ -1,6 +1,7 @@
 package com.example.classroom.presentation.screens.course.posts
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -187,12 +188,13 @@ fun CardPostItem(post: LocalPost, viewModel: PostsViewModel, scope: CoroutineSco
                 )
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
 
             // Media preview
             if (!post.mediaUrl.isNullOrEmpty()){
                 post.mediaUrl.let { url ->
                     val mediaUrl = getSupabaseFileUrl(url)
+
+                    Log.e("mediaurl", mediaUrl)
                     Spacer(modifier = Modifier.height(8.dp))
 
                     when {

@@ -1,5 +1,6 @@
 package com.example.classroom.presentation.screens.submission
 
+import android.annotation.SuppressLint
 import android.app.DownloadManager
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -31,6 +32,8 @@ import com.example.classroom.presentation.screens.home.states.CourseState
 import com.example.classroom.presentation.screens.submission.states.ReviewActivityState
 import com.example.classroom.presentation.screens.submission.states.SendActivityState
 import io.ktor.client.statement.bodyAsText
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -133,6 +136,7 @@ class SubmissionViewModel(
     fun submitStudentResponse(
         context: Context,
         activityId: String,
+        idCourse: String,
         userId: String,
         fileUri: Uri,
         message: String,
@@ -179,7 +183,8 @@ class SubmissionViewModel(
                                 activityId = activityId.toInt(),
                                 message = message,
                                 document = fileUrl!!
-                            )
+                            ),
+                            idCourse
                         ).collect { result ->
                             when (result) {
                                 is Resource.Error -> {
@@ -244,38 +249,72 @@ class SubmissionViewModel(
         }
     }
 
-    fun downloadAndOpenFile(context: Context, documentUrl: String, fileName: String = "document") {
-        viewModelScope.launch {
-            val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+    @SuppressLint("Range")
+    fun downloadAndOpenFile(
+        context: Context,
+        documentUrl: String,
+        fileName: String = "document",
+        onProgress: (Int) -> Unit
+    ) {
+        val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
 
-            // Create a request for DownloadManager
-            val request = DownloadManager.Request(Uri.parse(documentUrl)).apply {
-                setTitle("Descargando archivo")
-                setDescription("Descargando $fileName")
-                setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName)
-                setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
-            }
+        // Create a request for DownloadManager
+        val request = DownloadManager.Request(Uri.parse(documentUrl)).apply {
+            setTitle("Descargando archivo")
+            setDescription("Descargando $fileName")
+            setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName)
+            setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+            setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
+        }
 
-            // Enqueue the request
-            val downloadId = downloadManager.enqueue(request)
+        // Enqueue the request
+        val downloadId = downloadManager.enqueue(request)
 
-            // Register receiver to listen for download completion
-            val receiver = object : BroadcastReceiver() {
-                override fun onReceive(ctxt: Context, intent: Intent) {
-                    val id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
-                    if (id == downloadId) {
-                        context.unregisterReceiver(this)
-                        openDownloadedFile(context, downloadId, downloadManager)
-                    }
+        // Create a BroadcastReceiver for download completion
+        val receiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+                val id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+                if (id == downloadId) {
+                    // Download completed
+                    context.unregisterReceiver(this) // Unregister the receiver
+                    openDownloadedFile(context, downloadId, downloadManager)
+                    onProgress(100) // Progress complete
                 }
             }
+        }
 
-            // Register the receiver with RECEIVER_NOT_EXPORTED flag
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                context.registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE), Context.RECEIVER_NOT_EXPORTED)
-            } else {
-                context.registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
+        // Register the receiver
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context.registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE), Context.RECEIVER_NOT_EXPORTED)
+        } else {
+            context.registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
+        }
+
+        // Poll for progress updates
+        CoroutineScope(Dispatchers.IO).launch {
+            while (true) {
+                delay(500) // Poll every 500ms
+                val query = DownloadManager.Query().setFilterById(downloadId)
+                val cursor = downloadManager.query(query)
+                if (cursor != null && cursor.moveToFirst()) {
+                    val status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))
+                    if (status == DownloadManager.STATUS_SUCCESSFUL) {
+                        // Download succeeded
+                        break
+                    } else if (status == DownloadManager.STATUS_FAILED) {
+                        // Download failed
+                        onProgress(-1) // Indicate failure
+                        break
+                    } else {
+                        val totalBytes = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES))
+                        val downloadedBytes = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR))
+                        if (totalBytes > 0) {
+                            val progress = (downloadedBytes * 100) / totalBytes
+                            onProgress(progress)
+                        }
+                    }
+                }
+                cursor?.close()
             }
         }
     }
@@ -321,32 +360,6 @@ class SubmissionViewModel(
         }.launchIn(viewModelScope)
     }
 
-    suspend fun sendActivity(body: SendEvaluationRequestDto){
-        studentSendActivityUseCase(body).onEach { result ->
-            when(result){
-                is Resource.Error -> {
-                    //Timber.tag("AUTH_VM").e("Error ${result.message?.uiMessage}")
-                    Log.e("HOME_VM:", "Error ${result.message?.uiMessage}")
-                    _stateSendActivity.value = SendActivityState(error = result.message)
-                }
-                is Resource.Loading -> {
-                    Timber.tag("HOME_VM").e("is loading")
-                    _stateSendActivity.value = SendActivityState(isLoading = true)
-                }
-                is Resource.Success -> {
-                    Timber.tag("HOME_VM").e("success")
-                    Log.e("HOME_VM:", "success")
-                    _stateSendActivity.value = SendActivityState(info = result.data)
-                    Log.e("HOME_VM:", "${_stateSendActivity.value.info}")
-                    _stateSendActivity.value.info?.let {
-//                        repositoryBundle.activitiesRepository.insertAllActivities(it)
-//                        delay(1000)
-                    }
-                }
-            }
-
-        }.launchIn(viewModelScope)
-    }
 
 
 }

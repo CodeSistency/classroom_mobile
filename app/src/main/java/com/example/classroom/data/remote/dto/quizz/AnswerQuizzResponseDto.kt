@@ -1,5 +1,6 @@
 package com.example.classroom.data.remote.dto.quizz
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 
@@ -23,7 +24,9 @@ data class QuizActivityDto(
     val title: String,
     val description: String,
     val grade: Double,
+    @SerialName("start_date")
     val startDate: String,
+    @SerialName("end_date")
     val endDate: String,
     val email: String,
     val digital: Boolean,
@@ -34,6 +37,7 @@ data class QuizActivityDto(
 data class QuizSubmissionDto(
     val id: Int,
     val quizzId: Int,
+    @SerialName("user_id")
     val userId: Int,
     val grade: Double,
     val answers: List<SubmittedAnswerDto>

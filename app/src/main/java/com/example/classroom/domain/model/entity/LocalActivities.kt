@@ -7,6 +7,7 @@ import com.example.classroom.data.remote.dto.activities.ActivityResponseDto
 import com.example.classroom.data.remote.dto.activities.GetActivitiesResponseDto
 import com.example.classroom.data.remote.dto.activities.GetActivitiesWithQuizzResponseDto
 import com.example.classroom.data.remote.dto.login.signIn.SignInResponseDto
+import com.example.classroom.data.remote.dto.quizz.CreateQuizzResponseDto
 
 @Entity("localActivities_table")
 data class LocalActivities(
@@ -107,5 +108,22 @@ fun GetActivitiesWithQuizzResponseDto.Activity.toLocalActivity(): LocalActivitie
         quizzId = this.quizzId.toString(),
         isQuizz = this.isQuizz,
         status = Status.fromId(this.status),
+    )
+}
+
+
+fun CreateQuizzResponseDto.toLocalActivities(idCourse: String): LocalActivities {
+    val activity = this.data.activity
+    return LocalActivities(
+        idApi = activity.id.toString(),
+        idCourse = idCourse,
+        title = activity.title,
+        description = activity.description,
+        grade = activity.grade,
+        startDate = activity.startDate,
+        endDate = activity.endDate,
+        status = Status.OPEN,
+        isQuizz = activity.isQuizz,
+        quizzId = this.data.quizzId.toString()
     )
 }

@@ -5,7 +5,7 @@ fun getSupabaseFileUrl(path: String, isPublic: Boolean = true): String {
     val bucketName = "class_room_documents"
 
     return if (isPublic) {
-        "$supabaseBaseUrl/$path"
+        "$supabaseBaseUrl/storage/v1/object/public/$path"
 
 //        "$supabaseBaseUrl/storage/v1/object/public/$bucketName/$path"
     } else {

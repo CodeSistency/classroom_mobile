@@ -18,6 +18,7 @@ import com.example.classroom.domain.model.entity.OptionEntity
 import com.example.classroom.domain.model.entity.QuestionEntity
 import com.example.classroom.domain.model.entity.QuizEntity
 import com.example.classroom.domain.model.entity.Status
+import com.example.classroom.domain.model.entity.toLocalActivities
 import com.example.classroom.domain.use_case.quizz.AnswerQuizzUseCase
 import com.example.classroom.domain.use_case.quizz.CreateQuizzUseCase
 import com.example.classroom.presentation.screens.Quizz.states.AnswerQuizzState
@@ -62,25 +63,45 @@ class QuizzViewModel(
     private val _stateAnswerQuizz = MutableStateFlow(AnswerQuizzState())
     val stateAnswerQuizz: StateFlow<AnswerQuizzState> = _stateAnswerQuizz
 
-    val quizState = mutableStateOf<QuizWithQuestions?>(null)
+    val quizState = MutableStateFlow<QuizWithQuestions?>(null)
+
+    // Store selected options for each question
+    val selectedOptions = MutableStateFlow<Map<Int, Int>>(emptyMap())
 
     val questions = mutableStateOf(mutableListOf<QuestionDto>())
 
 
     fun addQuestion() {
-        questions.value = (questions.value + QuestionDto(
-            text = "",
-            options = mutableListOf("", ""),
-            answer = -1
-        )).toMutableList()
+        questions.value =
+            (questions.value + QuestionDto(text = "", options = mutableListOf("", ""), answer = -1)).toMutableList()
+    }
+
+    fun deleteQuestion(index: Int) {
+        if (questions.value.size > 1) {
+            val updatedQuestions = questions.value.toMutableList()
+            updatedQuestions.removeAt(index)
+            questions.value = updatedQuestions
+        }
     }
 
     fun addOption(questionIndex: Int) {
         val updatedQuestions = questions.value.toMutableList()
-        if (updatedQuestions[questionIndex].options.size < 4) {
-            updatedQuestions[questionIndex].options.add("")
+        val question = updatedQuestions[questionIndex]
+        if (question.options.size < 4) {
+            question.options.add("")
+            updatedQuestions[questionIndex] = question
+            questions.value = updatedQuestions
         }
-        questions.value = updatedQuestions
+    }
+
+    fun deleteOption(questionIndex: Int, optionIndex: Int) {
+        val updatedQuestions = questions.value.toMutableList()
+        val question = updatedQuestions[questionIndex]
+        if (question.options.size > 2) {
+            question.options.removeAt(optionIndex)
+            updatedQuestions[questionIndex] = question
+            questions.value = updatedQuestions
+        }
     }
 
     fun updateQuestionText(questionIndex: Int, newText: String) {
@@ -106,7 +127,7 @@ class QuizzViewModel(
     // State for form fields
     val title = mutableStateOf("")
     val description = mutableStateOf("")
-    val grade = mutableStateOf("")
+    val grade = mutableStateOf("0.0")
     val startDate = mutableStateOf("")
     val endDate = mutableStateOf("")
     val email = mutableStateOf("")
@@ -177,15 +198,8 @@ class QuizzViewModel(
         }
     }
 
-    private val selectedOptions = mutableStateOf(mutableMapOf<Int, Int>())
 
-    fun selectOption(questionId: Int, optionId: Int) {
-        selectedOptions.value[questionId] = optionId
-    }
 
-    fun getSelectedOption(questionId: Int): Int? {
-        return selectedOptions.value[questionId]
-    }
 
 
 
@@ -220,29 +234,56 @@ class QuizzViewModel(
         }
     }
 
+
+    // Get selected option for a question
+    fun getSelectedOption(questionId: Int): Int? {
+        return selectedOptions.value[questionId]
+    }
+
+    // Select an option for a question
+    fun selectOption(questionId: Int, optionId: Int) {
+        val updatedMap = selectedOptions.value.toMutableMap()
+        updatedMap[questionId] = optionId
+        selectedOptions.value = updatedMap
+    }
     fun answerQuizzRemote(quizId: String) {
         viewModelScope.launch {
-            val selectedAnswers = quizState.value?.questions?.mapNotNull { questionWithOptions ->
-                val selectedOptionId = selectedOptions.value[questionWithOptions.question.id]
-                selectedOptionId?.let {
-                    AnswerDto(
-                        questionId = questionWithOptions.question.id,
-                        optionId = it
-                    )
-                }
-            } ?: emptyList()
-
-            // Ensure there are answers to submit
-            if (selectedAnswers.isEmpty()) {
-                _stateAnswerQuizz.value = AnswerQuizzState(error = GenericCodeModel("Please answer all questions.", ""))
+            // Validate quizState exists
+            val currentQuiz = quizState.value
+            if (currentQuiz == null) {
+                _stateAnswerQuizz.value = AnswerQuizzState(error = GenericCodeModel("Quiz not loaded.", ""))
                 return@launch
             }
 
+            // Map selected answers
+            val selectedAnswers = currentQuiz.questions.map { questionWithOptions ->
+                val selectedOptionId = selectedOptions.value[questionWithOptions.question.id]
+                if (selectedOptionId == null) {
+                    // Missing answer for this question
+                    _stateAnswerQuizz.value = AnswerQuizzState(
+                        error = GenericCodeModel("Por favor contesta todas las preguntas. Respuesta faltante: ${questionWithOptions.question.text}", "")
+                    )
+                    return@launch
+                }
+                AnswerDto(
+                    questionId = questionWithOptions.question.id,
+                    optionId = selectedOptionId
+                )
+            }
+
+            // Ensure there are answers to submit
+            if (selectedAnswers.isEmpty()) {
+                _stateAnswerQuizz.value = AnswerQuizzState(error = GenericCodeModel("No answers selected.", ""))
+                return@launch
+            }
+
+            // Build DTO
             val dto = AnswerQuizzDto(
                 userId = _userInfo.value?.id ?: return@launch,
                 answers = selectedAnswers
             )
 
+            // Make remote call
             answerQuizzUseCase(dto, idQuizz = quizId).onEach { result ->
                 when (result) {
                     is Resource.Error -> {
@@ -303,7 +344,7 @@ class QuizzViewModel(
                 val dto = CreateQuizzDto(
                     title = title.value,
                     description = description.value,
-                    grade = grade.value.toIntOrNull() ?: 0, // Default grade to 0 if not provided
+                    grade = grade.value.toString(), // Default grade to 0 if not provided
                     startDate = startDate.value,
                     endDate = endDate.value,
                     email = it.email,
@@ -330,9 +371,14 @@ class QuizzViewModel(
                             _stateCreateQuizz.value = CreateQuizzState(info = response)
 
                             // Save the quiz data into the local database
+                            result.data?.let {
+                                repositoryBundle.activitiesRepository.insertActivity(it.toLocalActivities(idCourse))
+
+                            }
                             response?.data?.let { createdQuizData ->
                                 saveQuizzToLocalDatabase(createdQuizData)
                             }
+
                         }
                     }
                 }.launchIn(viewModelScope)

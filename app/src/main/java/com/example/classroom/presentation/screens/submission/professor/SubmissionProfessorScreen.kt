@@ -43,9 +43,7 @@ fun SubmissionProfessorScreen(
     submission?.let { loadedSubmission ->
         ReviewSubmissionScreen(
             submission = loadedSubmission,
-            onDownloadFile = { documentUrl ->
-                viewModel.downloadAndOpenFile(context, documentUrl, fileName = "submission_${loadedSubmission.id}.pdf")
-            },
+
           viewModel = viewModel,
             navController = navController
         )

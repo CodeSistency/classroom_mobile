@@ -104,13 +104,15 @@ class StudentEvaluationsViewModel(
                         Log.e("getActivitiesByStudent", "Successfully fetched remote data")
                         result.data?.let { evaluations ->
                             // Insert the data into the local database
-//                            repositoryBundle.submissionsRepository.insertAllSubmissions(evaluations)
+                            repositoryBundle.submissionsRepository.addSubmissionsWithoutDuplicates(evaluations)
+                            _stateStudentEvaluations.value = _stateStudentEvaluations.value.copy(
+                                isLoading = false,
+                                error = null,
+                                info = evaluations
+                                )
                         }
                         // Reset `isLoading` and error without clearing `info`
-                        _stateStudentEvaluations.value = _stateStudentEvaluations.value.copy(
-                            isLoading = false,
-                            error = null
-                        )
+
                     }
                 }
             }

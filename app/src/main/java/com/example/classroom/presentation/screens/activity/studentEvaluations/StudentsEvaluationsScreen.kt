@@ -42,7 +42,6 @@ import com.example.classroom.presentation.theme.Azul
 @Composable
 fun StudentsEvaluationsScreen(
     viewModel: StudentEvaluationsViewModel,
-    activityId: String = "",
     studentId: String,
     courseId: String,
     navController: NavController
@@ -51,7 +50,7 @@ fun StudentsEvaluationsScreen(
     LaunchedEffect(true) {
         Log.e("triggers", "triggers")
 
-        viewModel.observeLocalEvaluationsList(activityId, studentId)
+        viewModel.observeLocalEvaluations(courseId, studentId)
         viewModel.getActivitiesByStudent(courseId, studentId)
     }
 

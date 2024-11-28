@@ -16,9 +16,9 @@ data class ReviewEvaluationsResponseDto(
 ) {
     @Serializable
     data class Data(
-        @SerialName("activityId")
+        @SerialName("activity_id")
         val activityId: Int,
-        @SerialName("userId")
+        @SerialName("user_id")
         val userId: Int,
         @SerialName("document")
         val document: String,

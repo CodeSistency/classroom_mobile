@@ -46,7 +46,8 @@ fun SubmissionStudentScreen(
                     dialogState = SetupCustomDialogState.Error(message)
 
                 },
-                userId = studentId
+                userId = studentId,
+                idCourse = courseId
             )
         },
         navController = navController
@@ -66,7 +67,5 @@ fun SubmissionStudentScreen(
         dialogState = SetupCustomDialogState.Default()
     }
 
-    SetupCustomDialog(setupCustomDialogState = dialogState, showDialog = dialogState != SetupCustomDialogState.Default()) {
-        dialogState = SetupCustomDialogState.Default()
-    }
+
 }

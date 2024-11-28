@@ -14,11 +14,11 @@ import com.example.classroom.common.handlingError
 class StudentSendActivityUseCase(
     private val repositoryBundle: RepositoryBundle
 ) {
-    suspend operator fun invoke(body: SendEvaluationRequestDto) : Flow<Resource<LocalActivitySubmission>> {
+    suspend operator fun invoke(body: SendEvaluationRequestDto, idCourse: String) : Flow<Resource<LocalActivitySubmission>> {
         return handlingError<LocalActivitySubmission> {
             val data = repositoryBundle.submissionsRepository.submitActivityToServerAndSync(body)
             if (data.statusCode.value == 200 || data.statusCode.value == 201) { // Allow both 200 and 201
-                data.responseData?.toActivitySubmission()!!
+                data.responseData?.toActivitySubmission(idCourse)!!
             }else{
                 throw catchError(data.statusCode.value, null, message = data.messageError?.message)
             }

@@ -3,6 +3,7 @@ package com.example.classroom.presentation.screens.submission.composables
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,6 +36,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -59,13 +62,13 @@ import kotlinx.coroutines.launch
 @Composable
 fun ReviewSubmissionScreen(
     submission: LocalActivitySubmission,
-    onDownloadFile: (String) -> Unit,
+
     viewModel: SubmissionViewModel,
     navController: NavController
 ) {
     val state = viewModel.stateReviewActivity.collectAsState()
 
-
+var context = LocalContext.current
     LaunchedEffect(key1 = true, block = {
         viewModel.grade.value = submission.grade
     })
@@ -105,11 +108,17 @@ fun ReviewSubmissionScreen(
             ) {
                 // Document preview and download
                 if (submission.documentUrl != null) {
+                    var downloadProgress by remember { mutableStateOf(0) }
+
                     DocumentPreviewComponent(
                         documentUrl = submission.documentUrl,
-                        onDownloadFile = onDownloadFile,
-                        fileType = getFileType(submission.documentUrl)
-
+                        fileType = getFileType(submission.documentUrl),
+                        onDownloadFile = { url ->
+                            viewModel.downloadAndOpenFile(context, url, "file_name.ext") { progress ->
+                                downloadProgress = progress
+                            }
+                        },
+                        isDownloading = downloadProgress in 1..99 // Show progress indicator
                     )
                 } else {
                     Text(text = "Ningun documento.", style = MaterialTheme.typography.body2)
@@ -149,15 +158,29 @@ fun ReviewSubmissionScreen(
 //        )
 
 
-                CustomTextField(value = viewModel.grade.toString(),
+                CustomTextField(
+                    value = viewModel.grade.value.takeIf { it in 0.0..100.0 }?.toString() ?: "",
                     onValueChange = { value ->
-                        val newGrade = value.toFloatOrNull()
-                        if (newGrade != null && newGrade in 0f..100f) {
-                            viewModel.grade.value = newGrade.toDouble()
-                        }
-                    }, label = "Calificación (0-100)") {
+                        val sanitizedValue = value.filter { it.isDigit() || it == '.' } // Allow only digits and dot
+                        val newGrade = sanitizedValue.toDoubleOrNull()
 
-                }
+                        if (newGrade != null && newGrade in 0.0..100.0) {
+                            viewModel.grade.value = newGrade // Update grade if within range
+                        } else if (value.isEmpty()) {
+                            viewModel.grade.value = 0.0 // Default to 0 if input is empty
+                        }
+                    },
+                    label = "Calificación (0-100)",
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Done
+                    ),
+                    onNextClick = {
+                        // Handle done or next action
+                        Log.d("CustomTextField", "Grade input completed: ${viewModel.grade.value}")
+                    }
+                )
+
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Submit grade button
@@ -184,7 +207,7 @@ fun ReviewSubmissionScreen(
         }
     }
 
-    LaunchedEffect(key1 = state, block = {
+    LaunchedEffect(key1 = state.value, block = {
         when{
             state.value.isLoading -> {
                 dialogState = SetupCustomDialogState.Loading()
@@ -197,7 +220,7 @@ fun ReviewSubmissionScreen(
                 if (state.value.info != null){
                     dialogState = SetupCustomDialogState.Success(message = "Se ha calificado la evaluacion exitosamente")
                     delay(1000)
-
+                    navController.popBackStack()
 
                 }
             }
@@ -210,7 +233,9 @@ fun ReviewSubmissionScreen(
 }
 
 fun getFileType(documentUrl: String): String {
-    val fileExtension = documentUrl.substringAfterLast('.', "").lowercase()
+    val sanitizedUrl = documentUrl.substringBefore('?') // Remove query parameters
+    val fileExtension = sanitizedUrl.substringAfterLast('.', "").lowercase()
+    Log.d("getFileType", "Sanitized URL: $sanitizedUrl, Extracted extension: $fileExtension")
     return when (fileExtension) {
         "jpg", "jpeg", "png", "gif", "bmp", "webp" -> "image"
         "pdf" -> "pdf"
@@ -220,6 +245,9 @@ fun getFileType(documentUrl: String): String {
         "txt" -> "text"
         "mp4", "avi", "mov", "mkv" -> "video"
         "mp3", "wav", "aac" -> "audio"
-        else -> "unknown"
+        else -> {
+            Log.w("getFileType", "Unknown file type for URL: $documentUrl")
+            "unknown"
+        }
     }
 }
