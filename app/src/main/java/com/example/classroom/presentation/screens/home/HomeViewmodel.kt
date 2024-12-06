@@ -5,8 +5,10 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.classroom.data.local.db.daos.NotificationDao
 import com.example.classroom.data.repository.RepositoryBundle
 import com.example.classroom.domain.model.entity.LocalCourses
+import com.example.classroom.domain.model.entity.LocalNotification
 import com.example.classroom.domain.model.entity.LocalUser
 import com.example.classroom.domain.model.entity.toCoursesLocal
 import com.example.classroom.domain.use_case.courses.DeleteCourseUseCase
@@ -42,12 +44,19 @@ class HomeViewmodel(
     private val getCoursesUseCase: GetCoursesUseCase,
     private val joinCourseUseCase: JoinCourseUseCase,
     private val deleteCourseUseCase: DeleteCourseUseCase,
-    private val repositoryBundle: RepositoryBundle
+    private val repositoryBundle: RepositoryBundle,
+    private val notificationDao: NotificationDao // Inject DAO
 ) : ViewModel() {
 
     // StateFlow for user information
     private val _userInfo = MutableStateFlow<LocalUser?>(null)
     val userInfo: StateFlow<LocalUser?> = _userInfo
+
+    private val _notifications = MutableStateFlow<List<LocalNotification>>(emptyList())
+    val notifications: StateFlow<List<LocalNotification>> = _notifications
+
+    private val _unseenCount = MutableStateFlow(0)
+    val unseenCount: StateFlow<Int> = _unseenCount
 
     // Courses not owned by the user (joined courses)
 //    val listCoursesFlow: StateFlow<List<LocalCourses>> = _userInfo.filterNotNull()
@@ -114,9 +123,29 @@ class HomeViewmodel(
             _userInfo.value?.idApi?.let { getCourses(it) }
 
 
+            notificationDao.getAllNotifications().collect { notifications ->
+                _notifications.value = notifications
+            }
+
+            notificationDao.getUnseenCount().collect { count ->
+                _unseenCount.value = count
+            }
         }
 
         observeListAndFilter()
+    }
+
+    fun markAllAsSeen() {
+        viewModelScope.launch {
+            val unseenIds = _notifications.value.filter { !it.isSeen }.map { it.id }
+            notificationDao.markAsSeen(unseenIds)
+        }
+    }
+
+    fun addNotification(notification: LocalNotification) {
+        viewModelScope.launch {
+            notificationDao.insert(notification)
+        }
     }
 
     // Fetch courses from the server and update local database

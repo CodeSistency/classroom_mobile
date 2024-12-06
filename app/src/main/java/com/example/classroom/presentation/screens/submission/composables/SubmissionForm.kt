@@ -31,10 +31,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.classroom.common.CustomButton.CustomButton
-import com.example.classroom.common.CustomButton.NavigationButtonStyle
-import com.example.classroom.common.CustomInput.CustomTextField
-import com.example.classroom.common.FileUploadComponent.FileUploadComponent
+import com.example.classroom.common.composables.CustomButton.CustomButton
+import com.example.classroom.common.composables.CustomButton.NavigationButtonStyle
+import com.example.classroom.common.composables.CustomInput.CustomTextField
+import com.example.classroom.common.composables.FileUploadComponent.FileUploadComponent
 import com.example.classroom.presentation.screens.submission.SubmissionViewModel
 import com.example.classroom.presentation.theme.Azul
 import com.example.classroom.presentation.theme.AzulGradient

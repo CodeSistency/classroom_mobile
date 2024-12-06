@@ -3,18 +3,16 @@ package com.example.classroom.domain.repository
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import com.example.classroom.common.ResponseGenericAPi
-import com.example.classroom.data.local.db.QuizWithQuestions
+import com.example.classroom.data.local.db.daos.QuizWithQuestions
 import com.example.classroom.data.remote.dto.quizz.AnswerQuizzDto
 import com.example.classroom.data.remote.dto.quizz.AnswerQuizzResponseDto
 import com.example.classroom.data.remote.dto.quizz.CreateQuizzDto
 import com.example.classroom.data.remote.dto.quizz.CreateQuizzResponseDto
 import com.example.classroom.data.remote.dto.quizz.QuestionDto
-import com.example.classroom.data.remote.dto.quizz.QuizzResponseDto
 import com.example.classroom.domain.model.entity.AnswerEntity
 import com.example.classroom.domain.model.entity.OptionEntity
 import com.example.classroom.domain.model.entity.QuestionEntity
 import com.example.classroom.domain.model.entity.QuizEntity
-import kotlinx.coroutines.flow.Flow
 
 interface QuizzRepository {
     suspend fun createQuiz(activityId: Int, title: String, questions: List<QuestionDto>)

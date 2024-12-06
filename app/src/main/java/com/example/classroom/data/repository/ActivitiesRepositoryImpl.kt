@@ -1,6 +1,6 @@
 package com.example.classroom.data.repository
 
-import com.example.classroom.data.local.db.AppDao
+import com.example.classroom.data.local.db.daos.AppDao
 import com.example.classroom.data.remote.ApiService
 import com.example.classroom.data.remote.dto.activities.ActivityRequestDto
 import com.example.classroom.data.remote.dto.activities.ActivityResponseDto

@@ -28,6 +28,8 @@ data class SignUpRequestDto(
     val name: String,
     @SerialName("last_name")
     val lastname: String,
+    @SerialName("firebaseToken")
+    val firebaseToken: String? = null,
     @SerialName("user_name")
     val username: String,
     @SerialName("password")

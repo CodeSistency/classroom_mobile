@@ -133,6 +133,8 @@ data class GetUsersByCourseResponse(
                 val createDate: String,
                 @SerialName("user_name")
                 val userName: String,
+                @SerialName("firebaseToken")
+                val firebaseToken: String,
                 @SerialName("genderId")
                 val genderId: Int,
                 @SerialName("name")

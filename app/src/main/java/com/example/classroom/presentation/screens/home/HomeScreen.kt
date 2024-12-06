@@ -4,12 +4,14 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.DrawerValue
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.rememberDrawerState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -22,13 +24,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.classroom.common.bottomNav.ScaffoldBottomNav
+import com.example.classroom.common.composables.bottomNav.ScaffoldBottomNav
 import com.example.classroom.presentation.navigation.Destination
 import com.example.classroom.presentation.screens.course.AddCourse.AddCourseViewModel
 import com.example.classroom.presentation.screens.home.composables.HomePresentation
+import com.example.classroom.presentation.screens.home.composables.NotificationsDrawer
 import com.example.classroom.presentation.screens.home.composables.SelectedOptionDialog
 import com.example.classroom.presentation.screens.home.composables.TopBarHome
 import com.example.classroom.presentation.theme.Azul
+import kotlinx.coroutines.launch
 import proyecto.person.appconsultapopular.common.SnackbarDelegate
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -43,6 +47,8 @@ fun HomeScreen(navController: NavController, viewmodel: HomeViewmodel, addCourse
     val snackbarHost = remember { SnackbarHostState() }
     val snackbarDelegate = remember { SnackbarDelegate() }
     val scaffoldState = rememberScaffoldState()
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+
 
     snackbarDelegate.apply {
         snackbarHostState = scaffoldState.snackbarHostState
@@ -53,7 +59,7 @@ fun HomeScreen(navController: NavController, viewmodel: HomeViewmodel, addCourse
     Scaffold(
         scaffoldState = scaffoldState,
 //        snackbarHost = snackbarHost,
-        topBar = { TopBarHome(viewmodel, navController, scope) },
+        topBar = { TopBarHome(viewmodel, navController, scope, drawerState = drawerState) },
         content = {
             HomePresentation(viewmodel, navController, addCourseViewModel)
 
@@ -77,27 +83,17 @@ fun HomeScreen(navController: NavController, viewmodel: HomeViewmodel, addCourse
                 }
             }
         },
-        )
+        drawerContent = {
+            NotificationsDrawer(viewmodel, scope, onClose = {
+                scope.launch { drawerState.close() }
+            })
+        }
+    )
 
     if (isDialogOpen){
         SelectedOptionDialog(dismissDialog = { isDialogOpen = false },
             navController = navController,
             viewmodel, scope)
     }
-//    ScaffoldBottomNav(
-//        scaffoldState = scaffoldState,
-//        snackbarDelegate = snackbarDelegate,
-//        snackbarHost = snackbarHost,
-//        navController = navController,
-//        topBar = { TopBarHome(viewmodel, navController, scope) },
-//        content = {
-//                    HomePresentation(viewmodel, navController, addCourseViewModel)
-//                  },
-//        items = items,
-//        isFloatingAction = true,
-//        action = {
-//            isDialogOpen = true
-//        })
-
 
 }

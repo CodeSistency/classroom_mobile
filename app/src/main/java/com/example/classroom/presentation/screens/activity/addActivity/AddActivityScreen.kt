@@ -48,7 +48,7 @@ import androidx.navigation.NavHostController
 import com.example.classroom.DateUtils
 import com.example.classroom.R
 import com.example.classroom.common.composables.customDialogs.SetupCustomDialogState
-import com.example.classroom.common.datePicker.DatePickerWithDialog
+import com.example.classroom.common.composables.datePicker.DatePickerWithDialog
 import com.example.classroom.data.remote.dto.activities.ActivityRequestDto
 import com.example.classroom.data.remote.dto.courses.CourseRequestDto
 import com.example.classroom.presentation.screens.activity.ActivityViewmodel

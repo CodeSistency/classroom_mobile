@@ -7,7 +7,7 @@ import com.example.classroom.data.remote.dto.login.signUp.SignUpRequestDto
 import com.example.classroom.data.remote.dto.login.signUp.SignUpResponseDto
 import com.example.classroom.domain.repository.LoginRepository
 import com.example.classroom.common.ResponseGenericAPi
-import com.example.classroom.data.local.db.AppDao
+import com.example.classroom.data.local.db.daos.AppDao
 import com.example.classroom.domain.model.entity.LocalUser
 import kotlinx.coroutines.flow.Flow
 

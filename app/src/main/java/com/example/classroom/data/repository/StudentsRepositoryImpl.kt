@@ -1,7 +1,7 @@
 package com.example.classroom.data.repository
 
 import com.example.classroom.common.ResponseGenericAPi
-import com.example.classroom.data.local.db.AppDao
+import com.example.classroom.data.local.db.daos.AppDao
 import com.example.classroom.data.remote.ApiService
 import com.example.classroom.data.remote.dto.courses.GetUsersByCourseResponse
 import com.example.classroom.domain.model.entity.LocalStudents

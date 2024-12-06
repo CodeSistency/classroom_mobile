@@ -46,13 +46,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.classroom.R
-import com.example.classroom.common.CustomButton.CustomButton
-import com.example.classroom.common.CustomButton.NavigationButtonStyle
-import com.example.classroom.common.CustomDatePicker.CustomDatePicker
-import com.example.classroom.common.CustomInput.CustomTextField
+import com.example.classroom.common.composables.CustomButton.CustomButton
+import com.example.classroom.common.composables.CustomButton.NavigationButtonStyle
+import com.example.classroom.common.composables.CustomDatePicker.CustomDatePicker
+import com.example.classroom.common.composables.CustomInput.CustomTextField
 import com.example.classroom.common.composables.customDialogs.SetupCustomDialog
 import com.example.classroom.common.composables.customDialogs.SetupCustomDialogState
-import com.example.classroom.common.customSelect.CustomSelect
+import com.example.classroom.common.composables.customSelect.CustomSelect
 import com.example.classroom.data.remote.dto.quizz.QuestionDto
 import com.example.classroom.domain.model.entity.Status
 

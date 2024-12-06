@@ -3,7 +3,7 @@ package com.example.classroom.presentation.screens.Quizz
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.classroom.data.local.db.QuizWithQuestions
+import com.example.classroom.data.local.db.daos.QuizWithQuestions
 import com.example.classroom.data.remote.dto.quizz.AnswerDto
 import com.example.classroom.data.remote.dto.quizz.AnswerQuizzDataDto
 import com.example.classroom.data.remote.dto.quizz.AnswerQuizzDto
@@ -23,8 +23,6 @@ import com.example.classroom.domain.use_case.quizz.AnswerQuizzUseCase
 import com.example.classroom.domain.use_case.quizz.CreateQuizzUseCase
 import com.example.classroom.presentation.screens.Quizz.states.AnswerQuizzState
 import com.example.classroom.presentation.screens.Quizz.states.CreateQuizzState
-import com.example.classroom.presentation.screens.course.states.GetCourseState
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.firstOrNull

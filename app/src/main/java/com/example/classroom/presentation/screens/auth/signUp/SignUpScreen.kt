@@ -58,7 +58,7 @@ import com.example.classroom.DateUtils
 import com.example.classroom.R
 import com.example.classroom.common.composables.customDialogs.SetupCustomDialog
 import com.example.classroom.common.composables.customDialogs.SetupCustomDialogState
-import com.example.classroom.common.datePicker.DatePickerWithDialog
+import com.example.classroom.common.composables.datePicker.DatePickerWithDialog
 import com.example.classroom.data.remote.dto.login.signUp.SignUpRequestDto
 import com.example.classroom.domain.model.entity.Gender
 import com.example.classroom.presentation.navigation.Destination

@@ -1,6 +1,6 @@
 package com.example.classroom.data.repository
 
-import com.example.classroom.data.local.db.AppDao
+import com.example.classroom.data.local.db.daos.AppDao
 import com.example.classroom.data.remote.ApiService
 import com.example.classroom.data.remote.dto.courses.CourseRequestDto
 import com.example.classroom.data.remote.dto.courses.CourseResponseDto
@@ -10,7 +10,6 @@ import com.example.classroom.domain.repository.CoursesRepository
 import kotlinx.coroutines.flow.Flow
 import com.example.classroom.common.ResponseGenericAPi
 import com.example.classroom.data.remote.dto.courses.GetUsersByCourseResponse
-import com.example.classroom.domain.model.entity.LocalUser
 
 class CoursesRepositoryImpl(
     private val apiService: ApiService,

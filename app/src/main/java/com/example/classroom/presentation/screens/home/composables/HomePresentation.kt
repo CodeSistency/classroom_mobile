@@ -44,7 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.classroom.R
-import com.example.classroom.common.customTab.CustomTab
+import com.example.classroom.common.composables.customTab.CustomTab
 import com.example.classroom.domain.model.entity.Gender
 import com.example.classroom.presentation.screens.course.AddCourse.AddCourseViewModel
 import com.example.classroom.presentation.screens.home.HomeViewmodel

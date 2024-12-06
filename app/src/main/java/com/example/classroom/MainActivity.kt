@@ -1,34 +1,34 @@
 package com.example.classroom
 
+import android.app.Activity
+import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.coroutineScope
-import androidx.room.Room
-import com.example.classroom.common.Seeders
-import com.example.classroom.di.AppModuleImpl
-import com.example.classroom.domain.model.entity.Gender
+
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+
 import com.example.classroom.domain.model.entity.LocalUser
 import com.example.classroom.presentation.navigation.Navigation
 import com.example.classroom.presentation.theme.ClassroomTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
-import proyecto.person.appconsultapopular.data.local.db.AppDatabase
+import com.google.firebase.messaging.FirebaseMessaging
+import android.Manifest
+import com.example.classroom.common.firebase.saveTokenToPreferences
+
 
 class MainActivity : ComponentActivity() {
 
@@ -37,32 +37,13 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 //        Seeders(lifecycle).seedDatabase(App.appModule.db.appDao, App.appModule.db.quizDao)
+        requestNotificationPermission(this)
+
         setContent {
             val systemUiController = rememberSystemUiController()
-//            systemUiController.setStatusBarColor(
-//                color = if (isDarkTheme) Gris else Gris
-//            )
-//            systemUiController.setNavigationBarColor(
-//                color = if (isDarkTheme) darkColor else Color.White
-//            )
-//            LaunchedEffect(key1 = true, block = {
-//                App.appModule.db.appDao.insertLocalUser(
-//                    LocalUser(
-//                        email = "valero@gmail.com",
-//                        idApi = "1",
-//                        gender = Gender.Man,
-//                        birthdate = "11-10-03",
-//                        phone = "04121940547",
-//                        name = "Jose",
-//                        lastname = "Perez"
-//                        )
-//                )
-//            })
-
             val isUserLogged by produceState<List<LocalUser?>?>(initialValue = null, producer = {
                 value = App.appModule.db.appDao.getUserInfo()
             })
-
 
             ClassroomTheme {
                 // A surface container using the 'background' color from the theme
@@ -70,13 +51,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-
-
-
-
                     isUserLogged?.let {user ->
                         Navigation(
-
                             isUserLogged = user.isNotEmpty(),
                             darkTheme = true,
 
@@ -85,6 +61,29 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
+        }
+
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                saveTokenToPreferences(this, token = task.result)
+                Log.e("FCM", "Firebase Token: ${task.result}")
+            }
+        }
+    }
+}
+
+fun requestNotificationPermission(context: Context) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        if (ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                (context as Activity),
+                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                1001 // Request code
+            )
         }
     }
 }

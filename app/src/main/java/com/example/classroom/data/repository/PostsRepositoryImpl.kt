@@ -1,9 +1,8 @@
 package com.example.classroom.data.repository
 
 import com.example.classroom.common.ResponseGenericAPi
-import com.example.classroom.data.local.db.LocalPostDao
+import com.example.classroom.data.local.db.daos.LocalPostDao
 import com.example.classroom.data.remote.ApiService
-import com.example.classroom.data.remote.dto.courses.GetCoursesResponseDto
 import com.example.classroom.data.remote.dto.posts.GetPostsResponseDto
 import com.example.classroom.data.remote.dto.posts.PostRequestDto
 import com.example.classroom.data.remote.dto.posts.PostResponseDto

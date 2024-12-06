@@ -1,7 +1,7 @@
 package com.example.classroom.data.repository
 
 import com.example.classroom.common.ResponseGenericAPi
-import com.example.classroom.data.local.db.AppDao
+import com.example.classroom.data.local.db.daos.AppDao
 import com.example.classroom.data.remote.ApiService
 import com.example.classroom.data.remote.dto.evaluations.evaluationsSent.EvaluationsSentResponseDto
 import com.example.classroom.data.remote.dto.evaluations.reviewEvaluationDto.ReviewEvaluationRequestDto
@@ -10,10 +10,7 @@ import com.example.classroom.data.remote.dto.evaluations.sendEvaluationRequestDt
 import com.example.classroom.data.remote.dto.evaluations.sendEvaluationRequestDto.SendEvaluationResponseDto
 import com.example.classroom.domain.model.entity.LocalActivitySubmission
 import com.example.classroom.domain.repository.SubmissionsRepository
-import io.ktor.client.statement.HttpResponse
 import kotlinx.coroutines.flow.Flow
-import okhttp3.Response
-import java.io.File
 
 class SubmissionsRepositoryImpl(
     private val apiService: ApiService,

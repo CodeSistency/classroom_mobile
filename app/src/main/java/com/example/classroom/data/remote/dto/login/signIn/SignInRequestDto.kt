@@ -8,6 +8,7 @@ data class SignInRequestDto(
     @SerialName("email")
     val email: String,
     @SerialName("password")
-    val password: String
-
+    val password: String,
+    @SerialName("firebaseToken")
+    val firebaseToken: String? = null,
 )

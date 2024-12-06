@@ -43,8 +43,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import com.example.classroom.R
-import com.example.classroom.common.CustomButton.CustomButton
-import com.example.classroom.common.CustomButton.NavigationButtonStyle
+import com.example.classroom.common.composables.CustomButton.CustomButton
+import com.example.classroom.common.composables.CustomButton.NavigationButtonStyle
 import com.example.classroom.presentation.navigation.Destination
 import com.example.classroom.presentation.screens.auth.composables.ItemInputField
 import com.example.classroom.presentation.screens.home.composables.Options

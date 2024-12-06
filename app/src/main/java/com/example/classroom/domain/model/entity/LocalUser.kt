@@ -14,6 +14,7 @@ data class LocalUser(
     @ColumnInfo("idApi") val idApi: String,
     @ColumnInfo("name") val name: String,
     @ColumnInfo("lastname") val lastname: String,
+    @ColumnInfo("firebaseToken") val firebaseToken: String = "",
     @ColumnInfo("email") val email: String,
     @ColumnInfo("gender") val gender: Gender,
     @ColumnInfo("birthdate") val birthdate: String,
@@ -68,7 +69,7 @@ fun SignInResponseDto.toLoginLocal(): LocalUser {
         phone = data.phone,
         gender = gendertoInt(data.gender),
         birthdate = data.creation,
-
+        firebaseToken = data.firebaseToken
 
     )
 }
@@ -83,7 +84,7 @@ fun SignUpResponseDto.toLoginLocal(): LocalUser {
         phone = data.phone,
         gender = gendertoInt(data.gender),
         birthdate = data.creation,
-
+        firebaseToken = data.firebaseToken
     )
 }
 
@@ -98,7 +99,8 @@ fun GetUsersByCourseResponse.toLocal(): List<LocalStudents> {
             courseId = it.courseId.toString(),
             id = it.id,
             gender = Gender.Man,
-            birthdate = "",
+            birthdate = it.user.createDate,
+            firebaseToken = it.user.firebaseToken
 //        birthdate = data.birthdate,
 //            gender = gendertoInt(it.user.genderId),
 //            birthdate = "",

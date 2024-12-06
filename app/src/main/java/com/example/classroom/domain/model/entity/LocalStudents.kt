@@ -10,6 +10,7 @@ data class LocalStudents(
     @ColumnInfo("idApi") val idApi: String,
     @ColumnInfo("courseId") val courseId: String,
     @ColumnInfo("name") val name: String,
+    @ColumnInfo("firebaseToken") val firebaseToken: String = "",
     @ColumnInfo("lastname") val lastname: String,
     @ColumnInfo("email") val email: String,
     @ColumnInfo("gender") val gender: Gender,

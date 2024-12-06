@@ -56,8 +56,8 @@ import com.example.classroom.App
 import com.example.classroom.R
 import com.example.classroom.common.composables.customDialogs.SetupCustomDialog
 import com.example.classroom.common.composables.customDialogs.SetupCustomDialogState
-import com.example.classroom.common.customTab.CustomTab
-import com.example.classroom.common.scrolleableTab.CustomScrollableTabRow
+import com.example.classroom.common.composables.customTab.CustomTab
+import com.example.classroom.common.composables.scrolleableTab.CustomScrollableTabRow
 import com.example.classroom.domain.model.entity.Gender
 import com.example.classroom.presentation.navigation.Destination
 import com.example.classroom.presentation.screens.activity.ActivityViewmodel

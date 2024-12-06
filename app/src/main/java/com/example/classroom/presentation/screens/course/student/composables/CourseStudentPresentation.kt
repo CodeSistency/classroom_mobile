@@ -49,8 +49,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.classroom.App
 import com.example.classroom.R
-import com.example.classroom.common.customTab.CustomTab
-import com.example.classroom.common.scrolleableTab.CustomScrollableTabRow
+import com.example.classroom.common.composables.customTab.CustomTab
+import com.example.classroom.common.composables.scrolleableTab.CustomScrollableTabRow
 import com.example.classroom.domain.model.entity.Gender
 import com.example.classroom.presentation.screens.activity.ActivityViewmodel
 import com.example.classroom.presentation.screens.course.CourseViewmodel

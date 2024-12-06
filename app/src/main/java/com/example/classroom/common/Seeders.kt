@@ -2,8 +2,8 @@ package com.example.classroom.common
 
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.coroutineScope
-import com.example.classroom.data.local.db.AppDao
-import com.example.classroom.data.local.db.QuizzDao
+import com.example.classroom.data.local.db.daos.AppDao
+import com.example.classroom.data.local.db.daos.QuizzDao
 import com.example.classroom.domain.model.entity.Area
 import com.example.classroom.domain.model.entity.Gender
 import com.example.classroom.domain.model.entity.LocalActivities
@@ -16,13 +16,7 @@ import com.example.classroom.domain.model.entity.OptionEntity
 import com.example.classroom.domain.model.entity.QuestionEntity
 import com.example.classroom.domain.model.entity.QuizEntity
 import com.example.classroom.domain.model.entity.Status
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import proyecto.person.appconsultapopular.data.local.db.AppDatabase
-import java.util.UUID
-import kotlin.random.Random
 
 class Seeders(
     private val lifecycle: Lifecycle
