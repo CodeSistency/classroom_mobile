@@ -17,6 +17,10 @@ import com.example.classroom.domain.model.entity.LocalCourses
 import kotlinx.coroutines.flow.Flow
 import com.example.classroom.common.ResponseGenericAPi
 import com.example.classroom.data.remote.dto.activities.GetActivitiesWithQuizzResponseDto
+import com.example.classroom.data.remote.dto.chat.ChatRoomDTO
+import com.example.classroom.data.remote.dto.chat.MessageDTO
+import com.example.classroom.data.remote.dto.chat.TypingStatusDTO
+import com.example.classroom.data.remote.dto.chat.UserStatusDTO
 import com.example.classroom.data.remote.dto.cloud.CloudResposeDto
 import com.example.classroom.data.remote.dto.courses.GetUsersByCourseResponse
 import com.example.classroom.data.remote.dto.evaluations.evaluationsSent.EvaluationsSentResponseDto
@@ -87,5 +91,23 @@ interface ApiService {
 
 
 
+    //CHATS
 
+    // Get or Create a private chat room between two users
+    suspend fun getOrCreatePrivateRoom(userId1: Int, userId2: Int): ResponseGenericAPi<ChatRoomDTO>
+
+    // Create a group chat room
+    suspend fun createGroupRoom(userId: Int, userIds: List<Int>, roomName: String): ResponseGenericAPi<ChatRoomDTO>
+
+    // Send a message to a chat room
+    suspend fun sendMessage(userId: Int, roomId: Int, content: String, messageType: String): ResponseGenericAPi<MessageDTO>
+
+    // Update typing status for a user in a chat room
+    suspend fun updateTypingStatus(userId: Int, roomId: Int, isTyping: Boolean): ResponseGenericAPi<TypingStatusDTO>
+
+    // Update user status (online/offline)
+    suspend fun updateUserStatus(userId: Int, isOnline: Boolean): ResponseGenericAPi<UserStatusDTO>
+
+    // Get messages from a chat room
+    suspend fun getMessages(roomId: Int): ResponseGenericAPi<List<MessageDTO>>
 }

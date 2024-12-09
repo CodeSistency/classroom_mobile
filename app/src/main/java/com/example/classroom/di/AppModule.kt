@@ -9,6 +9,7 @@ import com.example.classroom.common.validator.UserDataValidator
 import com.example.classroom.data.remote.ApiService
 import com.example.classroom.data.remote.ApiServiceImpl
 import com.example.classroom.data.repository.ActivitiesRepositoryImpl
+import com.example.classroom.data.repository.ChatRepositoryImpl
 import com.example.classroom.data.repository.CloudRepositoryImpl
 import com.example.classroom.data.repository.CoursesRepositoryImpl
 import com.example.classroom.data.repository.LoginRepositoryImpl
@@ -165,7 +166,9 @@ class AppModuleImpl(
             studentsRepository = StudentsRepositoryImpl(apiService, db.appDao),
             submissionsRepository = SubmissionsRepositoryImpl(apiService, db.appDao),
             postsRepositoryImpl = PostsRepositoryImpl(db.localPostDao, apiService),
-            cloudRepository = CloudRepositoryImpl(apiService, db.appDao)
+            cloudRepository = CloudRepositoryImpl(apiService, db.appDao),
+            chatRepository = ChatRepositoryImpl(apiService = apiService,
+                chatDao = db.chatDao)
 
         )
     }
@@ -271,7 +274,7 @@ class AppModuleImpl(
             getCoursesUseCase = getCoursesUseCase,
             joinCourseUseCase = joinCourseUseCase,
             deleteCourseUseCase = deleteCourseUseCase,
-
+            notificationDao = db.notificationDao
         )
     }
 

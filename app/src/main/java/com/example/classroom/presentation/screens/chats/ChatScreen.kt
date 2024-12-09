@@ -8,9 +8,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Button
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -18,64 +23,63 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.classroom.domain.model.entity.LocalChatRoom
 import com.example.classroom.presentation.screens.chats.composable.MessageBubble
 import com.example.classroom.presentation.screens.chats.composable.TypingIndicator
 
 @Composable
 fun ChatScreen(
     viewModel: ChatViewModel,
-    userId: Int,
-    chatRoomId: Int
+    receiverId: Int?,  // For one-on-one chats
+    chatRoom: LocalChatRoom?,  // For group chats
+    userId: Int
 ) {
     val messages by viewModel.messages.collectAsState()
-    val typingUsers by viewModel.typingUsers.collectAsState()
     val (messageText, setMessageText) = remember { mutableStateOf("") }
+    val isTyping = remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
-        viewModel.connectWebSocket(userId, chatRoomId)
+    LaunchedEffect(chatRoom, receiverId) {
+        if (chatRoom == null && receiverId != null) {
+            viewModel.createOrGetPrivateChat(userId, receiverId) { room ->
+                viewModel.fetchMessages(room.id)
+            }
+        } else if (chatRoom != null) {
+            viewModel.connectWebSocket(userId, chatRoom.id)
+            viewModel.fetchMessages(chatRoom.id)
+        }
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.getMessages(chatRoomId)
+    DisposableEffect(Unit) {
+        onDispose { viewModel.disconnectWebSocket() }
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        LazyColumn(
-            modifier = Modifier.weight(1f),
-            contentPadding = PaddingValues(16.dp),
-            reverseLayout = true // Reverse the order to display messages bottom-up
-        ) {
+        LazyColumn(modifier = Modifier.weight(1f)) {
             items(messages) { message ->
-                MessageBubble(
-                    message = message,
-                    isMine = message.senderId == userId // Check if it's the current user's message
-                )
+                MessageBubble(message = message, isMine = message.senderId == userId)
             }
         }
-
-        // Show typing indicator
-        TypingIndicator(typingUsers = typingUsers)
 
         Row(modifier = Modifier.padding(8.dp)) {
             TextField(
                 value = messageText,
                 onValueChange = {
                     setMessageText(it)
-                    viewModel.sendTypingStatus(it.isNotEmpty())
+                    if (!isTyping.value) {
+                        isTyping.value = true
+                        viewModel.setTypingStatus(chatRoom?.id ?: 0, userId, true)
+                    }
                 },
                 modifier = Modifier.weight(1f),
                 placeholder = { Text("Type a message...") }
             )
-            Button(
-                onClick = {
-                    if (messageText.isNotBlank()) {
-                        viewModel.sendMessage(messageText)
-                        setMessageText("") // Clear message input
-                        viewModel.sendTypingStatus(false) // Stop typing notification
-                    }
-                }
-            ) {
-                Text("Send")
+            IconButton(onClick = {
+                viewModel.sendMessage(chatRoom?.id ?: 0, userId, messageText)
+                setMessageText("")
+                isTyping.value = false
+                viewModel.setTypingStatus(chatRoom?.id ?: 0, userId, false)
+            }) {
+                Icon(Icons.Default.Send, contentDescription = "Send")
             }
         }
     }

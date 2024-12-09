@@ -27,7 +27,9 @@ import com.example.classroom.presentation.theme.ClassroomTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.messaging.FirebaseMessaging
 import android.Manifest
+import android.content.Intent
 import com.example.classroom.common.firebase.saveTokenToPreferences
+import com.example.classroom.domain.services.ChatBackgroundService
 
 
 class MainActivity : ComponentActivity() {
@@ -69,6 +71,15 @@ class MainActivity : ComponentActivity() {
                 Log.e("FCM", "Firebase Token: ${task.result}")
             }
         }
+
+        val serviceIntent = Intent(this, ChatBackgroundService::class.java)
+        startService(serviceIntent)
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        // Stop the service when activity is destroyed
+        val serviceIntent = Intent(this, ChatBackgroundService::class.java)
+        stopService(serviceIntent)
     }
 }
 
@@ -86,6 +97,8 @@ fun requestNotificationPermission(context: Context) {
             )
         }
     }
+
+
 }
 
 

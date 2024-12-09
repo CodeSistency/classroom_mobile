@@ -10,17 +10,18 @@ import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import org.json.JSONObject
-
 class ChatWebSocket(
-    private val senderId: Int,
-    private val receiverId: Int,
-    private val chatRoomId: Int,
+    private val userId: Int,
+    private val chatRoomId: Int?,
     private val onMessageReceived: (LocalMessages) -> Unit,
-    private val onTypingStatusChanged: (Int, Boolean) -> Unit // userId, isTyping
+    private val onTypingStatusChanged: (Int, Boolean) -> Unit, // userId, isTyping
+    private val onSeenStatusChanged: (Int, Boolean) -> Unit,  // userId, isSeen
+    private val onUserActivityChanged: (Int, Boolean) -> Unit // userId, isActive
 ) {
     private val client = OkHttpClient()
     private var webSocket: WebSocket? = null
 
+    // Connect to WebSocket
     fun connect() {
         val request = Request.Builder()
             .url("ws://your-backend-url/chat")
@@ -28,32 +29,47 @@ class ChatWebSocket(
 
         webSocket = client.newWebSocket(request, object : WebSocketListener() {
             override fun onOpen(webSocket: WebSocket, response: Response) {
-                val payload = """
+                val payload = if (chatRoomId != null) {
+                    """
                     {
+                        "event": "join",
                         "userId": $userId,
                         "chatRoomId": $chatRoomId
                     }
-                """.trimIndent()
+                    """.trimIndent()
+                } else {
+                    """
+                    {
+                        "event": "userConnected",
+                        "userId": $userId
+                    }
+                    """.trimIndent()
+                }
                 webSocket.send(payload)
             }
 
+            // Handle incoming messages and other events
             override fun onMessage(webSocket: WebSocket, text: String) {
                 val json = JSONObject(text)
                 when (json.getString("event")) {
                     "message" -> {
-                        val message = Gson().fromJson(json.getString("data"), Message::class.java)
-                        val messageEntity = LocalMessages(
-                            content = message.content,
-                            senderId = message.senderId,
-                            chatRoomId = message.chatRoomId,
-                            createdAt = message.createdAt
-                        )
-                        onMessageReceived(messageEntity) // Save to local DB
+                        val message = Gson().fromJson(json.getString("data"), LocalMessages::class.java)
+                        onMessageReceived(message)
                     }
                     "typing" -> {
                         val typingUserId = json.getInt("userId")
                         val isTyping = json.getBoolean("isTyping")
                         onTypingStatusChanged(typingUserId, isTyping)
+                    }
+                    "seen" -> {
+                        val seenUserId = json.getInt("userId")
+                        val isSeen = json.getBoolean("isSeen")
+                        onSeenStatusChanged(seenUserId, isSeen)
+                    }
+                    "active" -> {
+                        val activeUserId = json.getInt("userId")
+                        val isActive = json.getBoolean("isActive")
+                        onUserActivityChanged(activeUserId, isActive)
                     }
                 }
             }
@@ -64,33 +80,64 @@ class ChatWebSocket(
         })
     }
 
-    fun sendMessage(message: String) {
+    // Send a message
+    fun sendMessage(message: String, messageType: String = "TEXT", fileUrl: String? = null) {
         val payload = """
             {
                 "event": "message",
                 "data": {
                     "chatRoomId": $chatRoomId,
                     "senderId": $userId,
-                    "message": "$message"
+                    "content": "$message",
+                    "messageType": "$messageType",
+                    "fileUrl": "$fileUrl"
                 }
             }
         """.trimIndent()
         webSocket?.send(payload)
     }
 
+    // Send typing status
     fun sendTypingStatus(isTyping: Boolean) {
         val payload = """
             {
                 "event": "typing",
-                "chatRoomId": $chatRoomId,
                 "userId": $userId,
+                "chatRoomId": $chatRoomId,
                 "isTyping": $isTyping
             }
         """.trimIndent()
         webSocket?.send(payload)
     }
 
+    // Send seen status
+    fun sendSeenStatus(isSeen: Boolean) {
+        val payload = """
+            {
+                "event": "seen",
+                "userId": $userId,
+                "chatRoomId": $chatRoomId,
+                "isSeen": $isSeen
+            }
+        """.trimIndent()
+        webSocket?.send(payload)
+    }
+
+    // Send user activity status
+    fun sendUserActivity(isActive: Boolean) {
+        val payload = """
+            {
+                "event": "active",
+                "userId": $userId,
+                "isActive": $isActive
+            }
+        """.trimIndent()
+        webSocket?.send(payload)
+    }
+
+    // Disconnect from WebSocket
     fun disconnect() {
         webSocket?.close(1000, "User disconnected")
     }
 }
+

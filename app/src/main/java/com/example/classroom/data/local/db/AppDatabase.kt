@@ -5,11 +5,14 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.classroom.data.local.db.daos.AppDao
 import com.example.classroom.data.local.db.daos.LocalPostDao
+import com.example.classroom.data.local.db.daos.MessageDao
 import com.example.classroom.data.local.db.daos.NotificationDao
 import com.example.classroom.data.local.db.daos.QuizzDao
 import com.example.classroom.domain.model.entity.AnswerEntity
 import com.example.classroom.domain.model.entity.LocalActivities
 import com.example.classroom.domain.model.entity.LocalActivitySubmission
+import com.example.classroom.domain.model.entity.LocalChatRoom
+import com.example.classroom.domain.model.entity.LocalChatRoomUser
 import com.example.classroom.domain.model.entity.LocalCourses
 import com.example.classroom.domain.model.entity.LocalMessages
 import com.example.classroom.domain.model.entity.LocalNotification
@@ -27,7 +30,7 @@ import com.example.classroom.domain.model.typeConverter.UsersInCourseConverter
 @Database(
     entities = [LocalUser::class, LocalCourses::class, LocalActivities::class, LocalStudents::class,
         QuizEntity::class, QuestionEntity::class, OptionEntity::class, AnswerEntity::class, LocalActivitySubmission::class,
-        LocalPost::class, LocalNotification::class, LocalMessages::class],
+        LocalPost::class, LocalNotification::class, LocalMessages::class, LocalChatRoom::class, LocalChatRoomUser::class],
     version = 1,
     //autoMigrations = [AutoMigration(from = 1 , to = 2)],
     exportSchema = false
@@ -42,6 +45,8 @@ abstract class AppDatabase: RoomDatabase() {
     abstract val quizDao: QuizzDao
     abstract val localPostDao: LocalPostDao
     abstract val notificationDao: NotificationDao
+    abstract val chatDao: MessageDao
+
 
     companion object {
         const val DATABASE_NAME = "app_classroom"

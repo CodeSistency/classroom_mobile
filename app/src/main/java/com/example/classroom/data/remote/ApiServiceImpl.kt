@@ -44,6 +44,10 @@ import com.example.classroom.common.ResponseGenericAPi
 import com.example.classroom.common.json
 import com.example.classroom.common.parseResponseToGenericObject
 import com.example.classroom.data.remote.dto.activities.GetActivitiesWithQuizzResponseDto
+import com.example.classroom.data.remote.dto.chat.ChatRoomDTO
+import com.example.classroom.data.remote.dto.chat.MessageDTO
+import com.example.classroom.data.remote.dto.chat.TypingStatusDTO
+import com.example.classroom.data.remote.dto.chat.UserStatusDTO
 import com.example.classroom.data.remote.dto.cloud.CloudResposeDto
 import com.example.classroom.data.remote.dto.courses.GetUsersByCourseResponse
 import com.example.classroom.data.remote.dto.evaluations.evaluationsSent.EvaluationsSentResponseDto
@@ -516,6 +520,137 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
         }
         return@withContext parseResponseToGenericObject(response, true)
 
+    }
+
+    //CHATS
+
+    override suspend fun getOrCreatePrivateRoom(userId1: Int, userId2: Int): ResponseGenericAPi<ChatRoomDTO> = withContext(Dispatchers.IO) {
+        val response = getOrCreatePrivateRoomInner(userId1, userId2)
+        return@withContext parseResponseToGenericObject(response, true)
+    }
+
+    @OptIn(InternalAPI::class)
+    private suspend fun getOrCreatePrivateRoomInner(userId1: Int, userId2: Int): HttpResponse {
+        val json = buildJsonObject {
+            put("userId1", userId1)
+            put("userId2", userId2)
+        }
+
+        val response = client.post {
+            url("${Constants.BASE_URL}")
+//            url("${Constants.BASE_URL}${HttpRoutes.GET_OR_CREATE_PRIVATE_ROOM}")
+            contentType(ContentType.Application.Json)
+            body = json.toString()
+        }
+
+        return response
+    }
+
+    override suspend fun createGroupRoom(userId: Int, userIds: List<Int>, roomName: String): ResponseGenericAPi<ChatRoomDTO> = withContext(Dispatchers.IO) {
+        val response = createGroupRoomInner(userId, userIds, roomName)
+        return@withContext parseResponseToGenericObject(response, true)
+    }
+
+    @OptIn(InternalAPI::class)
+    private suspend fun createGroupRoomInner(userId: Int, userIds: List<Int>, roomName: String): HttpResponse {
+        val json = buildJsonObject {
+            put("userId", userId)
+            put("roomName", roomName)
+            put("userIds", JsonArray(userIds.map { JsonPrimitive(it) }))
+        }
+
+        val response = client.post {
+            url("${Constants.BASE_URL}")
+//            url("${Constants.BASE_URL}${HttpRoutes.CREATE_GROUP_ROOM}")
+            contentType(ContentType.Application.Json)
+            body = json.toString()
+        }
+
+        return response
+    }
+
+    override suspend fun sendMessage(userId: Int, roomId: Int, content: String, messageType: String): ResponseGenericAPi<MessageDTO> = withContext(Dispatchers.IO) {
+        val response = sendMessageInner(userId, roomId, content, messageType)
+        return@withContext parseResponseToGenericObject(response, true)
+    }
+
+    @OptIn(InternalAPI::class)
+    private suspend fun sendMessageInner(userId: Int, roomId: Int, content: String, messageType: String): HttpResponse {
+        val json = buildJsonObject {
+            put("userId", userId)
+            put("roomId", roomId)
+            put("content", content)
+            put("messageType", messageType)
+        }
+
+        val response = client.post {
+            url("${Constants.BASE_URL}")
+//            url("${Constants.BASE_URL}${HttpRoutes.SEND_MESSAGE}")
+            contentType(ContentType.Application.Json)
+            body = json.toString()
+        }
+
+        return response
+    }
+
+    override suspend fun updateTypingStatus(userId: Int, roomId: Int, isTyping: Boolean): ResponseGenericAPi<TypingStatusDTO> = withContext(Dispatchers.IO) {
+        val response = updateTypingStatusInner(userId, roomId, isTyping)
+        return@withContext parseResponseToGenericObject(response, true)
+    }
+
+    @OptIn(InternalAPI::class)
+    private suspend fun updateTypingStatusInner(userId: Int, roomId: Int, isTyping: Boolean): HttpResponse {
+        val json = buildJsonObject {
+            put("userId", userId)
+            put("roomId", roomId)
+            put("isTyping", isTyping)
+        }
+
+        val response = client.post {
+            url("${Constants.BASE_URL}")
+//            url("${Constants.BASE_URL}${HttpRoutes.UPDATE_TYPING_STATUS}")
+            contentType(ContentType.Application.Json)
+            body = json.toString()
+        }
+
+        return response
+    }
+
+    override suspend fun updateUserStatus(userId: Int, isOnline: Boolean): ResponseGenericAPi<UserStatusDTO> = withContext(Dispatchers.IO) {
+        val response = updateUserStatusInner(userId, isOnline)
+        return@withContext parseResponseToGenericObject(response, true)
+    }
+
+    @OptIn(InternalAPI::class)
+    private suspend fun updateUserStatusInner(userId: Int, isOnline: Boolean): HttpResponse {
+        val json = buildJsonObject {
+            put("userId", userId)
+            put("isOnline", isOnline)
+        }
+
+        val response = client.post {
+            url("${Constants.BASE_URL}")
+//            url("${Constants.BASE_URL}${HttpRoutes.UPDATE_USER_STATUS}")
+            contentType(ContentType.Application.Json)
+            body = json.toString()
+        }
+
+        return response
+    }
+
+    override suspend fun getMessages(roomId: Int): ResponseGenericAPi<List<MessageDTO>> = withContext(Dispatchers.IO) {
+        val response = getMessagesInner(roomId)
+        return@withContext parseResponseToGenericObject(response, true)
+    }
+
+    @OptIn(InternalAPI::class)
+    private suspend fun getMessagesInner(roomId: Int): HttpResponse {
+        val response = client.get {
+            url("${Constants.BASE_URL}")
+//            url("${Constants.BASE_URL}${HttpRoutes.GET_MESSAGES}/$roomId")
+        }
+
+        return response
     }
 
 
