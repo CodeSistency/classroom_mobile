@@ -31,21 +31,21 @@ import com.example.classroom.presentation.screens.chats.composable.TypingIndicat
 fun ChatScreen(
     viewModel: ChatViewModel,
     receiverId: Int?,  // For one-on-one chats
-    chatRoom: LocalChatRoom?,  // For group chats
+    chatRoomId: Int?,  // For group chats
     userId: Int
 ) {
     val messages by viewModel.messages.collectAsState()
     val (messageText, setMessageText) = remember { mutableStateOf("") }
     val isTyping = remember { mutableStateOf(false) }
 
-    LaunchedEffect(chatRoom, receiverId) {
-        if (chatRoom == null && receiverId != null) {
+    LaunchedEffect(chatRoomId, receiverId) {
+        if (chatRoomId == null && receiverId != null) {
             viewModel.createOrGetPrivateChat(userId, receiverId) { room ->
                 viewModel.fetchMessages(room.id)
             }
-        } else if (chatRoom != null) {
-            viewModel.connectWebSocket(userId, chatRoom.id)
-            viewModel.fetchMessages(chatRoom.id)
+        } else if (chatRoomId != null) {
+            viewModel.connectWebSocket(userId, chatRoomId)
+            viewModel.fetchMessages(chatRoomId)
         }
     }
 
@@ -67,17 +67,17 @@ fun ChatScreen(
                     setMessageText(it)
                     if (!isTyping.value) {
                         isTyping.value = true
-                        viewModel.setTypingStatus(chatRoom?.id ?: 0, userId, true)
+                        viewModel.setTypingStatus(chatRoomId ?: 0, userId, true)
                     }
                 },
                 modifier = Modifier.weight(1f),
                 placeholder = { Text("Type a message...") }
             )
             IconButton(onClick = {
-                viewModel.sendMessage(chatRoom?.id ?: 0, userId, messageText)
+                viewModel.sendMessage(chatRoomId ?: 0, userId, messageText)
                 setMessageText("")
                 isTyping.value = false
-                viewModel.setTypingStatus(chatRoom?.id ?: 0, userId, false)
+                viewModel.setTypingStatus(chatRoomId ?: 0, userId, false)
             }) {
                 Icon(Icons.Default.Send, contentDescription = "Send")
             }

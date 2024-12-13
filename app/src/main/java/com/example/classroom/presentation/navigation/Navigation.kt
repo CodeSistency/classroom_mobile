@@ -28,6 +28,7 @@ import com.example.classroom.common.validator.UserDataValidator
 import com.example.classroom.data.repository.ActivitiesRepositoryImpl
 import com.example.classroom.data.repository.LoginRepositoryImpl
 import com.example.classroom.data.repository.RepositoryBundle
+import com.example.classroom.domain.model.entity.LocalUser
 import com.example.classroom.domain.use_case.courses.InsertCourseUseCase
 import com.example.classroom.domain.use_case.courses.UpdateCourseUseCase
 import com.example.classroom.domain.use_case.signIn.SignInUseCase
@@ -48,6 +49,9 @@ import com.example.classroom.presentation.screens.auth.signIn.SignInScreenNew
 import com.example.classroom.presentation.screens.auth.signIn.SignInViewModel
 import com.example.classroom.presentation.screens.auth.signUp.SignUpScreen
 import com.example.classroom.presentation.screens.auth.signUp.SignUpScreenNew
+import com.example.classroom.presentation.screens.chats.ChatListScreen
+import com.example.classroom.presentation.screens.chats.ChatScreen
+import com.example.classroom.presentation.screens.chats.CreateGroupChatScreen
 import com.example.classroom.presentation.screens.course.AddCourse.AddCourseScreen
 import com.example.classroom.presentation.screens.course.AddCourse.AddCourseScreenNew
 import com.example.classroom.presentation.screens.course.AddCourse.AddCourseViewModel
@@ -64,6 +68,7 @@ import com.example.classroom.presentation.screens.submission.student.SubmissionS
 @Composable
 fun Navigation(
     isUserLogged: Boolean,
+    currentUser: LocalUser?,
     darkTheme: Boolean,
     changeTheme: () -> Unit,
 ) {
@@ -400,41 +405,53 @@ fun Navigation(
                 }
             }
 
+            composable("${Destination.CREATE_GROUP_CHAT.screenRoute}/{courseId}") { backStackEntry ->
+                val courseId = backStackEntry.arguments?.getString("courseId")?.toInt() ?: 0
+                CreateGroupChatScreen(
+                    courseId = courseId,
+                    onCreateGroupChat = { groupName, selectedUserIds ->
+                        // Handle group chat creation
+                        navController.popBackStack() // Navigate back after creation
+                    },
+                    viewModel = App.appModule.chatViewModel,
+                    onCancel = {
+                        navController.popBackStack() // Navigate back on cancel
+                    }
+                )
+            }
+
+            composable("${Destination.CHAT_LIST.screenRoute}/{courseId}") { backStackEntry ->
+                val courseId = backStackEntry.arguments?.getString("courseId")
+                ChatListScreen(
+                    viewModel = App.appModule.chatViewModel,
+                    currentUserId = 1, // Replace with actual user ID
+                    onChatSelected = { chatRoom ->
+                        navController.navigate("chat/${chatRoom.id}")
+                    },
+                    onCreateGroupChat = {idCourse ->
+                        navController.navigate("${Destination.CREATE_GROUP_CHAT.screenRoute}/${idCourse}")
+                    },
+                    idCourse = courseId
+                )
+            }
+            composable("${Destination.CHAT.screenRoute}/{chatRoomId}/{receiverId}") { backStackEntry ->
+                val chatRoomId = backStackEntry.arguments?.getString("chatRoomId")?.toInt()
+                val receiverId = backStackEntry.arguments?.getString("receiverId")?.toInt()
+
+                if (isUserLogged && currentUser != null){
+                    ChatScreen(
+                        chatRoomId = chatRoomId,
+                        receiverId = receiverId,
+                        userId = currentUser.idApi.toInt(), // Replace with the actual current user ID
+                        viewModel = App.appModule.chatViewModel,
+                    )
+                }else{
+
+                }
+
+            }
+
         }
     )
 }
 
-@RequiresApi(Q)
-fun Modifier.advancedShadow(
-    color: Color = Color.Black,
-    alpha: Float = 1f,
-    cornersRadius: Dp = 0.dp,
-    shadowBlurRadius: Dp = 0.dp,
-    offsetY: Dp = 0.dp,
-    offsetX: Dp = 0.dp
-) = drawBehind {
-
-    val shadowColor = color.copy(alpha = alpha).toArgb()
-    val transparentColor = color.copy(alpha = 0f).toArgb()
-
-    drawIntoCanvas {
-        val paint = Paint()
-        val frameworkPaint = paint.asFrameworkPaint()
-        frameworkPaint.color = transparentColor
-        frameworkPaint.setShadowLayer(
-            shadowBlurRadius.toPx(),
-            offsetX.toPx(),
-            offsetY.toPx(),
-            shadowColor
-        )
-        it.drawRoundRect(
-            0f,
-            0f,
-            this.size.width,
-            this.size.height,
-            cornersRadius.toPx(),
-            cornersRadius.toPx(),
-            paint
-        )
-    }
-}

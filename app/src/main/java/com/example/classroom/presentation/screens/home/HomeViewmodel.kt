@@ -5,6 +5,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.classroom.common.composables.lists.PaginationState
 import com.example.classroom.data.local.db.daos.NotificationDao
 import com.example.classroom.data.repository.RepositoryBundle
 import com.example.classroom.domain.model.entity.LocalCourses
@@ -58,23 +59,15 @@ class HomeViewmodel(
     private val _unseenCount = MutableStateFlow(0)
     val unseenCount: StateFlow<Int> = _unseenCount
 
-    // Courses not owned by the user (joined courses)
-//    val listCoursesFlow: StateFlow<List<LocalCourses>> = _userInfo.filterNotNull()
-//        .flatMapLatest { user ->
-//            repositoryBundle.coursesRepository.getCoursesWithFlow().map { courses ->
-//                courses.filter { it.owner != user.idApi }
-//            }
-//        }
-//        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
-//
-//    // Courses owned by the user
-//    val listMyCoursesFlow: StateFlow<List<LocalCourses>> = _userInfo.filterNotNull()
-//        .flatMapLatest { user ->
-//            repositoryBundle.coursesRepository.getCoursesWithFlow().map { courses ->
-//                courses.filter { it.owner == user.idApi }
-//            }
-//        }
-//        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+    // Pagination state for courses
+    private val _coursesPaginationState = MutableStateFlow(PaginationState<LocalCourses>())
+    val coursesPaginationState: StateFlow<PaginationState<LocalCourses>> = _coursesPaginationState
+
+    // Pagination state for my courses
+    private val _myCoursesPaginationState = MutableStateFlow(PaginationState<LocalCourses>())
+    val myCoursesPaginationState: StateFlow<PaginationState<LocalCourses>> = _myCoursesPaginationState
+
+
 
     val listCoursesFlow: StateFlow<List<LocalCourses>> = channelFlow {
         _userInfo.filterNotNull().collectLatest { user ->
@@ -135,6 +128,16 @@ class HomeViewmodel(
         observeListAndFilter()
     }
 
+    fun loadItemsCourses(page: Int, pageSize: Int): List<LocalCourses> {
+        val allCourses = _coursesPaginationState.value.items
+        return allCourses.drop((page - 1) * pageSize).take(pageSize)
+    }
+
+    fun loadItemsMyCourses(page: Int, pageSize: Int): List<LocalCourses> {
+        val allCourses = _coursesPaginationState.value.items
+        return allCourses.drop((page - 1) * pageSize).take(pageSize)
+    }
+
     fun markAllAsSeen() {
         viewModelScope.launch {
             val unseenIds = _notifications.value.filter { !it.isSeen }.map { it.id }
@@ -163,6 +166,13 @@ class HomeViewmodel(
                     _stateCourse.value = CourseState(info = result.data?.toCoursesLocal())
                     _stateCourse.value.info?.let {
                         repositoryBundle.coursesRepository.insertAllCourses(it)
+                        // After insertion, trigger pagination and filtering
+                        _coursesPaginationState.value = _coursesPaginationState.value.copy(
+                            items = it,
+                            isLoading = false
+                        )
+                        filterCourses()
+
                     }
                 }
             }
@@ -183,6 +193,11 @@ class HomeViewmodel(
                     _stateCourse.value = _stateCourse.value.copy(error = null, isLoading = false)
                     _stateCourse.value.info?.let {
                         repositoryBundle.coursesRepository.deleteCourse(id)
+
+                        // After deletion, update the pagination state
+                        _coursesPaginationState.value = _coursesPaginationState.value.copy(
+                            items = it.filter { course -> course.idApi != id }
+                        )
                     }
                 }
             }
@@ -209,53 +224,92 @@ class HomeViewmodel(
             }
         }
     }
-    private fun observeListAndFilter() {
-        // Observe changes in listCoursesFlow and coursesInput separately to update _filteredListCoursesFlow
+    // Apply the filter based on user input for both course lists
+    private fun filterCourses() {
         viewModelScope.launch {
-            listCoursesFlow.collectLatest { courses ->
-                val input = coursesInput.value
-                _filteredListCoursesFlow.value = if (input.isEmpty()) {
-                    courses
-                } else {
-                    courses.filter { it.title.startsWith(input, ignoreCase = true) }
-                }
-            }
-        }
+            val allCourses = _coursesPaginationState.value.items
 
-        viewModelScope.launch {
-            coursesInput.collectLatest { input ->
-                val courses = listCoursesFlow.value
-                _filteredListCoursesFlow.value = if (input.isEmpty()) {
-                    courses
-                } else {
-                    courses.filter { it.title.startsWith(input, ignoreCase = true) }
-                }
+            // Filter for all courses list
+            _filteredListCoursesFlow.value = if (coursesInput.value.isNotEmpty()) {
+                allCourses.filter { it.title.contains(coursesInput.value, ignoreCase = true) }
+            } else {
+                allCourses
             }
-        }
 
-        // Observe changes in listMyCoursesFlow and myCoursesInput separately to update _filteredListMyCoursesFlow
-        viewModelScope.launch {
-            listMyCoursesFlow.collectLatest { courses ->
-                val input = myCoursesInput.value
-                _filteredListMyCoursesFlow.value = if (input.isEmpty()) {
-                    courses
-                } else {
-                    courses.filter { it.title.startsWith(input, ignoreCase = true) }
-                }
-            }
-        }
-
-        viewModelScope.launch {
-            myCoursesInput.collectLatest { input ->
-                val courses = listMyCoursesFlow.value
-                _filteredListMyCoursesFlow.value = if (input.isEmpty()) {
-                    courses
-                } else {
-                    courses.filter { it.title.startsWith(input, ignoreCase = true) }
-                }
+            // Filter for my courses list
+            _filteredListMyCoursesFlow.value = if (myCoursesInput.value.isNotEmpty()) {
+                allCourses.filter { it.title.contains(myCoursesInput.value, ignoreCase = true) && it.owner == _userInfo.value?.idApi }
+            } else {
+                allCourses.filter { it.owner == _userInfo.value?.idApi }
             }
         }
     }
+
+    // Observe changes in listCoursesFlow and coursesInput separately to update _filteredListCoursesFlow
+    private fun observeListAndFilter() {
+        viewModelScope.launch {
+            coursesInput.collectLatest {
+                filterCourses()  // Reapply filter when coursesInput changes
+            }
+        }
+
+        viewModelScope.launch {
+            myCoursesInput.collectLatest {
+                filterCourses()  // Reapply filter when myCoursesInput changes
+            }
+        }
+    }
+
+//    private fun observeListAndFilter() {
+//        // Observe changes in listCoursesFlow and coursesInput separately to update _filteredListCoursesFlow
+//        viewModelScope.launch {
+//            listCoursesFlow.collectLatest { courses ->
+//                val input = coursesInput.value
+//                _filteredListCoursesFlow.value = if (input.isEmpty()) {
+//                    courses
+//                } else {
+//                    courses.filter { it.title.startsWith(input, ignoreCase = true) }
+//                }
+//            }
+//        }
+//
+//        viewModelScope.launch {
+//            coursesInput.collectLatest { input ->
+//                val courses = listCoursesFlow.value
+//                _filteredListCoursesFlow.value = if (input.isEmpty()) {
+//                    courses
+//                } else {
+//                    courses.filter { it.title.startsWith(input, ignoreCase = true) }
+//                }
+//            }
+//        }
+//
+//        // Observe changes in listMyCoursesFlow and myCoursesInput separately to update _filteredListMyCoursesFlow
+//        viewModelScope.launch {
+//            listMyCoursesFlow.collectLatest { courses ->
+//                val input = myCoursesInput.value
+//                _filteredListMyCoursesFlow.value = if (input.isEmpty()) {
+//                    courses
+//                } else {
+//                    courses.filter { it.title.startsWith(input, ignoreCase = true) }
+//                }
+//            }
+//        }
+//
+//        viewModelScope.launch {
+//            myCoursesInput.collectLatest { input ->
+//                val courses = listMyCoursesFlow.value
+//                _filteredListMyCoursesFlow.value = if (input.isEmpty()) {
+//                    courses
+//                } else {
+//                    courses.filter { it.title.startsWith(input, ignoreCase = true) }
+//                }
+//            }
+//        }
+//    }
+
+
+
 
     // Join a course by course ID and token
     suspend fun joinCourse(id: String, token: String) {
@@ -280,190 +334,3 @@ class HomeViewmodel(
         repositoryBundle.loginRepository.logout()
     }
 }
-
-
-//
-//class HomeViewmodel(
-//    private val getCoursesUseCase: GetCoursesUseCase,
-//    private val joinCourseUseCase: JoinCourseUseCase,
-//    private val repositoryBundle: RepositoryBundle
-//): ViewModel() {
-//
-//    var filteredListCoursesFLow: Flow<List<LocalCourses>> = emptyFlow()
-//    var filteredListMyCoursesFLow: Flow<List<LocalCourses>> = emptyFlow()
-//
-//    var listCoursesFlow: Flow<List<LocalCourses>> = emptyFlow()
-//    var listMyCoursesFlow: Flow<List<LocalCourses>> = emptyFlow()
-//    var userInfo: Flow<LocalUser?> = emptyFlow()
-//
-//    val myCoursesInput = mutableStateOf("")
-//    val coursesInput = mutableStateOf("")
-//
-//    private val _stateCourse = mutableStateOf(CourseState())
-//    val stateCourse: State<CourseState> = _stateCourse
-//
-//    private val _stateJoinCourse = mutableStateOf(JoinCourseState())
-//    val stateJoinCourse: State<JoinCourseState> = _stateJoinCourse
-//    init {
-//        viewModelScope.launch {
-//            userInfo = repositoryBundle.loginRepository.getUserInfoWithFlow().let { userFlow ->
-//                userFlow.firstOrNull()?.firstOrNull()?.let { user ->
-//                    flow { emit(user) }
-//                } ?: emptyFlow()
-//            }
-//
-//            // Courses not owned by the user (joined courses)
-//            listCoursesFlow = userInfo.firstOrNull()?.let { user ->
-//                repositoryBundle.coursesRepository.getCoursesWithFlow().map { courses ->
-//                    courses.filter {
-//                        it.owner != user.idApi
-//                    }
-//                }
-//            } ?: emptyFlow()
-//
-//            // Filtered list of joined courses
-//            filteredListCoursesFLow = userInfo.firstOrNull()?.let { user ->
-//                repositoryBundle.coursesRepository.getCoursesWithFlow().map { courses ->
-//                    courses.filter {
-//                        it.owner != user.idApi
-//                    }
-//                }
-//            } ?: emptyFlow()
-//
-//            // Filtered list of owned courses
-//            filteredListMyCoursesFLow = userInfo.firstOrNull()?.let { user ->
-//                repositoryBundle.coursesRepository.getCoursesWithFlow().map { courses ->
-//                    courses.filter {
-//                        it.owner == user.idApi
-//                    }
-//                }
-//            } ?: emptyFlow()
-//
-//            // List of owned courses
-//            listMyCoursesFlow = userInfo.firstOrNull()?.let { user ->
-//                repositoryBundle.coursesRepository.getCoursesWithFlow().map { courses ->
-//                    courses.filter {
-//                        it.owner == user.idApi
-//                    }
-//                }
-//            } ?: emptyFlow()
-//
-//        }
-//    }
-//
-//    suspend fun getCourses(id: String){
-//                getCoursesUseCase(id).onEach { result ->
-//                    when(result){
-//                        is Resource.Error -> {
-//                            //Timber.tag("AUTH_VM").e("Error ${result.message?.uiMessage}")
-//                            Log.e("HOME_VM:", "Error ${result.message?.uiMessage}")
-//                            _stateCourse.value = CourseState(error = result.message)
-//                        }
-//                        is Resource.Loading -> {
-//                            Timber.tag("HOME_VM").e("is loading")
-//                            _stateCourse.value = CourseState(isLoading = true)
-//                        }
-//                        is Resource.Success -> {
-//                            Timber.tag("HOME_VM").e("success")
-//                            Log.e("HOME_VM:", "success")
-//                            _stateCourse.value = CourseState(info = result.data?.toCoursesLocal())
-//                            Log.e("HOME_VM:", "${stateCourse.value.info}")
-//                            _stateCourse.value.info?.let {
-//                                repositoryBundle.coursesRepository.insertAllCourses(it)
-//                                delay(1000)
-//                            }
-//                        }
-//                    }
-//
-//                }.launchIn(viewModelScope)
-//    }
-//
-//    suspend fun getCoursesLocal(){
-//        Log.e("lista cursos viewmodel", repositoryBundle.coursesRepository.getCoursesWithFlow().first().toString())
-//        listCoursesFlow = repositoryBundle.coursesRepository.getCoursesWithFlow()
-//    }
-//
-//    suspend fun getMyCoursesLocal(){
-//        Log.e("lista cursos viewmodel", repositoryBundle.coursesRepository.getCoursesWithFlow().first().toString())
-//        listMyCoursesFlow = userInfo.first()?.let { user ->
-//            repositoryBundle.coursesRepository.getCoursesWithFlow().map { courses ->
-//                courses.filter {
-//                    it.owner != user.idApi
-//                }
-//            }
-//        } ?: emptyFlow()
-////            userInfo?.let { user ->
-////            if (user.first().isNotEmpty()) {
-////                user.first()[0].idApi?.let { idApi ->
-////                    repositoryBundle.coursesRepository.getCoursesWithFlow().map { courses ->
-////                        courses.filter {
-////                            it.owner != idApi
-////                        }
-////                    }
-////                }
-////            } else {
-////                emptyFlow()
-////            }
-////        } ?: emptyFlow()
-//    }
-//
-//    fun filterListByInput(typeCourse: SelectedOption) {
-//        viewModelScope.launch {
-//            when(typeCourse){
-//                SelectedOption.MY_COURSES -> {
-//                    filteredListMyCoursesFLow = if (myCoursesInput.value.isNotEmpty()){
-//                        listMyCoursesFlow.map { list ->
-//                            list.filter { it.title.startsWith(myCoursesInput.value) }
-//                                .sortedByDescending { course -> course.id }
-//                        }
-//                    }else{
-//                        listMyCoursesFlow
-//                    }
-//                }
-//
-//                SelectedOption.COURSES -> {
-//                    filteredListCoursesFLow = if (coursesInput.value.isNotEmpty()){
-//                        listCoursesFlow.map { list ->
-//                            list.filter { it.title.startsWith(coursesInput.value) }
-//                                .sortedByDescending { course -> course.id }
-//                        }
-//                    } else {
-//                        listCoursesFlow
-//                    }
-//
-//                }
-//            }
-//        }
-//    }
-//
-//    suspend fun joinCourse(id: String, token: String){
-//        joinCourseUseCase(id, token).onEach { result ->
-//            when(result){
-//                is Resource.Error -> {
-//                    //Timber.tag("AUTH_VM").e("Error ${result.message?.uiMessage}")
-//                    Log.e("ACTIVITIES:", "Error ${result.message?.uiMessage}")
-//                    _stateJoinCourse.value = JoinCourseState(error = result.message)
-//                }
-//                is Resource.Loading -> {
-//                    Timber.tag("ACTIVITIES").e("is loading")
-//                    _stateJoinCourse.value = JoinCourseState(isLoading = true)
-//                }
-//                is Resource.Success -> {
-//                    Timber.tag("ACTIVITIES_VM").e("success")
-//                    Log.e("ACTIVITIES:", "success")
-//                    _stateJoinCourse.value = JoinCourseState(info = result.data)
-//                    Log.e("ACTIVITIES:", "${_stateCourse.value.info}")
-//                    _stateJoinCourse.value.info?.let {
-////                            insertUserDb(it)
-//                        delay(300)
-//                    }
-//                }
-//            }
-//        }.launchIn(viewModelScope)
-//    }
-//
-//    suspend fun logout(){
-//        repositoryBundle.loginRepository.logout()
-//    }
-//
-//}

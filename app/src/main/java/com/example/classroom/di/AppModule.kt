@@ -62,6 +62,7 @@ import com.example.classroom.presentation.screens.activity.addActivity.AddActivi
 import com.example.classroom.presentation.screens.activity.studentEvaluations.StudentEvaluationsViewModel
 import com.example.classroom.presentation.screens.auth.AuthViewModel
 import com.example.classroom.presentation.screens.auth.signIn.SignInViewModel
+import com.example.classroom.presentation.screens.chats.ChatViewModel
 import com.example.classroom.presentation.screens.course.AddCourse.AddCourseViewModel
 import com.example.classroom.presentation.screens.course.CourseViewmodel
 import com.example.classroom.presentation.screens.course.posts.PostsViewModel
@@ -123,6 +124,7 @@ interface AppModule {
     val addPostViewModel: AddPostViewModel
     val postViewModel: PostsViewModel
     val quizzViewModel: QuizzViewModel
+    val chatViewModel: ChatViewModel
 
     val validatorBundle : ValidatorBundle
     val db: AppDatabase
@@ -363,6 +365,11 @@ class AppModuleImpl(
             repositoryBundle = repositoryBundle,
             answerQuizzUseCase = answerQuizzUseCase,
             createQuizzUseCase = createQuizzUseCase
+        )
+    }
+    override val chatViewModel: ChatViewModel by lazy {
+        ChatViewModel(
+            repositoryBundle = repositoryBundle,
         )
     }
 

@@ -8,6 +8,7 @@ import com.example.classroom.data.repository.ChatRepositoryImpl
 import com.example.classroom.data.repository.RepositoryBundle
 import com.example.classroom.domain.model.entity.LocalChatRoom
 import com.example.classroom.domain.model.entity.LocalMessages
+import com.example.classroom.domain.model.entity.LocalStudents
 import com.example.classroom.domain.repository.ChatRepository
 import com.example.classroom.domain.services.ChatWebSocket
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -149,5 +150,36 @@ class ChatViewModel @Inject constructor(
             sentAt = messageDto.sentAt
 //            createdAt = messageDto.createdAt
         )
+    }
+
+    private val _groupName = MutableStateFlow("")
+    val groupName: StateFlow<String> = _groupName
+
+    private val _users = MutableStateFlow<List<LocalStudents>>(emptyList())
+    val users: StateFlow<List<LocalStudents>> = _users
+
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> = _errorMessage
+
+    fun onGroupNameChange(newName: String) {
+        _groupName.value = newName
+    }
+
+    fun fetchUsers(courseId: Int) {
+        viewModelScope.launch {
+//            _isLoading.value = true
+//            _errorMessage.value = null
+//            try {
+//                val fetchedUsers = userRepository.getUsersByCourse(courseId)
+//                _users.value = fetchedUsers
+//            } catch (e: Exception) {
+//                _errorMessage.value = e.localizedMessage ?: "Failed to fetch users"
+//            } finally {
+//                _isLoading.value = false
+//            }
+        }
     }
 }

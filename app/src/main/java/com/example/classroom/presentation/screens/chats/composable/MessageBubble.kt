@@ -13,7 +13,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.classroom.common.composables.previewDocument.DocumentPreviewComponent
 import com.example.classroom.domain.model.entity.LocalMessages
+import com.example.classroom.presentation.screens.submission.composables.getFileType
 
 @Composable
 fun MessageBubble(message: LocalMessages, isMine: Boolean) {
@@ -31,11 +33,21 @@ fun MessageBubble(message: LocalMessages, isMine: Boolean) {
                 )
                 .padding(12.dp)
         ) {
-            Text(
-                text = message.content,
-                color = Color.Black,
-                style = MaterialTheme.typography.body1
-            )
+            if (message.fileUrl != null){
+                DocumentPreviewComponent(
+                    modifier = Modifier,
+                    documentUrl = message.fileUrl,
+                    fileType = getFileType(message.fileUrl),
+                    onDownloadFile = {}
+                )
+            }else{
+                Text(
+                    text = message.content ?: "",
+                    color = Color.Black,
+                    style = MaterialTheme.typography.body1
+                )
+            }
+
         }
     }
 }

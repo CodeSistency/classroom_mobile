@@ -57,6 +57,7 @@ class MainActivity : ComponentActivity() {
                         Navigation(
                             isUserLogged = user.isNotEmpty(),
                             darkTheme = true,
+                            currentUser = if (user.isNotEmpty()) user.firstOrNull() else null
 
                         ){
                         }

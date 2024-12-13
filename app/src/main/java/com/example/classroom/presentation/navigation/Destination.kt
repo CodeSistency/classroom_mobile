@@ -94,4 +94,19 @@ enum class Destination(val screenRoute: String, val title: String, val icon: Ico
         title = "ADD_USER_COURSE",
         icon = Icon.Resource(R.drawable.ic_launcher_background)
     ),
+    CREATE_GROUP_CHAT(
+        screenRoute = "CREATE_GROUP_CHAT",
+        title = "CREATE_GROUP_CHAT",
+        icon = Icon.Resource(R.drawable.ic_edit)
+    ),
+    CHAT_LIST(
+        screenRoute = "CHAT_LIST",
+        title = "CHAT_LIST",
+        icon = Icon.Resource(R.drawable.ic_edit)
+    ),
+    CHAT(
+        screenRoute = "CHAT",
+        title = "CHAT",
+        icon = Icon.Resource(R.drawable.ic_edit)
+    ),
 }

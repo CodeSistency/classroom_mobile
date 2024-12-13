@@ -29,7 +29,8 @@ fun ChatListScreen(
     viewModel: ChatViewModel,
     currentUserId: Int,
     onChatSelected: (LocalChatRoom) -> Unit,
-    onCreateGroupChat: () -> Unit
+    onCreateGroupChat: (idCourse: String) -> Unit,
+    idCourse: String?
 ) {
     val chatRooms by viewModel.chatRooms.collectAsState()
 
@@ -39,8 +40,12 @@ fun ChatListScreen(
 
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = onCreateGroupChat) {
-                Icon(Icons.Default.GroupAdd, contentDescription = "Create Group")
+            if (idCourse != null){
+                FloatingActionButton(modifier = Modifier, onClick = {
+                    onCreateGroupChat(idCourse)
+                },) {
+                    Icon(Icons.Default.GroupAdd, contentDescription = "Create Group")
+                }
             }
         }
     ) {

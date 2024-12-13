@@ -65,7 +65,6 @@ fun CardCourses(
                 .clickable {
                     navController.navigate("${Destination.COURSES.screenRoute}?id=${course.idApi}&email=${email}&isOwner=${isOwner.toString()}")
 
-
                 }
         ) {
             Row(
@@ -141,6 +140,5 @@ fun CardCourses(
             icon = painterResource(id = R.drawable.ic_logout)
         )
     }
-
 }
 
