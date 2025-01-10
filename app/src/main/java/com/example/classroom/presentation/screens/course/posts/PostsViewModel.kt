@@ -53,6 +53,9 @@ class PostsViewModel(
                     if (!posts.isNullOrEmpty()) {
                         _postsState.value = _postsState.value.copy(info = posts)
                         _postsFlow.value = posts
+                    }else{
+                        _postsState.value = _postsState.value.copy(info = emptyList())
+                        _postsFlow.value = emptyList()
                     }
                 }
                 .launchIn(viewModelScope)

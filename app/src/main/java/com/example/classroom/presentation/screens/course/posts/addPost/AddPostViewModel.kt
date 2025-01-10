@@ -2,7 +2,10 @@ package com.example.classroom.presentation.screens.course.posts.addPost
 
 import android.content.Context
 import android.net.Uri
+import android.os.Build
+import android.os.Environment
 import android.util.Log
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -22,6 +25,7 @@ import com.example.classroom.domain.use_case.posts.GetPostsUseCase
 import com.example.classroom.domain.use_case.posts.UpdatePostUseCase
 import com.example.classroom.presentation.screens.course.AddCourse.states.AddCourseState
 import com.example.classroom.presentation.screens.course.posts.addPost.composable.AddPostState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,6 +34,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import proyecto.person.appconsultapopular.common.Resource
 import timber.log.Timber
 import java.io.File
@@ -234,6 +239,5 @@ class AddPostViewModel(
             }
         }
     }
-
 
 }

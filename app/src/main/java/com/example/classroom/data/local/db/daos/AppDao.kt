@@ -45,15 +45,36 @@ interface AppDao {
         deleteLocalUser()
         deleteLocalCourses()
         deleteLocalActivities()
+        deleteLocalPosts()
+        deleteLocalStudents()
+        deleteLocalMessages()
+        deleteLocalPosts()
+        deleteLocalChatRoom()
+        deleteLocalActivitySubmissions()
+        deleteLocalNotification()
+        deleteLocalChatRoomUser()
     }
 
+    @Query("DELETE FROM localActivitySubmission_table")
+    suspend fun deleteLocalActivitySubmissions()
+
+    @Query("DELETE FROM localPost_table")
+    suspend fun deleteLocalPosts()
+    @Query("DELETE FROM localStudents_table")
+    suspend fun deleteLocalStudents()
+    @Query("DELETE FROM localchatroom")
+    suspend fun deleteLocalChatRoom()
+    @Query("DELETE FROM localmessages")
+    suspend fun deleteLocalMessages()
+    @Query("DELETE FROM localnotification")
+    suspend fun deleteLocalNotification()
+
+    @Query("DELETE FROM localchatroomuser")
+    suspend fun deleteLocalChatRoomUser()
 
     // New method to get users by course ID
     @Query("SELECT * FROM localUser_table")
     fun getAllUsersWithFlow(): Flow<List<LocalUser>>
-
-  
-
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

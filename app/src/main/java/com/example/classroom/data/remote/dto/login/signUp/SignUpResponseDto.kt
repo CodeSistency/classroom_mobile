@@ -22,7 +22,7 @@ data class SignUpResponseDto(
         @SerialName("password")
         val password: String,
         @SerialName("firebaseToken")
-        val firebaseToken: String,
+        val firebaseToken: String? = null,
         @SerialName("user_name")
         val username: String,
         @SerialName("create_date")

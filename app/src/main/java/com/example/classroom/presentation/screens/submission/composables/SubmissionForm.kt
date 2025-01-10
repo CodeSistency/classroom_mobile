@@ -95,9 +95,8 @@ fun SubmissionForm(
                 CustomTextField(value = message,
                     onValueChange = { message = it },
                     label = "Mensaje",
-                    modifier = Modifier.fillMaxWidth()) {
-
-                }
+                    modifier = Modifier.fillMaxWidth(),
+                    onNextClick = {})
 
                 // Submit button
                 CustomButton(

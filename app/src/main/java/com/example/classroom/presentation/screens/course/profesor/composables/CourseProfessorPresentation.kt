@@ -113,8 +113,10 @@ fun CourseProfessorPresentation(
     })
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(key1 = courseInfo.value, block = {
-        if (courseInfo.value == null) courseViewmodel.getCourseByIdLocal(id)
+    LaunchedEffect(key1 = true, block = {
+        courseViewmodel.getCourseByIdLocal(id)
+
+//        if (courseInfo.value == null) courseViewmodel.getCourseByIdLocal(id)
     })
 
     LaunchedEffect(key1 = true, block = {
@@ -358,7 +360,7 @@ fun CourseProfessorPresentation(
                 Box(modifier = Modifier.fillMaxSize().background(Color.White)){
                     Text(
                         text = "Este curso no esta verificado, contacte un administrador para verificar este curso.",
-                        modifier = Modifier.align(Alignment.Center)
+                        modifier = Modifier.align(Alignment.Center).padding(12.dp)
                         )
                 }
             }

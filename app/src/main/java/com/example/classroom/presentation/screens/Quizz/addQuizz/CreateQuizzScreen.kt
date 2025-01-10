@@ -208,7 +208,8 @@ import kotlinx.coroutines.delay
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun CreateQuizzScreen(viewModel: QuizzViewModel, courseId: String, navController: NavController, focusManager: FocusManager) {
-    val questions by viewModel.questions
+    val questions by remember { viewModel.questions }
+
 
     var state = viewModel.stateCreateQuizz.collectAsState()
 
@@ -341,7 +342,8 @@ fun CreateQuizzScreen(viewModel: QuizzViewModel, courseId: String, navController
                                     onValueChange = { viewModel.updateOptionText(index, optIndex, it) },
                                     label = "Opción ${optIndex + 1}",
                                     errorMessage = if (option.isBlank()) "La opción no puede estar vacía" else "",
-                                ){}
+                                    onNextClick = {}
+                                )
 
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
@@ -355,7 +357,7 @@ fun CreateQuizzScreen(viewModel: QuizzViewModel, courseId: String, navController
                                     )
                                     Text("Correcta")
 
-                                    Spacer(modifier = Modifier.weight(1f)) // Push delete button to the right
+                                    Spacer(modifier = Modifier.weight(1f))
 
                                     IconButton(
                                         onClick = { viewModel.deleteOption(index, optIndex) },
@@ -364,14 +366,53 @@ fun CreateQuizzScreen(viewModel: QuizzViewModel, courseId: String, navController
                                         Icon(
                                             imageVector = Icons.Default.Delete,
                                             contentDescription = "Eliminar Opción",
-                                            tint = if (question.options.size > 2) Color.Red else Color.Gray
+                                            tint = Color.Red
+//                                            tint = if (question.options.size > 2) Color.Red else Color.Gray
                                         )
                                     }
                                 }
                             }
-
-                            Spacer(modifier = Modifier.height(8.dp))
                         }
+
+//                        question.options.forEachIndexed { optIndex, option ->
+//                            Column(modifier = Modifier.fillMaxWidth()) {
+//                                CustomTextField(
+//                                    value = option,
+//                                    onValueChange = { viewModel.updateOptionText(index, optIndex, it) },
+//                                    label = "Opción ${optIndex + 1}",
+//                                    errorMessage = if (option.isBlank()) "La opción no puede estar vacía" else "",
+//                                    onNextClick = {}
+//                                )
+//
+//                                Row(
+//                                    modifier = Modifier.fillMaxWidth(),
+//                                    verticalAlignment = Alignment.CenterVertically
+//                                ) {
+//                                    Checkbox(
+//                                        checked = question.answer == optIndex,
+//                                        onCheckedChange = {
+//                                            viewModel.setCorrectAnswer(index, optIndex)
+//                                        }
+//                                    )
+//                                    Text("Correcta")
+//
+//                                    Spacer(modifier = Modifier.weight(1f)) // Push delete button to the right
+//
+//                                    IconButton(
+//                                        onClick = { viewModel.deleteOption(index, optIndex) },
+//                                        enabled = question.options.size > 2
+//                                    ) {
+//                                        Icon(
+//                                            imageVector = Icons.Default.Delete,
+//                                            contentDescription = "Eliminar Opción",
+//                                            tint = if (question.options.size > 2) Color.Red else Color.Gray
+//                                        )
+//                                    }
+//                                }
+//                            }
+//
+//                            Spacer(modifier = Modifier.height(8.dp))
+//                        }
 
                         // Add Option Button
                         Button(

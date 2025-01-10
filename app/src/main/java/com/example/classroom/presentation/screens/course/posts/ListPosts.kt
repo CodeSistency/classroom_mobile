@@ -2,6 +2,7 @@ package com.example.classroom.presentation.screens.course.posts
 
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,11 +10,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Sync
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -27,67 +32,42 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import proyecto.person.appconsultapopular.common.shimmerEffects.ListShimmer
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ListPosts(viewModel: PostsViewModel, courseId: String, scope: CoroutineScope) {
     val posts by viewModel.postsFlow.collectAsState()
     val postsState by viewModel.postsState.collectAsState()
     val context = LocalContext.current
 
-    LaunchedEffect(key1 = posts, block = {
-        Log.e("posts", posts.toString())
-    })
-
     LaunchedEffect(true) {
         viewModel.fetchPosts(courseId)
-//        viewModel.getPostsByCourseRemote(courseId)
     }
 
-    when {
-        postsState.isLoading -> {
-            ListShimmer(quantity = 10)
-//            Column(modifier = Modifier.fillMaxSize(),
-//                verticalArrangement = Arrangement.Center,
-//                horizontalAlignment = Alignment.CenterHorizontally) {
-//                CircularProgressIndicator()
-//
-//            }
+    // Pull-to-refresh state linked to isLoading
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = postsState.isLoading,
+        onRefresh = {
+            scope.launch {
+                viewModel.fetchPosts(courseId)
+            }
         }
-//        postsState.error != null -> {
-//
-//            Column(
-//                modifier = Modifier.fillMaxSize(),
-//                Arrangement.Center,
-//                Alignment.CenterHorizontally
-//            ) {
-//                Column(
-//                    modifier = Modifier,
-//                    Arrangement.Center,
-//                    Alignment.CenterHorizontally
-//                ) {
-//                    Text(text = "Ha ocurrido un error")
-//                    Spacer(modifier = Modifier.height(10.dp))
-//                    IconButton(onClick = {
-//                        scope.launch {
-//                            viewModel.getPostsByCourseRemote(courseId)
-//                        }
-//                    }) {
-//                        Icon(Icons.Outlined.Sync, contentDescription = null)
-//                    }
-//                }
-//            }
-//
-//        }
-        postsState.info != null -> {
-            if (postsState.info!!.isEmpty()){
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    Arrangement.Center,
-                    Alignment.CenterHorizontally
-                ) {
+    )
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .pullRefresh(pullRefreshState) // Enables pull-to-refresh
+    ) {
+        when {
+            postsState.isLoading -> {
+                ListShimmer(quantity = 10)
+            }
+            postsState.info != null -> {
+                if (postsState.info!!.isEmpty()) {
                     Column(
-                        modifier = Modifier,
-                        Arrangement.Center,
-                        Alignment.CenterHorizontally
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(text = "No hay publicaciones")
                         Spacer(modifier = Modifier.height(10.dp))
@@ -99,17 +79,112 @@ fun ListPosts(viewModel: PostsViewModel, courseId: String, scope: CoroutineScope
                             Icon(Icons.Outlined.Sync, contentDescription = null)
                         }
                     }
-                }
-            }else{
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    items(posts) { post ->
-                        CardPostItem(post = post, viewModel, scope, context)
+                } else {
+                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                        items(posts) { post ->
+                            CardPostItem(post = post, viewModel, scope, context)
+                        }
                     }
                 }
             }
         }
-        else -> {
 
-        }
+        // PullRefreshIndicator to show loading at the top
+        PullRefreshIndicator(
+            refreshing = postsState.isLoading,
+            state = pullRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter)
+        )
     }
 }
+//@Composable
+//fun ListPosts(viewModel: PostsViewModel, courseId: String, scope: CoroutineScope) {
+//    val posts by viewModel.postsFlow.collectAsState()
+//    val postsState by viewModel.postsState.collectAsState()
+//    val context = LocalContext.current
+//
+//    LaunchedEffect(key1 = posts, block = {
+//        Log.e("posts", posts.toString())
+//    })
+//
+//    LaunchedEffect(key1 = postsState, block = {
+//        Log.e("postsState", postsState.toString())
+//    })
+//    LaunchedEffect(true) {
+//        viewModel.fetchPosts(courseId)
+////        viewModel.getPostsByCourseRemote(courseId)
+//    }
+//
+//    when {
+//        postsState.isLoading -> {
+//            ListShimmer(quantity = 10)
+////            Column(modifier = Modifier.fillMaxSize(),
+////                verticalArrangement = Arrangement.Center,
+////                horizontalAlignment = Alignment.CenterHorizontally) {
+////                CircularProgressIndicator()
+////
+////            }
+//        }
+////        postsState.error != null -> {
+////
+////            Column(
+////                modifier = Modifier.fillMaxSize(),
+////                Arrangement.Center,
+////                Alignment.CenterHorizontally
+////            ) {
+////                Column(
+////                    modifier = Modifier,
+////                    Arrangement.Center,
+////                    Alignment.CenterHorizontally
+////                ) {
+////                    Text(text = "Ha ocurrido un error")
+////                    Spacer(modifier = Modifier.height(10.dp))
+////                    IconButton(onClick = {
+////                        scope.launch {
+////                            viewModel.getPostsByCourseRemote(courseId)
+////                        }
+////                    }) {
+////                        Icon(Icons.Outlined.Sync, contentDescription = null)
+////                    }
+////                }
+////            }
+////
+////        }
+//        postsState.info != null -> {
+//
+//            Log.e("Post inside", postsState.toString())
+//            if (postsState.info!!.isEmpty()){
+//                Column(
+//                    modifier = Modifier.fillMaxSize(),
+//                    Arrangement.Center,
+//                    Alignment.CenterHorizontally
+//                ) {
+//                    Column(
+//                        modifier = Modifier,
+//                        Arrangement.Center,
+//                        Alignment.CenterHorizontally
+//                    ) {
+//                        Text(text = "No hay publicaciones")
+//                        Spacer(modifier = Modifier.height(10.dp))
+//                        IconButton(onClick = {
+//                            scope.launch {
+//                                viewModel.getPostsByCourseRemote(courseId)
+//                            }
+//                        }) {
+//                            Icon(Icons.Outlined.Sync, contentDescription = null)
+//                        }
+//                    }
+//                }
+//            }else{
+//                LazyColumn(modifier = Modifier.fillMaxSize()) {
+//                    items(posts) { post ->
+//                        CardPostItem(post = post, viewModel, scope, context)
+//                    }
+//                }
+//            }
+//        }
+//        else -> {
+//
+//        }
+//    }
+//}

@@ -69,6 +69,35 @@ class QuizzViewModel(
     val questions = mutableStateOf(mutableListOf<QuestionDto>())
 
 
+    fun addOption(questionIndex: Int) {
+        val updatedQuestions = questions.value.toMutableList()
+        val question = updatedQuestions[questionIndex]
+        if (question.options.size < 4) {
+            // Create a new list to force recomposition
+            val updatedOptions = question.options + ""
+            updatedQuestions[questionIndex] = question.copy(options = updatedOptions.toMutableList())
+            questions.value = updatedQuestions
+        }
+    }
+
+    fun deleteOption(questionIndex: Int, optionIndex: Int) {
+        val updatedQuestions = questions.value.toMutableList()
+        val question = updatedQuestions[questionIndex]
+        if (question.options.size > 2) {
+            // Create a new list to force recomposition
+            val updatedOptions = question.options.toMutableList().also { it.removeAt(optionIndex) }
+            updatedQuestions[questionIndex] = question.copy(options = updatedOptions)
+            questions.value = updatedQuestions
+        }
+    }
+
+    fun updateOptionText(questionIndex: Int, optionIndex: Int, newText: String) {
+        val updatedQuestions = questions.value.toMutableList()
+        val updatedOptions = updatedQuestions[questionIndex].options.toMutableList()
+        updatedOptions[optionIndex] = newText // Change option text
+        updatedQuestions[questionIndex] = updatedQuestions[questionIndex].copy(options = updatedOptions)
+        questions.value = updatedQuestions // Trigger recomposition
+    }
     fun addQuestion() {
         questions.value =
             (questions.value + QuestionDto(text = "", options = mutableListOf("", ""), answer = -1)).toMutableList()
@@ -82,25 +111,25 @@ class QuizzViewModel(
         }
     }
 
-    fun addOption(questionIndex: Int) {
-        val updatedQuestions = questions.value.toMutableList()
-        val question = updatedQuestions[questionIndex]
-        if (question.options.size < 4) {
-            question.options.add("")
-            updatedQuestions[questionIndex] = question
-            questions.value = updatedQuestions
-        }
-    }
-
-    fun deleteOption(questionIndex: Int, optionIndex: Int) {
-        val updatedQuestions = questions.value.toMutableList()
-        val question = updatedQuestions[questionIndex]
-        if (question.options.size > 2) {
-            question.options.removeAt(optionIndex)
-            updatedQuestions[questionIndex] = question
-            questions.value = updatedQuestions
-        }
-    }
+//    fun addOption(questionIndex: Int) {
+//        val updatedQuestions = questions.value.toMutableList()
+//        val question = updatedQuestions[questionIndex]
+//        if (question.options.size < 4) {
+//            question.options.add("")
+//            updatedQuestions[questionIndex] = question
+//            questions.value = updatedQuestions
+//        }
+//    }
+//
+//    fun deleteOption(questionIndex: Int, optionIndex: Int) {
+//        val updatedQuestions = questions.value.toMutableList()
+//        val question = updatedQuestions[questionIndex]
+//        if (question.options.size > 2) {
+//            question.options.removeAt(optionIndex)
+//            updatedQuestions[questionIndex] = question
+//            questions.value = updatedQuestions
+//        }
+//    }
 
     fun updateQuestionText(questionIndex: Int, newText: String) {
         val updatedQuestions = questions.value.toMutableList()
@@ -108,13 +137,7 @@ class QuizzViewModel(
         questions.value = updatedQuestions
     }
 
-    fun updateOptionText(questionIndex: Int, optionIndex: Int, newText: String) {
-        val updatedQuestions = questions.value.toMutableList()
-        val updatedOptions = updatedQuestions[questionIndex].options.toMutableList()
-        updatedOptions[optionIndex] = newText
-        updatedQuestions[questionIndex] = updatedQuestions[questionIndex].copy(options = updatedOptions)
-        questions.value = updatedQuestions
-    }
+
 
     fun setCorrectAnswer(questionIndex: Int, answerIndex: Int) {
         val updatedQuestions = questions.value.toMutableList()

@@ -71,19 +71,31 @@ class HomeViewmodel(
 
     val listCoursesFlow: StateFlow<List<LocalCourses>> = channelFlow {
         _userInfo.filterNotNull().collectLatest { user ->
+            Log.e("DB Flow", "Database emitted user: ${user}")
+
             repositoryBundle.coursesRepository.getCoursesWithFlow().collect { courses ->
+
+                Log.e("DB Flow", "Database emitted courses: ${courses.size}")
+
+                Log.e("courses", courses.toString())
                 send(courses.filter { it.owner != user.idApi })
             }
         }
-    }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     val listMyCoursesFlow: StateFlow<List<LocalCourses>> = channelFlow {
         _userInfo.filterNotNull().collectLatest { user ->
+            Log.e("DB Flow", "Database emitted user: ${user}")
+
             repositoryBundle.coursesRepository.getCoursesWithFlow().collect { courses ->
+                Log.e("my courses", courses.toString())
+                Log.e("DB Flow", "Database emitted courses: ${courses.size}")
+
+
                 send(courses.filter { it.owner == user.idApi })
             }
         }
-    }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
 
 
@@ -134,7 +146,7 @@ class HomeViewmodel(
     }
 
     fun loadItemsMyCourses(page: Int, pageSize: Int): List<LocalCourses> {
-        val allCourses = _coursesPaginationState.value.items
+        val allCourses = _myCoursesPaginationState.value.items
         return allCourses.drop((page - 1) * pageSize).take(pageSize)
     }
 
@@ -167,10 +179,15 @@ class HomeViewmodel(
                     _stateCourse.value.info?.let {
                         repositoryBundle.coursesRepository.insertAllCourses(it)
                         // After insertion, trigger pagination and filtering
-                        _coursesPaginationState.value = _coursesPaginationState.value.copy(
-                            items = it,
-                            isLoading = false
-                        )
+//                        _coursesPaginationState.value = _coursesPaginationState.value.copy(
+//                            items = it,
+//                            isLoading = false
+//                        )
+//                        _coursesPaginationState.value = _coursesPaginationState.value.copy(
+//                            items = it.filter { it.owner == _userInfo.value?.idApi },
+//                            isLoading = false
+//                        )
+
                         filterCourses()
 
                     }
@@ -227,23 +244,51 @@ class HomeViewmodel(
     // Apply the filter based on user input for both course lists
     private fun filterCourses() {
         viewModelScope.launch {
-            val allCourses = _coursesPaginationState.value.items
+//            val allCourses = _coursesPaginationState.value.items
+//
+//            val allMyCourses = _myCoursesPaginationState.value.items
+
+            Log.e("list courses", listCoursesFlow.value.toString())
+            Log.e("list my courses", listCoursesFlow.value.toString())
+
 
             // Filter for all courses list
             _filteredListCoursesFlow.value = if (coursesInput.value.isNotEmpty()) {
-                allCourses.filter { it.title.contains(coursesInput.value, ignoreCase = true) }
+                listCoursesFlow.value.filter { it.title.contains(coursesInput.value, ignoreCase = true) }
             } else {
-                allCourses
+                listCoursesFlow.value
             }
 
             // Filter for my courses list
             _filteredListMyCoursesFlow.value = if (myCoursesInput.value.isNotEmpty()) {
-                allCourses.filter { it.title.contains(myCoursesInput.value, ignoreCase = true) && it.owner == _userInfo.value?.idApi }
+                listMyCoursesFlow.value.filter { it.title.contains(myCoursesInput.value, ignoreCase = true) && it.owner == _userInfo.value?.idApi }
             } else {
-                allCourses.filter { it.owner == _userInfo.value?.idApi }
+                listMyCoursesFlow.value.filter { it.owner == _userInfo.value?.idApi }
             }
         }
     }
+//    private fun filterCourses() {
+//        viewModelScope.launch {
+//            val allCourses = _coursesPaginationState.value.items
+//
+//            val allMyCourses = _myCoursesPaginationState.value.items
+//
+//
+//            // Filter for all courses list
+//            _filteredListCoursesFlow.value = if (coursesInput.value.isNotEmpty()) {
+//                allCourses.filter { it.title.contains(coursesInput.value, ignoreCase = true) }
+//            } else {
+//                allCourses
+//            }
+//
+//            // Filter for my courses list
+//            _filteredListMyCoursesFlow.value = if (myCoursesInput.value.isNotEmpty()) {
+//                allMyCourses.filter { it.title.contains(myCoursesInput.value, ignoreCase = true) && it.owner == _userInfo.value?.idApi }
+//            } else {
+//                allMyCourses.filter { it.owner == _userInfo.value?.idApi }
+//            }
+//        }
+//    }
 
     // Observe changes in listCoursesFlow and coursesInput separately to update _filteredListCoursesFlow
     private fun observeListAndFilter() {
@@ -331,6 +376,12 @@ class HomeViewmodel(
 
     // Logout function to clear user session
     suspend fun logout() {
+        _stateCourse.value.copy(
+            isLoading = false,
+            error = null,
+            info = null)
+
+        _userInfo.value = null
         repositoryBundle.loginRepository.logout()
     }
 }

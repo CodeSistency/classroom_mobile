@@ -398,13 +398,12 @@ class AppModuleImpl(
                 )
     }
 
-
     override val db: AppDatabase by lazy {
         Room.databaseBuilder(
             appContext,
             AppDatabase::class.java,
             AppDatabase.DATABASE_NAME
-        ).fallbackToDestructiveMigrationFrom(1,2,3).build()
+        ).fallbackToDestructiveMigrationFrom(1,2).build()
     }
 
 

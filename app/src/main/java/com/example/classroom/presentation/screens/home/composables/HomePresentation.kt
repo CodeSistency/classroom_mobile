@@ -1,5 +1,6 @@
 package com.example.classroom.presentation.screens.home.composables
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -232,10 +233,12 @@ fun HomePresentation(viewModel: HomeViewmodel, navController: NavController, add
                     ) { page ->
                         when(page){
                             0 -> {
-                                ListCourses(viewModel, addCourseViewModel, scope, navController, email = userInfo.value!!.email)
+                                ListCourses(viewModel, addCourseViewModel, scope, navController, email = userInfo.value!!.email, idUser = userInfo.value!!.idApi)
                             }
                             1 -> {
-                                ListMyCourses(viewModel= viewModel, scope =  scope, navController = navController, addCourseViewModel = addCourseViewModel, email = userInfo.value!!.email)
+                                Log.e("Composition", "ListMyCourses Composed")  // Logs when the composable is recomposed
+
+                                ListMyCourses(viewModel= viewModel, scope =  scope, navController = navController, addCourseViewModel = addCourseViewModel, email = userInfo.value!!.email, idUser = userInfo.value!!.idApi)
                             }
                         }
                     }

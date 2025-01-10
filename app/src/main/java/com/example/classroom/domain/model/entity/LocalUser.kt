@@ -69,7 +69,7 @@ fun SignInResponseDto.toLoginLocal(): LocalUser {
         phone = data.phone,
         gender = gendertoInt(data.gender),
         birthdate = data.creation,
-        firebaseToken = data.firebaseToken
+        firebaseToken = data.firebaseToken ?: ""
 
     )
 }
@@ -84,7 +84,7 @@ fun SignUpResponseDto.toLoginLocal(): LocalUser {
         phone = data.phone,
         gender = gendertoInt(data.gender),
         birthdate = data.creation,
-        firebaseToken = data.firebaseToken
+        firebaseToken = data.firebaseToken ?: ""
     )
 }
 
@@ -100,7 +100,7 @@ fun GetUsersByCourseResponse.toLocal(): List<LocalStudents> {
             id = it.id,
             gender = Gender.Man,
             birthdate = it.user.createDate,
-            firebaseToken = it.user.firebaseToken
+            firebaseToken = it.user.firebaseToken ?: ""
 //        birthdate = data.birthdate,
 //            gender = gendertoInt(it.user.genderId),
 //            birthdate = "",

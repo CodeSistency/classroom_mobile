@@ -56,7 +56,7 @@ data class SignInResponseDto(
         @SerialName("user_name")
         val username: String,
         @SerialName("firebaseToken")
-        val firebaseToken: String,
+        val firebaseToken: String? = null,
         @SerialName("create_date")
         val creation: String,
         @SerialName("genderId")

@@ -250,7 +250,8 @@ fun SignUpScreenNew(
                             errorMessage = viewModel.phoneError.value ?: "",
                             onNextClick = {
                                 focusManager.moveFocus(FocusDirection.Down)
-                            }
+                            },
+                            showCountryCode = true
                         )
 
                         Spacer(modifier = Modifier.height(8.dp))

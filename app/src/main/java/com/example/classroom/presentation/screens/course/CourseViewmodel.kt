@@ -332,6 +332,13 @@ class CourseViewmodel(
                             isLoading = false,
                             error = null
                         )
+                    }else{
+                        _listActivitiesSubmittedFlow.value = emptyList()
+                        _stateStudentEvaluations.value = _stateStudentEvaluations.value.copy(
+                            info = emptyList(),
+                            isLoading = false,
+                            error = null
+                        )
                     }
                 }
         }
