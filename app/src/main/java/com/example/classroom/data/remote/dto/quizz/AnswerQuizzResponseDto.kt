@@ -4,23 +4,29 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 
-@kotlinx.serialization.Serializable
+
+@Serializable
 data class QuizOptionDto(
     val id: Int,
-    val text: String
+    val text: String,
+    @SerialName("questionId")
+    val questionId: Int
 )
 
-@kotlinx.serialization.Serializable
+@Serializable
 data class QuizQuestionDto(
     val id: Int,
+    @SerialName("quizzId")
+    val quizzId: Int?,  // Nullable to handle its absence from the provided example
     val text: String,
     val answer: Int,
     val options: List<QuizOptionDto>
 )
-
-@kotlinx.serialization.Serializable
+@Serializable
 data class QuizActivityDto(
     val id: Int,
+    @SerialName("course_id")
+    val courseId: Int,
     val title: String,
     val description: String,
     val grade: Double,
@@ -30,7 +36,9 @@ data class QuizActivityDto(
     val endDate: String,
     val email: String,
     val digital: Boolean,
-    val isQuizz: Boolean
+    val isQuizz: Boolean,
+    @SerialName("status_id")
+    val statusId: Int
 )
 
 @kotlinx.serialization.Serializable

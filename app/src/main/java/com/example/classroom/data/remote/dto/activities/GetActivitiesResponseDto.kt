@@ -97,7 +97,7 @@ data class GetActivitiesWithQuizzResponseDto(
         @SerialName("description")
         val description: String?,
         @SerialName("grade")
-        val grade: Double,
+        val grade: Double, // Changed to `String` to match `"grade": "0"` in the JSON.
         @SerialName("start_date")
         val startDate: String,
         @SerialName("end_date")
@@ -110,15 +110,25 @@ data class GetActivitiesWithQuizzResponseDto(
         val isQuizz: Boolean,
         @SerialName("status_id")
         val status: Int,
-        @SerialName("quizzId")
-        val quizzId: Int?,
-        @SerialName("questions")
-        val questions: List<Question>
+        @SerialName("quizz")
+        val quizz: List<QuizzDto> // Changed to `List<QuizzDto>` to match the server response
     ) {
+        @Serializable
+        data class QuizzDto(
+            @SerialName("id")
+            val id: Int,
+            @SerialName("activity_id")
+            val activityId: Int,
+            @SerialName("question")
+            val questions: List<Question> // The list of questions inside the quiz
+        )
+
         @Serializable
         data class Question(
             @SerialName("id")
             val id: Int,
+            @SerialName("quizzId")
+            val quizzId: Int,
             @SerialName("text")
             val text: String,
             @SerialName("answer")
@@ -132,7 +142,9 @@ data class GetActivitiesWithQuizzResponseDto(
             @SerialName("id")
             val id: Int,
             @SerialName("text")
-            val text: String
+            val text: String,
+            @SerialName("questionId")
+            val questionId: Int // Added `questionId` to match the JSON structure
         )
     }
 }

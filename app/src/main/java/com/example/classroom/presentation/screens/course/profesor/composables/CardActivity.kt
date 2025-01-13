@@ -57,7 +57,13 @@ fun CardActivity(
     var isDeleteOpen by remember { mutableStateOf(false) }
 
     // Format dates and compare
-    val dateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+//    val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+//    val currentDate = Date()
+//    val endDate = dateFormatter.parse(activity.endDate) ?: currentDate
+//    val isDatePast = endDate.before(currentDate)
+
+    val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     val currentDate = Date()
     val endDate = dateFormatter.parse(activity.endDate) ?: currentDate
     val isDatePast = endDate.before(currentDate)

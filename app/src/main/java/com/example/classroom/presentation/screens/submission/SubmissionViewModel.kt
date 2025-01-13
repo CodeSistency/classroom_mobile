@@ -106,32 +106,7 @@ class SubmissionViewModel(
         }
     }
 
-    suspend fun uploadFile(
-        fileUri: Uri,
-        context: Context
-    ) {
-        val file = getFileFromUri(context, fileUri)
 
-        if (file!= null){
-            uploadFileUseCase(fileUri, context).onEach { result ->
-                when (result) {
-                    is Resource.Error -> {
-                        Log.e("HOME_VM:", "Error ${result.message?.uiMessage}")
-//                    _stateCourse.value = CourseState(error = result.message)
-                    }
-                    is Resource.Loading -> {
-//                    _stateCourse.value = CourseState(isLoading = true)
-                    }
-                    is Resource.Success -> {
-//                    _stateCourse.value = CourseState(info = result.data?.toCoursesLocal())
-//                    _stateCourse.value.info?.let {
-//                        repositoryBundle.coursesRepository.insertAllCourses(it)
-//                    }
-                    }
-                }
-            }.launchIn(viewModelScope)
-        }
-    }
 
     fun submitStudentResponse(
         context: Context,
@@ -140,6 +115,7 @@ class SubmissionViewModel(
         userId: String,
         fileUri: Uri,
         message: String,
+        useSupabase: Boolean,
         onSubmissionSuccess: () -> Unit,
         onSubmissionFailure: (String) -> Unit
     ) {
@@ -151,7 +127,7 @@ class SubmissionViewModel(
                 try {
                     fileUrl = retryOperation(times = 3, delayMillis = 2000L) {
                         var resultUrl: String? = null
-                        uploadFileUseCase(fileUri, context).collect { result ->
+                        uploadFileUseCase(fileUri, context, useSupabase).collect { result ->
                             when (result) {
                                 is Resource.Loading -> {
 

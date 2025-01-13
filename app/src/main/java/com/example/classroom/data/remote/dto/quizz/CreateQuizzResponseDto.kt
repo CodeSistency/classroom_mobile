@@ -16,7 +16,6 @@ data class CreatedQuizDataDto(
     val id: Int,
     @SerialName("activity_id")
     val activityId: Int,
-    val quizzId: Int, // Add the quiz ID explicitly
     val activity: QuizActivityDto,
     val question: List<QuizQuestionDto>
 )

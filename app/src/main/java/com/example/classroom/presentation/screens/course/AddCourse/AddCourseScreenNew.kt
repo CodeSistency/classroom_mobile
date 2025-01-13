@@ -2,6 +2,7 @@ package com.example.classroom.presentation.screens.course.AddCourse
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,6 +32,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
@@ -66,219 +68,388 @@ fun AddCourseScreenNew(
     id: String?,
     viewModel: AddCourseViewModel,
     coursesViewModel: CourseViewmodel,
-
     focusManager: FocusManager,
     navController: NavHostController,
-){
+) {
     val scope = rememberCoroutineScope()
     val courseInfoState = viewModel.stateCourse.value
     var dialogState: SetupCustomDialogState by remember {
         mutableStateOf(SetupCustomDialogState.Default())
     }
-//    var userInfo = coursesViewModel.userInfo.collectAsState(initial = null)
-//
-//    var state = coursesViewModel.stateCourseForm
-//    var isPasswordOpen by remember { mutableStateOf(false) }
 
     val snackbarHost = remember { SnackbarHostState() }
-    val snackbarDelegate = remember { SnackbarDelegate() }
-    val scaffoldState = rememberScaffoldState()
 
-    snackbarDelegate.apply {
-        snackbarHostState = scaffoldState.snackbarHostState
-        coroutineScope = scope
-    }
-
-
-    Box(modifier = Modifier.fillMaxSize()){
-        Scaffold(
-            scaffoldState = scaffoldState,
-            snackbarHost = {
-                SnackbarHost(hostState = snackbarHost)
-
-            },
+    Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHost) }
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
         ) {
-            Column(Modifier.fillMaxSize()) {
-                Spacer(modifier = Modifier.padding(top = 10.dp))
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    Image(
-                        modifier = Modifier
-                            .size(width = 70.dp, height = 70.dp)
-                            .align(Alignment.Center)
-                            .padding(vertical = 10.dp),
-                        painter = painterResource(id = R.drawable.ic_logo),
-                        contentDescription = "logo"
-                    )
+            Spacer(modifier = Modifier.height(16.dp))
 
-                }
+            // Header with Icon and Title
+            Image(
+                modifier = Modifier
+                    .size(90.dp)
+                    .padding(8.dp),
+                painter = painterResource(id = R.drawable.ic_logo),
+                contentDescription = "logo"
+            )
+            Text(
+                text = if (id != null) "Actualizar Curso" else "Registrar Curso",
+                style = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colors.primary
+            )
 
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    item {
-                        //Title input
-                        // Campo de Token
-//                        CustomTextField(
-//                            value = viewModel.token.value,
-//                            onValueChange = {
-//                                viewModel.token.value = it
-//                                viewModel.validateToken()
-//                            },
-//                            label = "Token",
-//                            errorMessage = viewModel.tokenError.value ?: "",
-//                            onNextClick = {
-//                                focusManager.moveFocus(FocusDirection.Down)
-//                            }
-//                        )
+            Spacer(modifier = Modifier.height(24.dp))
 
-                        // Campo de Título
-                        CustomTextField(
-                            value = viewModel.title.value,
-                            onValueChange = {
-                                viewModel.title.value = it
-                                viewModel.validateTitle()
-                            },
-                            label = "Título",
-                            errorMessage = viewModel.titleError.value ?: "",
-                            onNextClick = {
-                                focusManager.moveFocus(FocusDirection.Down)
-                            }
-                        )
-
-                        // Campo de Descripción (opcional)
-                        CustomTextField(
-                            value = viewModel.description.value,
-                            onValueChange = { viewModel.description.value = it },
-                            label = "Descripción",
-                            onNextClick = {
-                                focusManager.moveFocus(FocusDirection.Down)
-                            }
-                        )
-
-                        // Campo de ID del Propietario
-//                        CustomTextField(
-//                            value = viewModel.ownerId.value.toString(),
-//                            onValueChange = {
-//                                viewModel.ownerId.value = it.toIntOrNull() ?: 0
-//                                viewModel.validateOwnerId()
-//                            },
-//                            label = "ID del Propietario",
-//                            errorMessage = viewModel.ownerIdError.value ?: "",
-//                            onNextClick = {
-//                                focusManager.moveFocus(FocusDirection.Down)
-//                            }
-//                        )
-
-                        // Campo de Nombre del Propietario
-//                        CustomTextField(
-//                            value = viewModel.ownerName.value,
-//                            onValueChange = {
-//                                viewModel.ownerName.value = it
-//                                viewModel.validateOwnerName()
-//                            },
-//                            label = "Nombre del Propietario",
-//                            errorMessage = viewModel.ownerNameError.value ?: "",
-//                            onNextClick = {
-//                                focusManager.moveFocus(FocusDirection.Down)
-//                            }
-//                        )
-
-                        // Campo de Sección
-                        CustomTextField(
-                            value = viewModel.section.value,
-                            onValueChange = {
-                                viewModel.section.value = it
-                                viewModel.validateSection()
-                            },
-                            label = "Sección",
-                            errorMessage = viewModel.sectionError.value ?: "",
-                            onNextClick = {
-                                focusManager.moveFocus(FocusDirection.Down)
-                            }
-                        )
-
-                        // Campo de Materia
-                        CustomTextField(
-                            value = viewModel.subject.value,
-                            onValueChange = {
-                                viewModel.subject.value = it
-                                viewModel.validateSubject()
-                            },
-                            label = "Materia",
-                            errorMessage = viewModel.subjectError.value ?: "",
-                            onNextClick = {
-                                focusManager.moveFocus(FocusDirection.Down)
-                            }
-                        )
-
-                        // Selección de Área
-                        CustomSelect(
-                            label = "Área",
-                            options = Area.values().toList(),
-                            selectedOption = listOf(viewModel.area.value),
-                            onOptionSelected = { selected ->
-                                if (selected.isNotEmpty()) viewModel.area.value = selected.first()
-                                viewModel.validateArea()
-                            },
-                            multiple = false,
-                            optionDisplay = { it.displayName }
-                        )
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        // Botón de Enviar
-                        CustomButton(
-                            text = if (id != null) "Actualizar curso" else "Crear Curso",
-                            isLoading = courseInfoState.isLoading,
-                            style = NavigationButtonStyle.SolidGradient,
-                            color1 = Color(0xFF4CAF50),
-                            color2 = Color(0xFF81C784),
-                            onClick = {
-                                scope.launch {
-                                    viewModel.executeCourseRequest(id)
-
-                                }
-                            },
-                            disabled = !viewModel.isFormValid || courseInfoState.isLoading
-                        )
-
+            // Fields Section with Padding and Spacing
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colors.surface, shape = RoundedCornerShape(16.dp))
+                    .padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                CustomTextField(
+                    value = viewModel.title.value,
+                    onValueChange = {
+                        viewModel.title.value = it
+                        viewModel.validateTitle()
+                    },
+                    label = "Título",
+                    errorMessage = viewModel.titleError.value ?: "",
+                    onNextClick = {
+                        focusManager.moveFocus(FocusDirection.Down)
                     }
-                }
+                )
+
+                CustomTextField(
+                    value = viewModel.description.value,
+                    onValueChange = { viewModel.description.value = it },
+                    label = "Descripción",
+                    onNextClick = {
+                        focusManager.moveFocus(FocusDirection.Down)
+                    }
+                )
+
+                CustomTextField(
+                    value = viewModel.section.value,
+                    onValueChange = {
+                        viewModel.section.value = it
+                        viewModel.validateSection()
+                    },
+                    label = "Sección",
+                    errorMessage = viewModel.sectionError.value ?: "",
+                    onNextClick = {
+                        focusManager.moveFocus(FocusDirection.Down)
+                    }
+                )
+
+                CustomTextField(
+                    value = viewModel.subject.value,
+                    onValueChange = {
+                        viewModel.subject.value = it
+                        viewModel.validateSubject()
+                    },
+                    label = "Materia",
+                    errorMessage = viewModel.subjectError.value ?: "",
+                    onNextClick = {
+                        focusManager.moveFocus(FocusDirection.Down)
+                    }
+                )
+
+                CustomSelect(
+                    label = "Área",
+                    options = Area.values().toList(),
+                    selectedOption = listOf(viewModel.area.value),
+                    onOptionSelected = { selected ->
+                        if (selected.isNotEmpty()) viewModel.area.value = selected.first()
+                        viewModel.validateArea()
+                    },
+                    multiple = false,
+                    optionDisplay = { it.displayName }
+                )
             }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Button Section
+            CustomButton(
+                text = if (id != null) "Actualizar Curso" else "Crear Curso",
+                isLoading = courseInfoState.isLoading,
+                style = NavigationButtonStyle.SolidGradient,
+                color1 = Color(0xFF4CAF50),
+                color2 = Color(0xFF81C784),
+                onClick = {
+                    scope.launch {
+                        viewModel.executeCourseRequest(id)
+                    }
+                },
+                disabled = !viewModel.isFormValid || courseInfoState.isLoading,
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .height(50.dp)
+//                    .clip(RoundedCornerShape(16.dp))
+            )
         }
     }
-    LaunchedEffect(key1 = courseInfoState, block = {
-        when{
+
+    LaunchedEffect(key1 = courseInfoState) {
+        when {
             courseInfoState.isLoading -> {
                 dialogState = SetupCustomDialogState.Loading()
             }
             courseInfoState.error != null -> {
                 dialogState = SetupCustomDialogState.Error(courseInfoState.error.uiMessage)
             }
-
             else -> {
-                if (courseInfoState.info != null){
+                if (courseInfoState.info != null) {
                     dialogState = SetupCustomDialogState.Success(message = "El curso ha sido creado exitosamente")
                     delay(1000)
-                    if (id != null){
-                        navController.popBackStack()
-                        navController.navigate(Destination.HOME.screenRoute){
-                            popUpTo(Destination.REGISTRO_COURSE.screenRoute){
+                    navController.popBackStack()
+                    if (id != null) {
+                        navController.navigate(Destination.HOME.screenRoute) {
+                            popUpTo(Destination.REGISTRO_COURSE.screenRoute) {
                                 inclusive = true
                             }
                             launchSingleTop = true
                         }
                         viewModel.resetState()
-
-                    }else{
-                        navController.popBackStack()
                     }
-
                 }
             }
         }
-    })
+    }
+
     SetupCustomDialog(setupCustomDialogState = dialogState, showDialog = dialogState != SetupCustomDialogState.Default()) {
         dialogState = SetupCustomDialogState.Default()
     }
 }
+
+//@SuppressLint("UnusedMaterialScaffoldPaddingParameter", "StateFlowValueCalledInComposition")
+//@Composable
+//fun AddCourseScreenNew(
+//    id: String?,
+//    viewModel: AddCourseViewModel,
+//    coursesViewModel: CourseViewmodel,
+//
+//    focusManager: FocusManager,
+//    navController: NavHostController,
+//){
+//    val scope = rememberCoroutineScope()
+//    val courseInfoState = viewModel.stateCourse.value
+//    var dialogState: SetupCustomDialogState by remember {
+//        mutableStateOf(SetupCustomDialogState.Default())
+//    }
+////    var userInfo = coursesViewModel.userInfo.collectAsState(initial = null)
+////
+////    var state = coursesViewModel.stateCourseForm
+////    var isPasswordOpen by remember { mutableStateOf(false) }
+//
+//    val snackbarHost = remember { SnackbarHostState() }
+//    val snackbarDelegate = remember { SnackbarDelegate() }
+//    val scaffoldState = rememberScaffoldState()
+//
+//    snackbarDelegate.apply {
+//        snackbarHostState = scaffoldState.snackbarHostState
+//        coroutineScope = scope
+//    }
+//
+//
+//    Box(modifier = Modifier.fillMaxSize()){
+//        Scaffold(
+//            scaffoldState = scaffoldState,
+//            snackbarHost = {
+//                SnackbarHost(hostState = snackbarHost)
+//
+//            },
+//        ) {
+//            Column(Modifier.fillMaxSize()) {
+//                Spacer(modifier = Modifier.padding(top = 10.dp))
+//                Box(modifier = Modifier.fillMaxWidth()) {
+//                    Image(
+//                        modifier = Modifier
+//                            .size(width = 70.dp, height = 70.dp)
+//                            .align(Alignment.Center)
+//                            .padding(vertical = 10.dp),
+//                        painter = painterResource(id = R.drawable.ic_logo),
+//                        contentDescription = "logo"
+//                    )
+//
+//                }
+//
+//                LazyColumn(
+//                    verticalArrangement = Arrangement.spacedBy(8.dp)
+//                ) {
+//                    item {
+//                        //Title input
+//                        // Campo de Token
+////                        CustomTextField(
+////                            value = viewModel.token.value,
+////                            onValueChange = {
+////                                viewModel.token.value = it
+////                                viewModel.validateToken()
+////                            },
+////                            label = "Token",
+////                            errorMessage = viewModel.tokenError.value ?: "",
+////                            onNextClick = {
+////                                focusManager.moveFocus(FocusDirection.Down)
+////                            }
+////                        )
+//
+//                        // Campo de Título
+//                        CustomTextField(
+//                            value = viewModel.title.value,
+//                            onValueChange = {
+//                                viewModel.title.value = it
+//                                viewModel.validateTitle()
+//                            },
+//                            label = "Título",
+//                            errorMessage = viewModel.titleError.value ?: "",
+//                            onNextClick = {
+//                                focusManager.moveFocus(FocusDirection.Down)
+//                            }
+//                        )
+//
+//                        // Campo de Descripción (opcional)
+//                        CustomTextField(
+//                            value = viewModel.description.value,
+//                            onValueChange = { viewModel.description.value = it },
+//                            label = "Descripción",
+//                            onNextClick = {
+//                                focusManager.moveFocus(FocusDirection.Down)
+//                            }
+//                        )
+//
+//                        // Campo de ID del Propietario
+////                        CustomTextField(
+////                            value = viewModel.ownerId.value.toString(),
+////                            onValueChange = {
+////                                viewModel.ownerId.value = it.toIntOrNull() ?: 0
+////                                viewModel.validateOwnerId()
+////                            },
+////                            label = "ID del Propietario",
+////                            errorMessage = viewModel.ownerIdError.value ?: "",
+////                            onNextClick = {
+////                                focusManager.moveFocus(FocusDirection.Down)
+////                            }
+////                        )
+//
+//                        // Campo de Nombre del Propietario
+////                        CustomTextField(
+////                            value = viewModel.ownerName.value,
+////                            onValueChange = {
+////                                viewModel.ownerName.value = it
+////                                viewModel.validateOwnerName()
+////                            },
+////                            label = "Nombre del Propietario",
+////                            errorMessage = viewModel.ownerNameError.value ?: "",
+////                            onNextClick = {
+////                                focusManager.moveFocus(FocusDirection.Down)
+////                            }
+////                        )
+//
+//                        // Campo de Sección
+//                        CustomTextField(
+//                            value = viewModel.section.value,
+//                            onValueChange = {
+//                                viewModel.section.value = it
+//                                viewModel.validateSection()
+//                            },
+//                            label = "Sección",
+//                            errorMessage = viewModel.sectionError.value ?: "",
+//                            onNextClick = {
+//                                focusManager.moveFocus(FocusDirection.Down)
+//                            }
+//                        )
+//
+//                        // Campo de Materia
+//                        CustomTextField(
+//                            value = viewModel.subject.value,
+//                            onValueChange = {
+//                                viewModel.subject.value = it
+//                                viewModel.validateSubject()
+//                            },
+//                            label = "Materia",
+//                            errorMessage = viewModel.subjectError.value ?: "",
+//                            onNextClick = {
+//                                focusManager.moveFocus(FocusDirection.Down)
+//                            }
+//                        )
+//
+//                        // Selección de Área
+//                        CustomSelect(
+//                            label = "Área",
+//                            options = Area.values().toList(),
+//                            selectedOption = listOf(viewModel.area.value),
+//                            onOptionSelected = { selected ->
+//                                if (selected.isNotEmpty()) viewModel.area.value = selected.first()
+//                                viewModel.validateArea()
+//                            },
+//                            multiple = false,
+//                            optionDisplay = { it.displayName }
+//                        )
+//
+//                        Spacer(modifier = Modifier.height(16.dp))
+//
+//                        // Botón de Enviar
+//                        CustomButton(
+//                            text = if (id != null) "Actualizar curso" else "Crear Curso",
+//                            isLoading = courseInfoState.isLoading,
+//                            style = NavigationButtonStyle.SolidGradient,
+//                            color1 = Color(0xFF4CAF50),
+//                            color2 = Color(0xFF81C784),
+//                            onClick = {
+//                                scope.launch {
+//                                    viewModel.executeCourseRequest(id)
+//
+//                                }
+//                            },
+//                            disabled = !viewModel.isFormValid || courseInfoState.isLoading
+//                        )
+//
+//                    }
+//                }
+//            }
+//        }
+//    }
+//    LaunchedEffect(key1 = courseInfoState, block = {
+//        when{
+//            courseInfoState.isLoading -> {
+//                dialogState = SetupCustomDialogState.Loading()
+//            }
+//            courseInfoState.error != null -> {
+//                dialogState = SetupCustomDialogState.Error(courseInfoState.error.uiMessage)
+//            }
+//
+//            else -> {
+//                if (courseInfoState.info != null){
+//                    dialogState = SetupCustomDialogState.Success(message = "El curso ha sido creado exitosamente")
+//                    delay(1000)
+//                    if (id != null){
+//                        navController.popBackStack()
+//                        navController.navigate(Destination.HOME.screenRoute){
+//                            popUpTo(Destination.REGISTRO_COURSE.screenRoute){
+//                                inclusive = true
+//                            }
+//                            launchSingleTop = true
+//                        }
+//                        viewModel.resetState()
+//
+//                    }else{
+//                        navController.popBackStack()
+//                    }
+//
+//                }
+//            }
+//        }
+//    })
+//    SetupCustomDialog(setupCustomDialogState = dialogState, showDialog = dialogState != SetupCustomDialogState.Default()) {
+//        dialogState = SetupCustomDialogState.Default()
+//    }
+//}

@@ -12,7 +12,7 @@ class CloudRepositoryImpl(
     private val apiService: ApiService,
     private val dao: AppDao
 ): CloudRepository {
-    override suspend fun uploadFile(fileUri: Uri, context: Context): ResponseGenericAPi<CloudResposeDto> {
-        return apiService.uploadFile(fileUri, context)
+    override suspend fun uploadFile(fileUri: Uri, context: Context, useSupabase: Boolean): ResponseGenericAPi<CloudResposeDto> {
+        return apiService.uploadFile(fileUri, context, useSupabase)
     }
 }

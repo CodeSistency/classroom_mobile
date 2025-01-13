@@ -74,7 +74,7 @@ interface ApiService {
     suspend fun professorReviewsEvaluation(body: ReviewEvaluationRequestDto): ResponseGenericAPi<ReviewEvaluationsResponseDto>
 
     //CLOUD
-    suspend fun uploadFile(fileUri: Uri, context: Context): ResponseGenericAPi<CloudResposeDto>
+    suspend fun uploadFile(fileUri: Uri, context: Context, useSupabase: Boolean): ResponseGenericAPi<CloudResposeDto>
 
     //POSTS
     suspend fun getPostByCourseRemote(id: String): ResponseGenericAPi<GetPostsResponseDto>

@@ -105,7 +105,7 @@ fun GetActivitiesWithQuizzResponseDto.Activity.toLocalActivity(): LocalActivitie
         grade = this.grade,
         startDate = this.startDate,
         endDate = this.endDate,
-        quizzId = this.quizzId.toString(),
+        quizzId = this.idApi.toString(),
         isQuizz = this.isQuizz,
         status = Status.fromId(this.status),
     )
@@ -124,6 +124,6 @@ fun CreateQuizzResponseDto.toLocalActivities(idCourse: String): LocalActivities 
         endDate = activity.endDate,
         status = Status.OPEN,
         isQuizz = activity.isQuizz,
-        quizzId = this.data.quizzId.toString()
+        quizzId = this.data.id.toString()
     )
 }

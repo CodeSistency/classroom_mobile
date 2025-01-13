@@ -47,7 +47,8 @@ fun SubmissionStudentScreen(
 
                 },
                 userId = studentId,
-                idCourse = courseId
+                idCourse = courseId,
+                useSupabase = false
             )
         },
         navController = navController

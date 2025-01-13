@@ -207,7 +207,7 @@ class ActivityViewmodel(
 
                     // Save quizzes if questions are not empty
                     activities.forEach { activity ->
-                        if (activity.questions.isNotEmpty()) {
+                        if (activity.quizz.isNotEmpty()) {
                             saveQuizToLocalDatabase(activity)
                         }
                     }
@@ -222,31 +222,65 @@ class ActivityViewmodel(
     }
 
     private suspend fun saveQuizToLocalDatabase(activity: GetActivitiesWithQuizzResponseDto.Activity) {
-        val quizEntity = QuizEntity(
-            id = activity.quizzId ?: return,
-            activityId = activity.idApi,
-            title = activity.title
-        )
-        repositoryBundle.quizzRepository.insertQuiz(quizEntity)
 
-        activity.questions.forEach { questionDto ->
-            val questionEntity = QuestionEntity(
-                id = questionDto.id,
-                quizId = activity.quizzId ?: return,
-                text = questionDto.text,
-                correctAnswer = questionDto.answer
+        if (activity.quizz.isEmpty()) {
+            println("No quizzes found for activity ID: ${activity.idApi}")
+            return
+        }
+        activity.quizz.forEach { quizzDto ->  // Iterate over each quiz
+            val quizEntity = QuizEntity(
+                id = quizzDto.id, // Use the quiz ID from `QuizzDto`
+                activityId = activity.idApi,
+                title = activity.title
             )
-            repositoryBundle.quizzRepository.insertQuestion(questionEntity)
+            repositoryBundle.quizzRepository.insertQuiz(quizEntity)
 
-            questionDto.options.forEach { optionDto ->
-                val optionEntity = OptionEntity(
-                    id = optionDto.id,
-                    questionId = questionDto.id,
-                    text = optionDto.text
+            quizzDto.questions.forEach { questionDto ->  // Iterate over each question inside the quiz
+                val questionEntity = QuestionEntity(
+                    id = questionDto.id,
+                    quizId = quizzDto.id, // Corrected to use the quiz ID
+                    text = questionDto.text,
+                    correctAnswer = questionDto.answer
                 )
-                repositoryBundle.quizzRepository.insertOption(optionEntity)
+                repositoryBundle.quizzRepository.insertQuestion(questionEntity)
+
+                questionDto.options.forEach { optionDto ->
+                    val optionEntity = OptionEntity(
+                        id = optionDto.id,
+                        questionId = questionDto.id, // Corrected to use the question ID
+                        text = optionDto.text
+                    )
+                    repositoryBundle.quizzRepository.insertOption(optionEntity)
+                }
             }
         }
+//        val quizEntity = QuizEntity(
+////            id = activity.quizzId ?: return,
+//            id = activity.quizzId ?: return,
+//
+//            activityId = activity.idApi,
+//            title = activity.title
+//        )
+//        repositoryBundle.quizzRepository.insertQuiz(quizEntity)
+//
+//        activity.quizz.forEach { questionDto ->
+//            val questionEntity = QuestionEntity(
+//                id = questionDto.id,
+//                quizId = activity.quizzId ?: return,
+//                text = questionDto.text,
+//                correctAnswer = questionDto.answer
+//            )
+//            repositoryBundle.quizzRepository.insertQuestion(questionEntity)
+//
+//            questionDto.options.forEach { optionDto ->
+//                val optionEntity = OptionEntity(
+//                    id = optionDto.id,
+//                    questionId = questionDto.id,
+//                    text = optionDto.text
+//                )
+//                repositoryBundle.quizzRepository.insertOption(optionEntity)
+//            }
+//        }
     }
     suspend fun deleteActivity(id: String) {
         deleteActivityUseCase(id).onEach { result ->

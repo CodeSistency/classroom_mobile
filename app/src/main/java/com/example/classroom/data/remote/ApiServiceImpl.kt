@@ -398,7 +398,7 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
 
     }
 
-    override suspend fun uploadFile(fileUri: Uri, context: Context): ResponseGenericAPi<CloudResposeDto> =
+    override suspend fun uploadFile(fileUri: Uri, context: Context, useSupabase: Boolean): ResponseGenericAPi<CloudResposeDto> =
         withContext(Dispatchers.IO) {
             // Extract the original file name
             val originalFileName = extractOriginalFileName(fileUri, context)
@@ -420,6 +420,7 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
                     append("file", fileBytes, Headers.build {
                         append(HttpHeaders.ContentDisposition, "filename=${originalFileName}")
                     })
+                    append("useSupabase", useSupabase.toString())
                 }
             )
 

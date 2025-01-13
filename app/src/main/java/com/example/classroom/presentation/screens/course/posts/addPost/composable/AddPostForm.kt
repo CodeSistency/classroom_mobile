@@ -196,7 +196,7 @@ fun AddPostForm(viewModel: AddPostViewModel, focusManager: FocusManager, courseI
                     color2 = Color(0xFF81C784),
                     onClick = {
                         scope.launch {
-                            viewModel.executeCourseRequest(idPost, courseId, isFileUploadChecked, context)
+                            viewModel.executeCourseRequest(idPost, courseId, isFileUploadChecked, context, false)
                         }
                     },
                     disabled = !viewModel.isFormValid

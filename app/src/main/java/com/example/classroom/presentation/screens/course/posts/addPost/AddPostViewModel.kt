@@ -148,7 +148,7 @@ class AddPostViewModel(
         }
     }
 
-    fun executeCourseRequest(idPost: String?, courseId: String, isFileUploadChecked: Boolean, context: Context) {
+    fun executeCourseRequest(idPost: String?, courseId: String, isFileUploadChecked: Boolean, context: Context, useSupabase: Boolean) {
         viewModelScope.launch {
             try {
                 var fileUrl: String? = null
@@ -160,7 +160,7 @@ class AddPostViewModel(
 
                         Log.e("fileurl", file.toString())
 
-                        uploadFileUseCase(selectedFileUri!!, context).collect { result ->
+                        uploadFileUseCase(selectedFileUri!!, context, useSupabase).collect { result ->
                             when (result) {
                                 is Resource.Error -> {
                                     Log.e("fileurl error", result.message?.uiMessage.toString())

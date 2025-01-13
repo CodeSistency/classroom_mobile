@@ -17,9 +17,9 @@ import java.io.File
 class UploadFileUseCase(
     private val repositoryBundle: RepositoryBundle
 ) {
-    suspend operator fun invoke(fileUri: Uri, context: Context): Flow<Resource<CloudResposeDto>> {
+    suspend operator fun invoke(fileUri: Uri, context: Context, useSupase: Boolean): Flow<Resource<CloudResposeDto>> {
         return handlingError<CloudResposeDto> {
-            val data = repositoryBundle.cloudRepository.uploadFile(fileUri, context)
+            val data = repositoryBundle.cloudRepository.uploadFile(fileUri, context, useSupase)
             Log.e("response cloud", data.toString())
             if (data.statusCode.value == 200 || data.statusCode.value == 201) { // Allow both 200 and 201
                 data.responseData!!

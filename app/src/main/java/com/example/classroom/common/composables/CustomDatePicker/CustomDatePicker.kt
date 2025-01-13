@@ -55,7 +55,7 @@ fun CustomDatePicker(
     }
 
     // Display selected date and open DatePickerDialog on click
-    Box(modifier = Modifier.padding(horizontal = 8.dp)){
+    Box(modifier = Modifier){
         Box(
             modifier = modifier
                 .fillMaxWidth()

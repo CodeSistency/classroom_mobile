@@ -9,6 +9,6 @@ import java.io.File
 
 interface CloudRepository {
 
-    suspend fun uploadFile(fileUri: Uri, context: Context): ResponseGenericAPi<CloudResposeDto>
+    suspend fun uploadFile(fileUri: Uri, context: Context, useSupabase: Boolean): ResponseGenericAPi<CloudResposeDto>
 
 }
