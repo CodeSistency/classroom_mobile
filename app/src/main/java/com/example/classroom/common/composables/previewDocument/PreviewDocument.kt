@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.InsertDriveFile
 import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -33,9 +34,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
+import coil.request.ImageRequest
 import com.example.classroom.common.getSupabaseFileUrl
 
 @Composable
@@ -50,9 +53,12 @@ fun DocumentPreviewComponent(
     val errorState = remember { mutableStateOf(false) }
 
     // Supabase media URL
-    val mediaUrl = getSupabaseFileUrl(documentUrl)
-    Log.d("DocumentPreview", "Media URL: $mediaUrl")
-    Log.d("DocumentPreview", "FileType: $fileType")
+    val mediaUrl = getSupabaseFileUrl(documentUrl, isPublic = true, useSupabase = false).replace("localhost", "172.17.12.55")
+
+    LaunchedEffect(key1 = true, block = {
+        Log.e("DocumentPreview", "Media URL: $mediaUrl")
+        Log.e("DocumentPreview", "FileType: $fileType")
+    })
 
     Box(
         modifier = modifier
@@ -102,21 +108,38 @@ fun DocumentPreviewComponent(
                                     color = MaterialTheme.colors.primary
                                 )
                             }
+
                             AsyncImage(
-                                model = mediaUrl,
-                                contentDescription = "Imagen preview",
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(150.dp)
-                                    .clip(RoundedCornerShape(8.dp)),
-                                contentScale = ContentScale.Crop,
-                                onLoading = { loadingState.value = true },
-                                onSuccess = { loadingState.value = false },
-                                onError = {
-                                    errorState.value = true
-                                    loadingState.value = false
-                                }
+                                model = ImageRequest.Builder(LocalContext.current)
+                                    .data(mediaUrl)
+                                    .crossfade(true)
+                                    .listener(
+                                        onStart = { Log.d("DocumentPreview", "Loading started for URL: $mediaUrl") },
+                                        onSuccess = { _, _ -> Log.d("DocumentPreview", "Image loaded successfully!") },
+                                        onError = { _, throwable -> Log.e("DocumentPreview", "Error loading image: ${throwable.throwable.message}") }
+                                    )
+                                    .build(),
+                                contentDescription = "Image Preview",
+                                modifier = Modifier.fillMaxWidth().height(200.dp)
                             )
+//                            AsyncImage(
+//                                model = mediaUrl,
+//                                contentDescription = "Imagen preview",
+//                                modifier = Modifier
+//                                    .fillMaxWidth()
+//                                    .height(150.dp)
+//                                    .clip(RoundedCornerShape(8.dp)),
+//                                contentScale = ContentScale.Crop,
+//                                onLoading = { loadingState.value = true },
+//                                onSuccess = { loadingState.value = false },
+//                                onError = {
+//                                    errorState.value = true
+//                                    loadingState.value = false
+//
+//                                    Log.e("DocumentPreview", "Failed to load image: ${it.result.throwable.message}")
+//
+//                                }
+//                            )
                             // Download icon in the top-right corner
                             IconButton(
                                 onClick = { onDownloadFile(mediaUrl) },

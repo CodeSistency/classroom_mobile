@@ -159,30 +159,29 @@ fun AddActivityScreenNew(
                     }
                 )
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    CustomDatePicker(
-                        label = "Fecha de Inicio",
-                        selectedDate = viewModel.startDate.value,
-                        onDateSelected = {
-                            viewModel.startDate.value = it
-                            viewModel.validateStartDate()
-                        },
-                        modifier = Modifier.weight(1f)
-                    )
+                CustomDatePicker(
+                    label = "Fecha de Inicio",
+                    selectedDate = viewModel.startDate.value,
+                    onDateSelected = {
+                        viewModel.startDate.value = it
+                        viewModel.validateStartDate()
+                    },
+//                        modifier = Modifier.weight(1f)
+                )
 
-                    CustomDatePicker(
-                        label = "Fecha de Finalización",
-                        selectedDate = viewModel.endDate.value,
-                        onDateSelected = {
-                            viewModel.endDate.value = it
-                            viewModel.validateEndDate()
-                        },
-                        modifier = Modifier.weight(1f)
-                    )
-                }
+//                Spacer(modifier = Modifier.height(5.dp))
+
+                CustomDatePicker(
+                    label = "Fecha de Finalización",
+                    selectedDate = viewModel.endDate.value,
+                    onDateSelected = {
+                        viewModel.endDate.value = it
+                        viewModel.validateEndDate()
+                    },
+//                        modifier = Modifier.weight(1f)
+                )
+
+//                Spacer(modifier = Modifier.height(5.dp))
 
                 if (id == null) {
                     CustomSelect(

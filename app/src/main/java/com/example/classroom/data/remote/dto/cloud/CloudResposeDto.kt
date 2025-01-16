@@ -17,7 +17,7 @@ data class CloudResposeDto(
         @SerialName("path")
         val path: String,
         @SerialName("id")
-        val id: String,
+        val id: String? = null,
         @SerialName("fullPath")
         val fullPath: String,
         )

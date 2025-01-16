@@ -1,5 +1,6 @@
 package com.example.classroom.presentation.screens.home.composables
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -43,16 +44,12 @@ fun TopBarHome(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         IconButton(onClick = {
-            scope.launch {
-                navController.navigate(Destination.LOGIN.screenRoute) {
-                    popUpTo(Destination.LOGIN.screenRoute) {
-                        inclusive = true
-                    }
-                    launchSingleTop = true
-                }
-                delay(1000)
-                viewmodel.logout()
-            }
+            Log.e("login", "executing")
+            navController.navigate("LOGIN")
+//
+//            scope.launch {
+//                viewmodel.logout()
+//            }
         }) {
             Icon(
                 imageVector = Icons.Default.ArrowBackIos,

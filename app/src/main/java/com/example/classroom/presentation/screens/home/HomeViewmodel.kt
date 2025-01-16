@@ -375,7 +375,7 @@ class HomeViewmodel(
     }
 
     // Logout function to clear user session
-    suspend fun logout() {
+    suspend fun logout(): Boolean {
         _stateCourse.value.copy(
             isLoading = false,
             error = null,
@@ -383,5 +383,7 @@ class HomeViewmodel(
 
         _userInfo.value = null
         repositoryBundle.loginRepository.logout()
+        delay(300)
+        return true
     }
 }

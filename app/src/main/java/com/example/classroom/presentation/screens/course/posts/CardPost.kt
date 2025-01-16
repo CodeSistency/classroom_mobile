@@ -23,6 +23,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.classroom.R
 import com.example.classroom.common.CustomDialog
+import com.example.classroom.common.composables.PreviewFile.FilePreview
 import com.example.classroom.common.getSupabaseFileUrl
 import com.example.classroom.domain.model.entity.LocalPost
 import com.example.classroom.presentation.theme.PaddingCustom
@@ -133,6 +135,8 @@ fun CardPostItem(post: LocalPost, viewModel: PostsViewModel, scope: CoroutineSco
     var isDeleteOpen by remember { mutableStateOf(false) }
     val shape = RoundedCornerShape(12.dp)
 
+    val userInfo by viewModel.userInfo.collectAsState()
+
     Box(
         modifier = Modifier
             .padding(8.dp)
@@ -167,13 +171,15 @@ fun CardPostItem(post: LocalPost, viewModel: PostsViewModel, scope: CoroutineSco
                         )
                     )
                 }
-                IconButton(onClick = { isDeleteOpen = true }) {
-                    Icon(
-                        painterResource(id = R.drawable.ic_cancel),
-                        contentDescription = null,
-                        tint = Color.Gray,
-                        modifier = Modifier.size(24.dp)
-                    )
+                if (userInfo?.idApi ?: 999999 == post.authorId){
+                    IconButton(onClick = { isDeleteOpen = true }) {
+                        Icon(
+                            painterResource(id = R.drawable.ic_cancel),
+                            contentDescription = null,
+                            tint = Color.Gray,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
                 }
             }
 
@@ -192,29 +198,35 @@ fun CardPostItem(post: LocalPost, viewModel: PostsViewModel, scope: CoroutineSco
             // Media preview
             if (!post.mediaUrl.isNullOrEmpty()){
                 post.mediaUrl.let { url ->
-                    val mediaUrl = getSupabaseFileUrl(url)
+                    val mediaUrl = getSupabaseFileUrl(url, isPublic = true, useSupabase = false)
 
                     Log.e("mediaurl", mediaUrl)
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    when {
-                        mediaUrl.endsWith(".jpg") || mediaUrl.endsWith(".jpeg") || mediaUrl.endsWith(".png") -> {
-                            // Image preview using AsyncImage
-                            AsyncImage(
-                                model = mediaUrl,
-                                contentDescription = "Post media image",
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(200.dp)
-                                    .clip(shape),
-                                contentScale = ContentScale.Crop
-                            )
-                        }
-                        else -> {
-                            // File preview
-                            FilePreviewCard(url = mediaUrl, context = context, viewModel = viewModel)
-                        }
-                    }
+                    FilePreview(
+                        fileUrl = mediaUrl,
+                        fileName = "",
+                        modifier = Modifier.padding(16.dp)
+                    )
+
+//                    when {
+//                        mediaUrl.endsWith(".jpg") || mediaUrl.endsWith(".jpeg") || mediaUrl.endsWith(".png") -> {
+//                            // Image preview using AsyncImage
+//                            AsyncImage(
+//                                model = mediaUrl,
+//                                contentDescription = "Post media image",
+//                                modifier = Modifier
+//                                    .fillMaxWidth()
+//                                    .height(200.dp)
+//                                    .clip(shape),
+//                                contentScale = ContentScale.Crop
+//                            )
+//                        }
+//                        else -> {
+//                            // File preview
+//                            FilePreviewCard(url = mediaUrl, context = context, viewModel = viewModel)
+//                        }
+//                    }
                     Spacer(modifier = Modifier.height(8.dp))
                 }
 

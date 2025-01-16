@@ -415,7 +415,9 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
 
             // Make the POST request
             val response = client.submitFormWithBinaryData(
-                url = "https://class-room-nest.onrender.com/cloud/send/file",
+                url = "${Constants.BASE_URL}/cloud/send/file",
+
+//                url = "https://class-room-nest.onrender.com/cloud/send/file",
                 formData = formData {
                     append("file", fileBytes, Headers.build {
                         append(HttpHeaders.ContentDisposition, "filename=${originalFileName}")
@@ -423,6 +425,8 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
                     append("useSupabase", useSupabase.toString())
                 }
             )
+
+            Log.e("response", response.bodyAsText())
 
 
             // Log response details

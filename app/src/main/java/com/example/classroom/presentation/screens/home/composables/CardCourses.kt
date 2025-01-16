@@ -97,19 +97,19 @@ fun CardCourses(
                     verticalAlignment = Alignment.CenterVertically,
 //                    horizontalArrangement = Arrangement.Center
                 ) {
-                    IconButton(onClick = {
-                        viewModel.fillForm(course)
-                        navController.navigate("${Destination.REGISTRO_COURSE.screenRoute}?id=${course.idApi}")
-
-                    }) {
-                        Icon(
-                            Icons.Default.Edit,
-                            contentDescription = null,
-                            tint = Color.Gray,
-                            modifier = Modifier.size(35.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(3.dp))
+//                    IconButton(onClick = {
+//                        viewModel.fillForm(course)
+//                        navController.navigate("${Destination.REGISTRO_COURSE.screenRoute}?id=${course.idApi}")
+//
+//                    }) {
+//                        Icon(
+//                            Icons.Default.Edit,
+//                            contentDescription = null,
+//                            tint = Color.Gray,
+//                            modifier = Modifier.size(35.dp)
+//                        )
+//                    }
+//                    Spacer(modifier = Modifier.width(3.dp))
                     IconButton(onClick = {
                         isDeleteOpen = true
                     }) {

@@ -28,6 +28,8 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.messaging.FirebaseMessaging
 import android.Manifest
 import android.content.Intent
+import androidx.compose.runtime.LaunchedEffect
+import androidx.navigation.compose.rememberNavController
 import com.example.classroom.common.firebase.saveTokenToPreferences
 import com.example.classroom.domain.services.ChatBackgroundService
 
@@ -47,6 +49,12 @@ class MainActivity : ComponentActivity() {
                 value = App.appModule.db.appDao.getUserInfo()
             })
 
+            LaunchedEffect(key1 = true, block = {
+                Log.e("userInfo", isUserLogged.toString())
+            })
+            val navController = rememberNavController()
+
+
             ClassroomTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
@@ -57,6 +65,7 @@ class MainActivity : ComponentActivity() {
                         Navigation(
                             isUserLogged = user.isNotEmpty(),
                             darkTheme = true,
+                            navController = navController,
                             currentUser = if (user.isNotEmpty()) user.firstOrNull() else null
 
                         ){

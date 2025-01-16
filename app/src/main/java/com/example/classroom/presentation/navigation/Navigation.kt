@@ -3,6 +3,7 @@ package com.example.classroom.presentation.navigation
 
 import android.os.Build
 import android.os.Build.VERSION_CODES.Q
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +17,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -68,13 +70,14 @@ import com.example.classroom.presentation.screens.submission.student.SubmissionS
 @Composable
 fun Navigation(
     isUserLogged: Boolean,
+    navController: NavHostController,
     currentUser: LocalUser?,
     darkTheme: Boolean,
     changeTheme: () -> Unit,
 ) {
 
+    Log.d("NavDebug", "Navigation composed. isUserLogged = $isUserLogged")
 
-    val navController = rememberNavController()
     val focusManager = LocalFocusManager.current
 
     NavHost(

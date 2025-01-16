@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.classroom.data.repository.RepositoryBundle
 import com.example.classroom.domain.model.entity.LocalPost
+import com.example.classroom.domain.model.entity.LocalUser
 import com.example.classroom.domain.model.entity.toLocal
 import com.example.classroom.domain.repository.PostsRepository
 import com.example.classroom.domain.use_case.posts.DeletePostUseCase
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
@@ -33,6 +35,9 @@ class PostsViewModel(
     private val repositoryBundle: RepositoryBundle,
 ) : ViewModel() {
 
+    private val _userInfo = MutableStateFlow<LocalUser?>(null)
+    val userInfo: StateFlow<LocalUser?> = _userInfo
+
     private val _postsState = MutableStateFlow(PostsState())
     val postsState: StateFlow<PostsState> = _postsState
 
@@ -45,6 +50,16 @@ class PostsViewModel(
     private val _filteredPostsFlow = MutableStateFlow<List<LocalPost>>(emptyList())
     val filteredPostsFlow: StateFlow<List<LocalPost>> = _filteredPostsFlow
 
+    init {
+        viewModelScope.launch {
+            repositoryBundle.loginRepository.getUserInfoWithFlow()
+                .firstOrNull()
+                ?.firstOrNull()
+                ?.let { _userInfo.value = it }
+
+//            observeUserInput()
+        }
+    }
     fun fetchPosts(courseId: String) {
         viewModelScope.launch {
             repository.getPostsByCourse(courseId)
