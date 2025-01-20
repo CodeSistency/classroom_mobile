@@ -138,7 +138,13 @@ fun AnswerQuizScreen(viewModel: QuizzViewModel, quizId: String, navController: N
                         Spacer(modifier = Modifier.height(24.dp))
 
                         Button(
-                            onClick = { viewModel.answerQuizzRemote(quizId) },
+                            onClick = {
+//                                viewModel.answerQuizzRemote(quizId)
+                                quizState?.let {
+                                    viewModel.answerQuizzRemote(it.quiz.id.toString())
+
+                                }
+                                      },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(50.dp),
