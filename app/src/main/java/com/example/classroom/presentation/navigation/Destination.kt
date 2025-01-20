@@ -24,6 +24,7 @@ enum class Destination(val screenRoute: String, val title: String, val icon: Ico
         title = "LOGIN",
         icon = Icon.Resource(R.drawable.ic_launcher_background)
     ),
+
     SPLASH(
         screenRoute = "SPLASH",
         title = "SPLASH",

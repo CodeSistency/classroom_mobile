@@ -196,13 +196,14 @@ fun SignInScreenNew(
             else -> {
                 if (userInfo.info != null){
                     dialogState = SetupCustomDialogState.Default()
-                    navController.popBackStack()
+//                    navController.popBackStack()
                     navController.navigate(Destination.HOME.screenRoute){
                         popUpTo(Destination.LOGIN.screenRoute){
                             inclusive = true
                         }
                         launchSingleTop = true
                     }
+                    viewModel.cleanInfo()
                 }
             }
         }

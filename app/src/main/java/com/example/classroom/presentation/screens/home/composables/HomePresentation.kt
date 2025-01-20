@@ -70,10 +70,13 @@ fun HomePresentation(viewModel: HomeViewmodel, navController: NavController, add
     var coursesInput = viewModel.coursesInput.collectAsState()
     var myCoursesInput = viewModel.myCoursesInput.collectAsState()
 
-    LaunchedEffect(key1 = true, block = {
+//    LaunchedEffect(key1 = true, block = {
+    LaunchedEffect(key1 = userInfo.value, block = {
         userInfo.value.let {
             if (it != null){
                 viewModel.getCourses(it.idApi)
+            }else{
+                viewModel.loadUserInfo()
             }
 
         }

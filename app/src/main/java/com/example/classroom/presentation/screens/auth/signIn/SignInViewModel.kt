@@ -33,6 +33,10 @@ class SignInViewModel(
     var passwordError = mutableStateOf<String?>(null)
 
     // Check if form is valid
+
+    fun cleanInfo(){
+        _stateLoginUser.value = _stateLoginUser.value.copy(isLoading = false, info = null, error = null)
+    }
     val isFormValid: Boolean
         get() = emailError.value == null &&
                 passwordError.value == null &&

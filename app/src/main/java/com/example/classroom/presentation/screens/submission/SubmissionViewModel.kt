@@ -131,12 +131,18 @@ class SubmissionViewModel(
                             when (result) {
                                 is Resource.Loading -> {
 
+                                    Log.e("Loading", result.data.toString())
+
                                     _stateSendActivity.value = SendActivityState(isLoading = true)
                                 }
                                 is Resource.Error -> {
+                                    Log.e("Error", result.data.toString())
+
                                     throw Exception("${result.message?.uiMessage}")
                                 }
                                 is Resource.Success -> {
+                                    Log.e("success", result.data.toString())
+
                                     resultUrl = result.data?.data?.fullPath
                                 }
                                 else -> {}
@@ -144,7 +150,7 @@ class SubmissionViewModel(
                         }
                         resultUrl ?: throw Exception("File upload failed: URL is null or empty")
                     }
-                    Log.d("submitStudentResponse", "File uploaded successfully: $fileUrl")
+                    Log.e("submitStudentResponse", "File uploaded successfully: $fileUrl")
                 } catch (e: Exception) {
                     onSubmissionFailure("File upload failed after retries: ${e.message}")
                     return@launch
@@ -172,7 +178,7 @@ class SubmissionViewModel(
 //                                    _stateSendActivity.value = SendActivityState(isLoading = true)
                                 }
                                 is Resource.Success -> {
-                                    Log.d("submitStudentResponse", "Activity submitted successfully.")
+                                    Log.e("submitStudentResponse", "Activity submitted successfully.")
                                     result.data?.let {
                                         _stateSendActivity.value = SendActivityState(info = result.data, isLoading = false, error = null)
                                         repositoryBundle.submissionsRepository.addOrUpdateSubmission(submission = result.data)

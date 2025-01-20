@@ -300,7 +300,7 @@ class QuizzViewModel(
 
             // Build DTO
             val dto = AnswerQuizzDto(
-                userId = _userInfo.value?.id ?: return@launch,
+                userId = _userInfo.value?.idApi?.toInt() ?: return@launch,
                 answers = selectedAnswers
             )
 

@@ -33,7 +33,8 @@ fun TopBarHome(
     viewmodel: HomeViewmodel,
     navController: NavController,
     scope: CoroutineScope,
-    drawerState: DrawerState
+    drawerState: DrawerState,
+    onNavigate: () -> Unit
 ) {
     val unseenCount by viewmodel.unseenCount.collectAsState(initial = 0)
 
@@ -44,8 +45,12 @@ fun TopBarHome(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         IconButton(onClick = {
+            onNavigate()
             Log.e("login", "executing")
-            navController.navigate("LOGIN")
+//
+//            navController.navigate(Destination.LOGIN.screenRoute){
+//                launchSingleTop = true
+//            }
 //
 //            scope.launch {
 //                viewmodel.logout()

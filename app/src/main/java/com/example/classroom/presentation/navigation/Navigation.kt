@@ -7,6 +7,8 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.Button
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -83,7 +85,7 @@ fun Navigation(
     NavHost(
         navController = navController,
 //        startDestination = Destination.LOGIN.screenRoute,
-        startDestination =
+//        startDestination =
         if (isUserLogged) {
                 Destination.HOME.screenRoute
         }else {
@@ -98,29 +100,7 @@ fun Navigation(
                     SplashScreen(navController)
                 }
             }
-            /** Configuracion de vista de inicio de sesion*/
-            composable(
-                route = Destination.LOGIN.screenRoute
-            ){
-                SignInScreenNew(
-                    viewModel = App.appModule.signInViewModel,
-                    focusManager = focusManager,
-                    navController = navController,
-                    darkTheme = false)
-//                SignInScreen(
-//                    viewModel = AuthViewModel(
-//                        signUpValidator = App.appModule.validatorBundle.signUpValidator,
-//                        signInValidator = App.appModule.validatorBundle.signInValidator,
-//                        userDataValidator = UserDataValidator(),
-//                        signUpUseCase = SignUpUseCase(App.appModule.repositoryBundle),
-//                        signInUseCase = SignInUseCase(App.appModule.repositoryBundle),
-//                        loginRepositoryImp = LoginRepositoryImpl(App.appModule.apiService, App.appModule.db.appDao),
-//
-//                    ),
-//                    focusManager = focusManager,
-//                    navController = navController,
-//                    darkTheme = false)
-            }
+
             /** Configuracion de vista de Home*/
             composable(
                 route = Destination.HOME.screenRoute
@@ -128,12 +108,30 @@ fun Navigation(
                 Box(modifier = Modifier.fillMaxSize()){
                     HomeScreen(
                         navController = navController,
+                        focusManager = focusManager,
+
                         viewmodel = App.appModule.homeViewModel,
                         addCourseViewModel = App.appModule.addCourseViewModel
                     )
                 }
             }
             /** Configuracion de vista de Registro*/
+
+            /** Configuracion de vista de inicio de sesion*/
+            composable(
+                route = Destination.LOGIN.screenRoute
+            ){
+
+//                Button(onClick = { navController.navigate(Destination.HOME.screenRoute) }) {
+//                    Text(text = "HOME")
+//                }
+                SignInScreenNew(
+                    viewModel = App.appModule.signInViewModel,
+                    focusManager = focusManager,
+                    navController = navController,
+                    darkTheme = false)
+
+            }
             composable(
                 route = Destination.REGISTRO.screenRoute
             ){

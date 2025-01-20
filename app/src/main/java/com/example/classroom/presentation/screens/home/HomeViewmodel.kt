@@ -140,6 +140,15 @@ class HomeViewmodel(
         observeListAndFilter()
     }
 
+    fun loadUserInfo(){
+        viewModelScope.launch {
+            repositoryBundle.loginRepository.getUserInfoWithFlow()
+                .firstOrNull()
+                ?.firstOrNull()
+                ?.let { _userInfo.value = it }
+        }
+    }
+
     fun loadItemsCourses(page: Int, pageSize: Int): List<LocalCourses> {
         val allCourses = _coursesPaginationState.value.items
         return allCourses.drop((page - 1) * pageSize).take(pageSize)
@@ -375,15 +384,19 @@ class HomeViewmodel(
     }
 
     // Logout function to clear user session
-    suspend fun logout(): Boolean {
-        _stateCourse.value.copy(
-            isLoading = false,
-            error = null,
-            info = null)
+    fun logout(): Boolean{
+        viewModelScope.launch {
+            _stateCourse.value.copy(
+                isLoading = false,
+                error = null,
+                info = null)
 
-        _userInfo.value = null
-        repositoryBundle.loginRepository.logout()
-        delay(300)
+            _userInfo.value = null
+            repositoryBundle.loginRepository.logout()
+            delay(300)
+        }
+
+
         return true
     }
 }
