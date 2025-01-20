@@ -1,6 +1,7 @@
 package com.example.classroom.common.composables.customDialogs
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -141,59 +142,85 @@ fun StyledDialog(
 ) {
     Dialog(onDismissRequest = onDismissRequest) {
         Card(
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier.padding(16.dp)
+            shape = RoundedCornerShape(16.dp), // Rounded corners for the dialog
+//            modifier = Modifier.padding(16.dp)
         ) {
             Column(
-                modifier = Modifier.padding(24.dp),
+//                modifier = Modifier.padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Icon(
-                    icon,
-                    contentDescription = null,
-                    tint = iconColor,
-                    modifier = Modifier.size(48.dp)
-                )
+                // Header with color corresponding to the status (red for error, green for success, etc.)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(40.dp)
+                        .background(iconColor, shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+                        .padding(horizontal = 16.dp),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    Icon(
+                        icon,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.h6,
+                        color = Color.White,
+                        modifier = Modifier.padding(start = 32.dp) // Position the title properly
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.h6,
-                    textAlign = TextAlign.Center,
-                    color = iconColor
-                )
-                Spacer(modifier = Modifier.height(8.dp))
+
+                // Message Text
                 Text(
                     text = message,
                     style = MaterialTheme.typography.body1,
                     textAlign = TextAlign.Center
                 )
+
                 Spacer(modifier = Modifier.height(24.dp))
+
+                // Buttons
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    // Secondary button (optional)
                     if (secondaryButtonText != null && secondaryClick != null) {
                         OutlinedButton(
                             onClick = secondaryClick,
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(50), // Rounded corners for the button
+                            border = BorderStroke(1.dp, iconColor)
                         ) {
-                            Text(text = secondaryButtonText)
+                            Text(
+                                text = secondaryButtonText,
+                                style = TextStyle(color = iconColor)
+                            )
                         }
                     }
+
+                    // Primary button
                     Button(
                         onClick = onClick,
                         modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(50), // Rounded corners for the button
                         colors = ButtonDefaults.buttonColors(backgroundColor = buttonColor)
                     ) {
-                        Text(text = buttonText, color = Color.White)
+                        Text(
+                            text = buttonText,
+                            color = Color.White
+                        )
                     }
                 }
             }
         }
     }
 }
-
 @Composable
 fun CardDialogParent(
     showButton: Boolean = false,

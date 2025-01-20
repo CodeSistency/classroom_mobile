@@ -22,7 +22,8 @@ interface QuizzDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOptions(options: List<OptionEntity>)
 
-    @Query("SELECT * FROM QuizEntity WHERE id = :quizId")
+//    @Query("SELECT * FROM QuizEntity WHERE id = :quizId")
+        @Query("SELECT * FROM QuizEntity WHERE activityId = :quizId")
     suspend fun getQuizWithQuestions(quizId: Int): QuizWithQuestions
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

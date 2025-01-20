@@ -1,5 +1,6 @@
 package com.example.classroom.presentation.screens.Quizz
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,6 +14,7 @@ import com.example.classroom.data.remote.dto.quizz.Question
 import com.example.classroom.data.remote.dto.quizz.QuestionDto
 import com.example.classroom.data.repository.RepositoryBundle
 import com.example.classroom.domain.model.entity.AnswerEntity
+import com.example.classroom.domain.model.entity.LocalPost
 import com.example.classroom.domain.model.entity.LocalUser
 import com.example.classroom.domain.model.entity.OptionEntity
 import com.example.classroom.domain.model.entity.QuestionEntity
@@ -209,7 +211,11 @@ class QuizzViewModel(
 
     fun loadQuiz(quizId: Int) {
         viewModelScope.launch {
+            Log.e("quizz id", quizId.toString())
             quizState.value = quizzRepository.loadQuiz(quizId)
+
+            Log.e("quizz state", quizState.value.toString())
+
         }
     }
 
@@ -226,6 +232,9 @@ class QuizzViewModel(
 
 
     private suspend fun saveQuizzToLocalDatabase(createdQuizData: CreatedQuizDataDto) {
+
+        Log.e("quizz response data", createdQuizData.toString())
+
         val quizEntity = QuizEntity(
             id = createdQuizData.id,
             activityId = createdQuizData.activityId,
@@ -395,6 +404,13 @@ class QuizzViewModel(
                             result.data?.let {
                                 repositoryBundle.activitiesRepository.insertActivity(it.toLocalActivities(idCourse))
 
+                                //POR HACER
+
+//                                repositoryBundle.postsRepositoryImpl.insertPost(
+//                                    LocalPost(
+//
+//                                    )
+//                                )
                             }
                             response?.data?.let { createdQuizData ->
                                 saveQuizzToLocalDatabase(createdQuizData)
@@ -406,6 +422,8 @@ class QuizzViewModel(
             }
         }
     }
+
+
 
     fun cleanData() {
         _stateAnswerQuizz.value = AnswerQuizzState(isLoading = false, null, null

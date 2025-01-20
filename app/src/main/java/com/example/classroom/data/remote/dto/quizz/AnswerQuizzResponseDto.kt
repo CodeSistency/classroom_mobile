@@ -116,21 +116,40 @@ data class QuizQuestionDto(
 data class QuizActivityDto(
     val id: Int,
     @SerialName("courseId")
-    val courseId: Int, // Corrected naming to match response
+    val courseId: Int? = null, // Marked as nullable to handle missing data
     val title: String,
     val description: String,
     @SerialName("grade")
-    val grade: Double, // Changed to String to match the response format
+    val grade: Double? = null, // Make grade nullable if the response can have missing values
     @SerialName("startDate")
-    val startDate: String, // Corrected naming to match response
+    val startDate: String? = null, // Nullable to handle missing values
     @SerialName("endDate")
-    val endDate: String, // Corrected naming to match response
+    val endDate: String? = null, // Nullable to handle missing values
     val email: String,
     val digital: Boolean,
     val isQuizz: Boolean,
     @SerialName("statusId")
-    val statusId: Int // Corrected naming to match response
+    val statusId: Int? = null // Nullable to handle missing values
 )
+//@Serializable
+//data class QuizActivityDto(
+//    val id: Int,
+//    @SerialName("courseId")
+//    val courseId: Int, // Corrected naming to match response
+//    val title: String,
+//    val description: String,
+//    @SerialName("grade")
+//    val grade: Double, // Changed to String to match the response format
+//    @SerialName("startDate")
+//    val startDate: String, // Corrected naming to match response
+//    @SerialName("endDate")
+//    val endDate: String, // Corrected naming to match response
+//    val email: String,
+//    val digital: Boolean,
+//    val isQuizz: Boolean,
+//    @SerialName("statusId")
+//    val statusId: Int // Corrected naming to match response
+//)
 
 @Serializable
 data class SubmittedAnswerDto(

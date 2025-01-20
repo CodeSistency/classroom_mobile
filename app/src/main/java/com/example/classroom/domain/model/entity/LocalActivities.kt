@@ -119,11 +119,12 @@ fun CreateQuizzResponseDto.toLocalActivities(idCourse: String): LocalActivities 
         idCourse = idCourse,
         title = activity.title,
         description = activity.description,
-        grade = activity.grade,
-        startDate = activity.startDate,
-        endDate = activity.endDate,
+        grade = activity.grade ?: 0.0,
+        startDate = activity.startDate ?: "",
+        endDate = activity.endDate ?: "",
         status = Status.OPEN,
         isQuizz = activity.isQuizz,
         quizzId = this.data.id.toString()
     )
 }
+

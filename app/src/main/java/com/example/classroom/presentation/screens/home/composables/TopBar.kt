@@ -13,6 +13,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIos
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.runtime.Composable
@@ -57,7 +58,7 @@ fun TopBarHome(
 //            }
         }) {
             Icon(
-                imageVector = Icons.Default.ArrowBackIos,
+                imageVector = Icons.Default.Logout,
                 contentDescription = null,
                 tint = Color.White
             )

@@ -84,6 +84,11 @@ fun HomePresentation(viewModel: HomeViewmodel, navController: NavController, add
 //        viewModel.getCoursesLocal()
 //        viewModel.getMyCoursesLocal()
     })
+
+    LaunchedEffect(key1 = true, block = {
+        viewModel.getCoursesFlow()
+    })
+
     Column(
         modifier = Modifier.background(Azul3)
     ) {

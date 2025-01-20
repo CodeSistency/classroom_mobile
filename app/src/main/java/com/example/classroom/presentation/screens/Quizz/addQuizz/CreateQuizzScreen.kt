@@ -2,6 +2,7 @@ package com.example.classroom.presentation.screens.Quizz.addQuizz
 
 import android.annotation.SuppressLint
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -49,6 +50,7 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -219,6 +221,11 @@ fun CreateQuizzScreen(viewModel: QuizzViewModel, courseId: String, navController
     val questions by remember { viewModel.questions }
     var state = viewModel.stateCreateQuizz.collectAsState()
     var dialogState: SetupCustomDialogState by remember { mutableStateOf(SetupCustomDialogState.Default()) }
+    var context = LocalContext.current
+
+    val isCreateButtonEnabled = (questions.size > 1 && questions.all { question ->
+        question.options.isNotEmpty() && question.answer in question.options.indices
+    })
 
     Scaffold(
         topBar = {
@@ -239,7 +246,7 @@ fun CreateQuizzScreen(viewModel: QuizzViewModel, courseId: String, navController
                         )
                     }
                 },
-                backgroundColor = MaterialTheme.colors.primary,
+                backgroundColor = Azul,
                 elevation = 8.dp
             )
         }
@@ -417,100 +424,6 @@ fun CreateQuizzScreen(viewModel: QuizzViewModel, courseId: String, navController
                 }
             }
 
-//            itemsIndexed(questions) { index, question ->
-//                Card(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(vertical = 8.dp),
-//                    shape = RoundedCornerShape(12.dp),
-//                    elevation = 4.dp,
-//                    backgroundColor = MaterialTheme.colors.background
-//                ) {
-//                    Column(modifier = Modifier.padding(16.dp)) {
-//                        Row(
-//                            modifier = Modifier.fillMaxWidth(),
-//                            verticalAlignment = Alignment.CenterVertically
-//                        ) {
-//                            Text(
-//                                text = "Pregunta ${index + 1}",
-//                                style = MaterialTheme.typography.h6,
-//                                modifier = Modifier.weight(1f),
-//                                color = MaterialTheme.colors.onSurface
-//                            )
-//
-//                            IconButton(
-//                                onClick = { viewModel.deleteQuestion(index) },
-//                                enabled = questions.size > 1
-//                            ) {
-//                                Icon(
-//                                    imageVector = Icons.Default.Delete,
-//                                    contentDescription = "Eliminar Pregunta",
-//                                    tint = if (questions.size > 1) Color.Red else Color.Gray
-//                                )
-//                            }
-//                        }
-//
-//                        Spacer(modifier = Modifier.height(8.dp))
-//
-//                        CustomTextField(
-//                            value = question.text,
-//                            onValueChange = { viewModel.updateQuestionText(index, it) },
-//                            label = "Texto de la Pregunta",
-//                            errorMessage = if (question.text.isBlank()) "La pregunta no puede estar vacía" else "",
-//                            onNextClick = { focusManager.moveFocus(FocusDirection.Down) }
-//                        )
-//
-//                        Spacer(modifier = Modifier.height(16.dp))
-//
-//                        question.options.forEachIndexed { optIndex, option ->
-//                            Row(
-//                                modifier = Modifier
-//                                    .fillMaxWidth()
-//                                    .padding(vertical = 4.dp),
-//                                verticalAlignment = Alignment.CenterVertically
-//                            ) {
-//                                CustomTextField(
-//                                    value = option,
-//                                    onValueChange = { viewModel.updateOptionText(index, optIndex, it) },
-//                                    label = "Opción ${optIndex + 1}",
-//                                    errorMessage = if (option.isBlank()) "La opción no puede estar vacía" else "",
-//                                    onNextClick = {}
-//                                )
-//
-//                                Checkbox(
-//                                    checked = question.answer == optIndex,
-//                                    onCheckedChange = {
-//                                        viewModel.setCorrectAnswer(index, optIndex)
-//                                    },
-//                                    modifier = Modifier.padding(start = 8.dp)
-//                                )
-//                                Text("Correcta", modifier = Modifier.padding(start = 4.dp))
-//
-//                                Spacer(modifier = Modifier.weight(1f))
-//
-//                                IconButton(
-//                                    onClick = { viewModel.deleteOption(index, optIndex) },
-//                                    enabled = question.options.size > 2
-//                                ) {
-//                                    Icon(
-//                                        imageVector = Icons.Default.Delete,
-//                                        contentDescription = "Eliminar Opción",
-//                                        tint = if (question.options.size > 2) Color.Red else Color.Gray
-//                                    )
-//                                }
-//                            }
-//                        }
-//
-//                        Button(
-//                            onClick = { viewModel.addOption(index) },
-//                            enabled = question.options.size < 4,
-//                            modifier = Modifier.align(Alignment.End)
-//                        ) {
-//                            Text("Añadir Opción")
-//                        }
-//                    }
-//                }
-//            }
 
             item {
                 Button(
@@ -530,9 +443,12 @@ fun CreateQuizzScreen(viewModel: QuizzViewModel, courseId: String, navController
                 CustomButton(
                     text = "Crear Quizz",
                     color1 = Azul,
+                    disabled = !isCreateButtonEnabled,
                     color2 = AzulGradient,
                     style = NavigationButtonStyle.SolidGradient,
-                    onClick = { viewModel.createQuizRemote(idCourse = courseId, questions.toList()) },
+                    onClick = {
+                            viewModel.createQuizRemote(idCourse = courseId, questions.toList())
+                    },
                     modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
                 )
             }
