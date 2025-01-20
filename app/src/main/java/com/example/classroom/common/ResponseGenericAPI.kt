@@ -22,7 +22,10 @@ data class ResponseGenericAPi<T>(
 )
 
 suspend inline fun <reified T> parseResponseToGenericObject(response: HttpResponse, isUsedResponse: Boolean = true): ResponseGenericAPi<T>{
+    Log.e("RawResponseStatus", response.status.value.toString()) // Log raw response
+
     return when{
+
         response.status.value < 300 ->{
             Log.e("RawResponseBody", response.bodyAsText()) // Log raw response
 
@@ -50,50 +53,29 @@ data class ErrorMensaje(
     val message: String,
 )
 
-//data class ResponseGenericAPi<T>(
-//    val statusCode: HttpStatusCode,
-//    val responseData: T?,
-//    val messageError: String?,
-//)
-//
+
+
 //val json = Json {
 //    coerceInputValues = true
 //    ignoreUnknownKeys = true
 //}
+//data class ResponseGenericAPi<T>(
+//    val statusCode: HttpStatusCode,
+//    val responseData: T?,
+//    val messageError: ErrorMensaje?
+//)
 //
-//suspend inline fun <reified T> parseResponseToGenericObject(response: HttpResponse, isUsedResponse: Boolean = true): ResponseGenericAPi<T> {
-////    Log.e("RESPONSE", response.bodyAsText())
+//suspend inline fun <reified T> parseResponseToGenericObject(response: HttpResponse, isUsedResponse: Boolean = true): ResponseGenericAPi<T>{
+//    Log.e("RawResponseStatus", response.status.value.toString()) // Log raw response
+//
 //    return when{
+//
 //        response.status.value < 300 ->{
+//            Log.e("RawResponseBody", response.bodyAsText()) // Log raw response
 //
-//            Log.e("iscorrect", "iscorrect")
-//            Log.e("data response", "${response.bodyAsText()}")
-//
-//            val parsedData = if (isUsedResponse) {
-//                try {
-//                    val responseBody = response.bodyAsText()
-//                    Log.e("RESPONSE", responseBody)
-//                    // Parse the entire response as a JsonObject
-//                    val jsonObject = json.parseToJsonElement(responseBody).jsonObject
-//                    // Access the "result" field and convert it to string
-//                    val resultJson = jsonObject["result"]?.toString()
-//
-//                    // Log the intermediate JSON string for debugging
-//                    Log.e("resultJson", resultJson ?: "null")
-//
-//                    // Deserialize the resultJson to the expected generic type T
-//                    resultJson?.let { json.decodeFromString<T>(it) }
-//                } catch (e: Exception) {
-//                    Log.e("JsonError", "Error decoding response: ${e.message}")
-//                    null
-//                }
-//            } else {
-//                null
-//            }
-//            Log.e("parsed data", parsedData.toString())
 //            ResponseGenericAPi(
 //                statusCode = response.status,
-//                responseData = parsedData,
+//                responseData = if (isUsedResponse) response.body<T>() else null,
 //                messageError = null
 //            )
 //        }
@@ -101,8 +83,16 @@ data class ErrorMensaje(
 //            ResponseGenericAPi(
 //                statusCode = response.status,
 //                responseData = null,
-//                messageError = response.body<String>()
+//                messageError = response.body<ErrorMensaje>()
 //            )
 //        }
 //    }
 //}
+//
+//@Serializable
+//data class ErrorMensaje(
+//    @SerialName("code")
+//    val code: Int,
+//    @SerialName("message")
+//    val message: String,
+//)

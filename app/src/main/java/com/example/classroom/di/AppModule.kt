@@ -155,7 +155,9 @@ class AppModuleImpl(
             }
 
             install(HttpTimeout) {
-                requestTimeoutMillis = 60000
+                requestTimeoutMillis = 100000
+
+//                requestTimeoutMillis = 60000
             }
         }
     }

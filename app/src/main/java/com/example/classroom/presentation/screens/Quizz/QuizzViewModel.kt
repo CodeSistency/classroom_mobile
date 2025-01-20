@@ -406,6 +406,12 @@ class QuizzViewModel(
             }
         }
     }
+
+    fun cleanData() {
+        _stateAnswerQuizz.value = AnswerQuizzState(isLoading = false, null, null
+        )
+        _stateCreateQuizz.value = CreateQuizzState(false, null, null)
+    }
 //    fun createQuizRemote(idCourse: String) {
 //        viewModelScope.launch {
 //            // Validation

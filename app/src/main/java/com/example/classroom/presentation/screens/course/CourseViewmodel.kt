@@ -89,6 +89,10 @@ class CourseViewmodel(
     private val _filteredListActivitiesSubmittedFlow = MutableStateFlow<List<LocalActivitySubmission>>(emptyList())
     val filteredListActivitiesSubmittedFlow: StateFlow<List<LocalActivitySubmission>> = _filteredListActivitiesSubmittedFlow
 
+
+    private val _listActivitiesFlow = MutableStateFlow<List<LocalActivities>>(emptyList())
+    val listActivitiesFlow: StateFlow<List<LocalActivities>> = _listActivitiesFlow
+
     val studentInput = MutableStateFlow("")
     val postInput = MutableStateFlow("")
     val activityInput = MutableStateFlow("")
@@ -133,6 +137,8 @@ class CourseViewmodel(
                 ?.let { _userInfo.value = it }
 
 //            observeUserInput()
+
+            _listActivitiesFlow.value = repositoryBundle.activitiesRepository.getActivitiesWithFlow().first()
         }
     }
 

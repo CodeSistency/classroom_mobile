@@ -92,6 +92,10 @@ class SubmissionViewModel(
         }
     }
 
+    fun cleanData() {
+        _stateReviewActivity.value = ReviewActivityState(error = null, info = null, isLoading = false)
+    }
+
     // Update the grade locally
     fun updateGrade(newGrade: Double) {
         _currentSubmission.value = _currentSubmission.value?.copy(grade = newGrade)

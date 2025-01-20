@@ -103,6 +103,7 @@ fun ListActivitiesSubmitted(
                         items(evaluations) { evaluation ->
                             CardActivitySubmitted(
                                 evaluation = evaluation,
+                                viewModel = viewModel,
                                 navController = navController,
                             )
                         }

@@ -60,6 +60,7 @@ import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
+import proyecto.person.appconsultapopular.common.Constants
 
 @Composable
 fun FilePreview(
@@ -82,7 +83,7 @@ fun FilePreview(
     var showFullScreenImage by remember { mutableStateOf(false) }
     var fullImageUri by remember { mutableStateOf<Uri?>(null) }
 
-    var url = fileUrl.replace("localhost", "10.0.2.2")
+    var url = fileUrl.replace("localhost", Constants.HOST)
 
     // BroadcastReceiver to check success/failure of the DownloadManager
     DisposableEffect(Unit) {

@@ -120,14 +120,32 @@ fun CustomTextField(
             }
 
             OutlinedTextField(
-                value = value,
+                value = value.removePrefix("$selectedCountryCode ").trimStart(), // Only display the phone number part
                 onValueChange = { input ->
-                    val formattedValue = if (showCountryCode) "$selectedCountryCode $input" else input
+                    // Clean the input to ensure the country code isn't added multiple times
+                    val cleanedInput = input.trim() // Remove any extra spaces
+
+                    // If the country code exists in the input, remove it
+                    val phoneNumberPart = if (cleanedInput.startsWith(selectedCountryCode)) {
+                        cleanedInput.removePrefix("$selectedCountryCode ").trimStart()
+                    } else {
+                        cleanedInput
+                    }
+
+                    // Reconstruct the full value with the country code
+                    val formattedValue = if (showCountryCode) {
+                        "$selectedCountryCode $phoneNumberPart".trim()
+                    } else {
+                        phoneNumberPart
+                    }
+
+                    // Update the full value including the country code
                     onValueChange(formattedValue)
 
+                    // Validation logic
                     textFieldState = if (validateInput(formattedValue)) {
                         displayErrorMessage = false
-                        if (input.isNotEmpty()) TextFieldState.Success else TextFieldState.Default
+                        if (phoneNumberPart.isNotEmpty()) TextFieldState.Success else TextFieldState.Default
                     } else {
                         displayErrorMessage = true
                         TextFieldState.Error

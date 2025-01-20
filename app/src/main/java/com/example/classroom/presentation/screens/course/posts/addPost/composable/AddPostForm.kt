@@ -222,6 +222,7 @@ fun AddPostForm(viewModel: AddPostViewModel, focusManager: FocusManager, courseI
                     dialogState = SetupCustomDialogState.Success(message = "Se ha creado la publicacion exitosamente exitosamente")
                     delay(1000)
                     navController.popBackStack()
+                    viewModel.cleanData()
                     viewModel.resetState()
 
                 }

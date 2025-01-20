@@ -15,6 +15,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -26,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.classroom.domain.model.entity.LocalActivitySubmission
 import com.example.classroom.presentation.navigation.Destination
+import com.example.classroom.presentation.screens.course.CourseViewmodel
 import com.example.classroom.presentation.theme.Azul2
 import com.example.classroom.presentation.theme.PaddingCustom
 
@@ -33,10 +36,15 @@ import com.example.classroom.presentation.theme.PaddingCustom
 @Composable
 fun CardActivitySubmitted(
     evaluation: LocalActivitySubmission,
-
+    viewModel: CourseViewmodel,
     navController: NavController
 ) {
     val shape = RoundedCornerShape(PaddingCustom.MEDIUM.size)
+
+    val activities by viewModel.listActivitiesFlow.collectAsState()
+
+    val activity = activities.first { it.idApi == evaluation.activityId }
+
 
     Box(modifier = Modifier){
         Box(
@@ -52,7 +60,7 @@ fun CardActivitySubmitted(
             ) {
                 Column {
                     Text(
-                        text = "Actividad: ${evaluation.activityId}",
+                        text = "Actividad: ${activity.title}",
                         style = TextStyle(
                             color = Color.DarkGray,
                             fontSize = 20.sp,
