@@ -163,6 +163,8 @@ fun AnswerQuizScreen(viewModel: QuizzViewModel, quizId: String, navController: N
             state.value.info != null -> {
                 dialogState = SetupCustomDialogState.Success("Respuestas enviadas correctamente")
                 delay(1000)
+                viewModel.cleanData()
+
                 navController.popBackStack()
             }
         }

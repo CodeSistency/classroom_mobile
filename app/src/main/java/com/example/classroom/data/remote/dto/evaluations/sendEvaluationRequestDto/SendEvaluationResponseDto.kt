@@ -15,19 +15,19 @@ data class SendEvaluationResponseDto(
 ) {
     @Serializable
     data class Data(
-        @SerialName("activityId")
+        @SerialName("id")
+        val id: Int,
+        @SerialName("activity_id")
         val activityId: Int,
-        @SerialName("userId")
+        @SerialName("user_id")
         val userId: Int,
         @SerialName("document")
         val document: String,
         @SerialName("message")
         val message: String,
         @SerialName("grade")
-        val grade: Double,
+        val grade: Double,  
         @SerialName("create_date")
-        val createDate: String,
+        val createDate: String,  // You can change this to LocalDateTime if you want to parse the date
     )
 }
-
-

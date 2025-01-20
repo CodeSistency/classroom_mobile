@@ -219,6 +219,7 @@ fun AddCourseScreenNew(
                             }
                             launchSingleTop = true
                         }
+                        viewModel.cleanData()
                         viewModel.resetState()
                     }
                 }

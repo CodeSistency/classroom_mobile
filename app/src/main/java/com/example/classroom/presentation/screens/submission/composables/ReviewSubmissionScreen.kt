@@ -45,6 +45,7 @@ import androidx.navigation.NavController
 import com.example.classroom.common.composables.CustomButton.CustomButton
 import com.example.classroom.common.composables.CustomButton.NavigationButtonStyle
 import com.example.classroom.common.composables.CustomInput.CustomTextField
+import com.example.classroom.common.composables.PreviewFile.FilePreview
 import com.example.classroom.common.composables.customDialogs.SetupCustomDialog
 import com.example.classroom.common.composables.customDialogs.SetupCustomDialogState
 import com.example.classroom.common.composables.previewDocument.DocumentPreviewComponent
@@ -110,15 +111,19 @@ var context = LocalContext.current
                 if (submission.documentUrl != null) {
                     var downloadProgress by remember { mutableStateOf(0) }
 
-                    DocumentPreviewComponent(
-                        documentUrl = submission.documentUrl,
-                        fileType = getFileType(submission.documentUrl),
-                        onDownloadFile = { url ->
-                            viewModel.downloadAndOpenFile(context, url, "file_name.ext") { progress ->
-                                downloadProgress = progress
-                            }
-                        },
-                        isDownloading = downloadProgress in 1..99 // Show progress indicator
+//                    DocumentPreviewComponent(
+//                        documentUrl = submission.documentUrl,
+//                        fileType = getFileType(submission.documentUrl),
+//                        onDownloadFile = { url ->
+//                            viewModel.downloadAndOpenFile(context, url, "file_name.ext") { progress ->
+//                                downloadProgress = progress
+//                            }
+//                        },
+//                        isDownloading = downloadProgress in 1..99 // Show progress indicator
+//                    )
+                    FilePreview(
+                        submission.documentUrl,
+                        fileName = ""
                     )
                 } else {
                     Text(text = "Ningun documento.", style = MaterialTheme.typography.body2)
@@ -221,7 +226,7 @@ var context = LocalContext.current
                     dialogState = SetupCustomDialogState.Success(message = "Se ha calificado la evaluacion exitosamente")
                     delay(1000)
                     navController.popBackStack()
-
+                    viewModel.cleanData()
                 }
             }
         }

@@ -203,7 +203,9 @@ fun SignInScreenNew(
                         }
                         launchSingleTop = true
                     }
-                    viewModel.cleanInfo()
+                    viewModel.cleanData()
+
+//                    viewModel.cleanInfo()
                 }
             }
         }

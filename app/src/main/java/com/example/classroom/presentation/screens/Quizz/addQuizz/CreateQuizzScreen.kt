@@ -550,6 +550,7 @@ fun CreateQuizzScreen(viewModel: QuizzViewModel, courseId: String, navController
             state.value.info != null -> {
                 dialogState = SetupCustomDialogState.Success(message = "Se ha creado el Quizz exitosamente")
                 delay(1000)
+                viewModel.cleanData()
                 navController.popBackStack()
             }
         }

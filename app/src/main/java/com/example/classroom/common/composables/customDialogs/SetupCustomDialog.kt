@@ -4,16 +4,22 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Error
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import com.example.classroom.presentation.theme.PaddingCustom
 import com.example.classroom.common.composables.customDialogs.dialogs.ErrorDialog
 import com.example.classroom.common.composables.customDialogs.dialogs.LoadingDialog
@@ -28,38 +34,164 @@ sealed class SetupCustomDialogState (val messageDialog: String? = null){
     class Success(message: String?): SetupCustomDialogState(messageDialog = message)
     class Error(message: String?): SetupCustomDialogState(messageDialog = message)
 }
+
 @Composable
 fun SetupCustomDialog(
     setupCustomDialogState: SetupCustomDialogState,
     showDialog: Boolean,
     onDismissRequest: () -> Unit = {},
-    customClick: ()-> Unit = {},
-    onClick: ()-> Unit
-){
-    when(setupCustomDialogState){
-    is SetupCustomDialogState.Default -> {
+    customClick: () -> Unit = {},
+    onClick: () -> Unit
+) {
+    if (!showDialog) return
 
-    }
+    when (setupCustomDialogState) {
+        is SetupCustomDialogState.Default -> {}
         is SetupCustomDialogState.Error -> {
-        ErrorDialog(message = setupCustomDialogState.messageDialog ?: "", onDismissRequest = onDismissRequest) {
-            onClick()
+            StyledDialog(
+                title = "Error!",
+                icon = Icons.Default.Error,
+                iconColor = Color.Red,
+                message = setupCustomDialogState.messageDialog ?: "An unexpected error occurred.",
+                buttonText = "CLOSE",
+                buttonColor = Color.Red,
+                onDismissRequest = onDismissRequest,
+                onClick = onClick
+            )
         }
+        is SetupCustomDialogState.Success -> {
+            StyledDialog(
+                title = "Success!",
+                icon = Icons.Default.CheckCircle,
+                iconColor = Color.Green,
+                message = setupCustomDialogState.messageDialog ?: "Operation completed successfully.",
+                buttonText = "OK",
+                buttonColor = Color.Green,
+                onDismissRequest = onDismissRequest,
+                onClick = onClick
+            )
         }
-    is SetupCustomDialogState.Success -> {
-        SuccessDialog(message = setupCustomDialogState.messageDialog ?: "", onDismissRequest = onDismissRequest) {
-        onClick()            }
-    }
         is SetupCustomDialogState.Warning -> {
-        WarningDialog(
-            message = setupCustomDialogState.messageDialog ?: "",
-            onDismissRequest = onDismissRequest,
-            secondaryClick = customClick){
-            onClick()
+            StyledDialog(
+                title = "Warning!",
+                icon = Icons.Default.Warning,
+                iconColor = Color.Yellow,
+                message = setupCustomDialogState.messageDialog ?: "Please be cautious.",
+                buttonText = "UNDERSTOOD",
+                buttonColor = Color.Yellow,
+                onDismissRequest = onDismissRequest,
+                secondaryButtonText = "CANCEL",
+                secondaryClick = customClick,
+                onClick = onClick
+            )
+        }
+        is SetupCustomDialogState.Loading -> {
+            LoadingDialog()
+        }
+    }
+}
+//@Composable
+//fun SetupCustomDialog(
+//    setupCustomDialogState: SetupCustomDialogState,
+//    showDialog: Boolean,
+//    onDismissRequest: () -> Unit = {},
+//    customClick: ()-> Unit = {},
+//    onClick: ()-> Unit
+//){
+//    when(setupCustomDialogState){
+//    is SetupCustomDialogState.Default -> {
+//
+//    }
+//        is SetupCustomDialogState.Error -> {
+//        ErrorDialog(message = setupCustomDialogState.messageDialog ?: "", onDismissRequest = onDismissRequest) {
+//            onClick()
+//        }
+//        }
+//    is SetupCustomDialogState.Success -> {
+//        SuccessDialog(message = setupCustomDialogState.messageDialog ?: "", onDismissRequest = onDismissRequest) {
+//        onClick()            }
+//    }
+//        is SetupCustomDialogState.Warning -> {
+//        WarningDialog(
+//            message = setupCustomDialogState.messageDialog ?: "",
+//            onDismissRequest = onDismissRequest,
+//            secondaryClick = customClick){
+//            onClick()
+//            }
+//        }
+//    is SetupCustomDialogState.Loading -> {
+//        LoadingDialog()
+//    }    }
+//}
+
+
+
+@Composable
+fun StyledDialog(
+    title: String,
+    icon: ImageVector,
+    iconColor: Color,
+    message: String,
+    buttonText: String,
+    buttonColor: Color,
+    onDismissRequest: () -> Unit = {},
+    secondaryButtonText: String? = null,
+    secondaryClick: (() -> Unit)? = null,
+    onClick: () -> Unit
+) {
+    Dialog(onDismissRequest = onDismissRequest) {
+        Card(
+            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(
+                    icon,
+                    contentDescription = null,
+                    tint = iconColor,
+                    modifier = Modifier.size(48.dp)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.h6,
+                    textAlign = TextAlign.Center,
+                    color = iconColor
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = message,
+                    style = MaterialTheme.typography.body1,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (secondaryButtonText != null && secondaryClick != null) {
+                        OutlinedButton(
+                            onClick = secondaryClick,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text(text = secondaryButtonText)
+                        }
+                    }
+                    Button(
+                        onClick = onClick,
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = buttonColor)
+                    ) {
+                        Text(text = buttonText, color = Color.White)
+                    }
+                }
             }
         }
-    is SetupCustomDialogState.Loading -> {
-        LoadingDialog()
-    }    }
+    }
 }
 
 @Composable

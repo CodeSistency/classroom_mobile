@@ -28,8 +28,20 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.messaging.FirebaseMessaging
 import android.Manifest
 import android.content.Intent
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
+import com.example.classroom.common.animations.gsap.delay
 import com.example.classroom.common.firebase.saveTokenToPreferences
 import com.example.classroom.domain.services.ChatBackgroundService
 
@@ -44,36 +56,72 @@ class MainActivity : ComponentActivity() {
         requestNotificationPermission(this)
 
         setContent {
+            var showSplash by remember { mutableStateOf(true) }
+            val navController = rememberNavController()
             val systemUiController = rememberSystemUiController()
             val isUserLogged by produceState<List<LocalUser?>?>(initialValue = null, producer = {
                 value = App.appModule.db.appDao.getUserInfo()
             })
 
-            LaunchedEffect(key1 = true, block = {
-                Log.e("userInfo", isUserLogged.toString())
-            })
-            val navController = rememberNavController()
-
+            LaunchedEffect(Unit) {
+                delay(3000) // Show splash screen for 3 seconds
+                showSplash = false
+            }
 
             ClassroomTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    isUserLogged?.let {user ->
-                        Navigation(
-                            isUserLogged = user.isNotEmpty(),
-                            darkTheme = true,
-                            navController = navController,
-                            currentUser = if (user.isNotEmpty()) user.firstOrNull() else null
+                if (showSplash) {
+                    SplashScreen()
+                } else {
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
+                        isUserLogged?.let {user ->
+                            Navigation(
+                                isUserLogged = user.isNotEmpty(),
+                                darkTheme = true,
+                                navController = navController,
+                                currentUser = if (user.isNotEmpty()) user.firstOrNull() else null
 
-                        ){
+                            ){
+                            }
                         }
                     }
                 }
             }
         }
+
+//        setContent {
+//            val systemUiController = rememberSystemUiController()
+//            val isUserLogged by produceState<List<LocalUser?>?>(initialValue = null, producer = {
+//                value = App.appModule.db.appDao.getUserInfo()
+//            })
+//
+//            LaunchedEffect(key1 = true, block = {
+//                Log.e("userInfo", isUserLogged.toString())
+//            })
+//            val navController = rememberNavController()
+//
+//
+//            ClassroomTheme {
+//                // A surface container using the 'background' color from the theme
+//                Surface(
+//                    modifier = Modifier.fillMaxSize(),
+//                    color = MaterialTheme.colorScheme.background
+//                ) {
+//                    isUserLogged?.let {user ->
+//                        Navigation(
+//                            isUserLogged = user.isNotEmpty(),
+//                            darkTheme = true,
+//                            navController = navController,
+//                            currentUser = if (user.isNotEmpty()) user.firstOrNull() else null
+//
+//                        ){
+//                        }
+//                    }
+//                }
+//            }
+//        }
 
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (task.isSuccessful) {
@@ -113,3 +161,22 @@ fun requestNotificationPermission(context: Context) {
 
 
 
+@Composable
+fun SplashScreen() {
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.primary
+    ) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_logo),
+                contentDescription = "App Icon",
+                tint = Color.White,
+                modifier = Modifier.size(120.dp)
+            )
+        }
+    }
+}

@@ -233,6 +233,7 @@ fun AddActivityScreenNew(
                     dialogState = SetupCustomDialogState.Success(message = "Se ha creado la actividad exitosamente")
                     delay(1000)
                     navController.popBackStack()
+                    viewModel.cleanData()
                     viewModel.resetForm()
                 }
             }

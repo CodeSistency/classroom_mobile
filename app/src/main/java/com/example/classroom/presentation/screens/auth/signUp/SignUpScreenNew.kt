@@ -269,6 +269,14 @@ fun SignUpScreenNew(
                             options = Gender.values().toList(),
                             selectedOption = listOf(viewModel.gender.value),
                             onOptionSelected = { selected ->
+                                val invalidFields = viewModel.getInvalidFields()
+
+                                if (invalidFields.isEmpty()) {
+                                    println("All fields are valid")
+                                } else {
+                                    println("Invalid fields: $invalidFields")
+                                }
+
                                 if (selected.isNotEmpty()) viewModel.gender.value = selected.first()
                             },
                             multiple = false,
@@ -310,13 +318,14 @@ fun SignUpScreenNew(
                 if (userInfo.info != null){
                     dialogState = SetupCustomDialogState.Success(message = "El usuario ha sido creado exitosamente")
                     delay(1000)
-                    navController.popBackStack()
+//                    navController.popBackStack()
                     navController.navigate(Destination.LOGIN.screenRoute){
                         popUpTo(Destination.REGISTRO.screenRoute){
                             inclusive = true
                         }
                         launchSingleTop = true
                     }
+                    viewModel.cleanData()
                 }
             }
         }

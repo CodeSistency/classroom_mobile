@@ -88,6 +88,10 @@ class SignInViewModel(
         }.launchIn(viewModelScope)
     }
 
+    fun cleanData(){
+        _stateLoginUser.value = SignInState(isLoading = false, info = null,
+            error = null)
+    }
     suspend fun insertUserDb(user: LocalUser){
         loginRepositoryImp.insertLocalUser(user)
     }

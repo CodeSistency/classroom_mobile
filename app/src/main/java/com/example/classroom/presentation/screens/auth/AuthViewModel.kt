@@ -332,10 +332,46 @@ class AuthViewModel(
         birthdateError.value = if (birthdate.value.isBlank()) "La fecha de nacimiento es obligatoria" else null
     }
 
+//    fun validatePhone() {
+//        phoneError.value = if (!phone.value.matches(Regex("^\\+?[0-9]{10,13}\$"))) {
+//            "El teléfono no es válido"
+//        } else null
+//    }
+
     fun validatePhone() {
-        phoneError.value = if (!phone.value.matches(Regex("^\\+?[0-9]{10,13}\$"))) {
+        phoneError.value = if (!phone.value.matches(Regex("^\\+[0-9]{2,3} [0-9]{6,10}\$"))) {
             "El teléfono no es válido"
         } else null
+    }
+
+
+    fun getFieldStatus(): Map<String, Boolean> {
+        return mapOf(
+            "name" to (nameError.value == null && name.value.isNotBlank()),
+            "lastname" to (lastnameError.value == null && lastname.value.isNotBlank()),
+            "username" to (usernameError.value == null && username.value.isNotBlank()),
+            "password" to (passwordError.value == null && password.value.isNotBlank()),
+            "email" to (emailError.value == null && email.value.isNotBlank()),
+            "birthdate" to (birthdateError.value == null && birthdate.value.isNotBlank()),
+            "phone" to (phoneError.value == null && phone.value.isNotBlank())
+        )
+    }
+
+    fun getInvalidFields(): List<String> {
+        return listOfNotNull(
+            if (nameError.value != null || name.value.isBlank()) "name" else null,
+            if (lastnameError.value != null || lastname.value.isBlank()) "lastname" else null,
+            if (usernameError.value != null || username.value.isBlank()) "username" else null,
+            if (passwordError.value != null || password.value.isBlank()) "password" else null,
+            if (emailError.value != null || email.value.isBlank()) "email" else null,
+            if (birthdateError.value != null || birthdate.value.isBlank()) "birthdate" else null,
+            if (phoneError.value != null || phone.value.isBlank()) "phone" else null
+        )
+    }
+
+    fun cleanData() {
+        _stateLoginUser.value = SignInState(isLoading = false, error = null, info = null)
+        _stateRegisterUser.value = SignUpState(isLoading = false, error = null, info = null)
     }
 
     suspend fun insertUserDb(user: LocalUser){
