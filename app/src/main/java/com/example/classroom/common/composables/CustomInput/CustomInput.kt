@@ -64,7 +64,7 @@ fun CustomTextField(
     borderColor: Color = Color(0xFFB0BEC5),
     successColor: Color = Color(0xFF4CAF50),
     errorColor: Color = Color(0xFFF44336),
-    validationRegex: ValidationRegex? = null,
+    validationRegex: ValidationRegex = ValidationRegex.Alphanumeric,
     password: Boolean = false,
     errorMessage: String = "Invalid input",
     onNextClick: () -> Unit,
@@ -78,7 +78,7 @@ fun CustomTextField(
     var expanded by remember { mutableStateOf(false) }
 
     fun validateInput(fullText: String): Boolean {
-        return validationRegex?.pattern?.matches(fullText) ?: true
+        return validationRegex.pattern.matches(fullText)
     }
 
     Column(modifier = modifier.fillMaxWidth()) {

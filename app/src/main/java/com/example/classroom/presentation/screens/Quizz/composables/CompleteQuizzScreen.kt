@@ -62,6 +62,11 @@ fun AnswerQuizScreen(viewModel: QuizzViewModel, quizId: String, navController: N
     val state = viewModel.stateAnswerQuizz.collectAsState()
     var dialogState: SetupCustomDialogState by remember { mutableStateOf(SetupCustomDialogState.Default()) }
 
+    val isAnswerButtonEnabled = quizState?.questions?.all { questionWithOptions ->
+        // Check if there's a selected option for each question
+        selectedOptions[questionWithOptions.question.id] != null
+    } == true // Ensure `all` returns true, even if `questions` is empty
+
     LaunchedEffect(Unit) {
         viewModel.loadQuiz(quizId.toInt())
     }
@@ -137,25 +142,38 @@ fun AnswerQuizScreen(viewModel: QuizzViewModel, quizId: String, navController: N
                     item {
                         Spacer(modifier = Modifier.height(24.dp))
 
-                        Button(
+                        CustomButton(
+                            text = "Enviar respuestas",
+                            color1 = Azul,
+                            disabled = !isAnswerButtonEnabled,
+                            color2 = AzulGradient,
+                            style = NavigationButtonStyle.SolidGradient,
                             onClick = {
-//                                viewModel.answerQuizzRemote(quizId)
                                 quizState?.let {
                                     viewModel.answerQuizzRemote(it.quiz.id.toString())
 
-                                }
-                                      },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(50.dp),
-                            colors = ButtonDefaults.buttonColors(backgroundColor = Azul)
-                        ) {
-                            Text(
-                                text = "Enviar Respuestas",
-                                style = MaterialTheme.typography.button,
-                                color = Color.White
-                            )
-                        }
+                                }                            },
+                            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+                        )
+//                        Button(
+//                            onClick = {
+////                                viewModel.answerQuizzRemote(quizId)
+//                                quizState?.let {
+//                                    viewModel.answerQuizzRemote(it.quiz.id.toString())
+//
+//                                }
+//                                      },
+//                            modifier = Modifier
+//                                .fillMaxWidth()
+//                                .height(50.dp),
+//                            colors = ButtonDefaults.buttonColors(backgroundColor = Azul)
+//                        ) {
+//                            Text(
+//                                text = "Enviar Respuestas",
+//                                style = MaterialTheme.typography.button,
+//                                color = Color.White
+//                            )
+//                        }
                     }
                 }
             }

@@ -100,22 +100,22 @@ fun CardActivity(
                     } else {
                         Column {
                             Text(
-                                text = "Fecha de inicio: ${activity.startDate}",
+                                text = "Inicio: ${activity.startDate} - ${activity.endDate}",
                                 style = TextStyle(
                                     color = Color.DarkGray,
                                     fontSize = 12.sp,
-                                    fontWeight = FontWeight.Bold,
+                                    fontWeight = FontWeight.Bold
                                 )
                             )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = "Fecha de finalización: ${activity.endDate}",
-                                style = TextStyle(
-                                    color = Color.DarkGray,
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Bold,
-                                )
-                            )
+//                            Spacer(modifier = Modifier.height(4.dp))
+//                            Text(
+//                                text = "Fecha de finalización: ${activity.endDate}",
+//                                style = TextStyle(
+//                                    color = Color.DarkGray,
+//                                    fontSize = 12.sp,
+//                                    fontWeight = FontWeight.Bold,
+//                                )
+//                            )
                         }
                     }
                 }

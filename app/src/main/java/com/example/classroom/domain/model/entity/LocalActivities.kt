@@ -128,3 +128,5 @@ fun CreateQuizzResponseDto.toLocalActivities(idCourse: String): LocalActivities 
     )
 }
 
+
+

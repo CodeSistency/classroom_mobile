@@ -14,6 +14,7 @@ import com.example.classroom.data.remote.dto.quizz.Question
 import com.example.classroom.data.remote.dto.quizz.QuestionDto
 import com.example.classroom.data.repository.RepositoryBundle
 import com.example.classroom.domain.model.entity.AnswerEntity
+import com.example.classroom.domain.model.entity.LocalActivitySubmission
 import com.example.classroom.domain.model.entity.LocalPost
 import com.example.classroom.domain.model.entity.LocalUser
 import com.example.classroom.domain.model.entity.OptionEntity
@@ -276,6 +277,7 @@ class QuizzViewModel(
         updatedMap[questionId] = optionId
         selectedOptions.value = updatedMap
     }
+
     fun answerQuizzRemote(quizId: String) {
         viewModelScope.launch {
             // Validate quizState exists
@@ -295,9 +297,19 @@ class QuizzViewModel(
                     )
                     return@launch
                 }
+
+                // Ensure the selected option matches the backend's `answer` index
+                val correctOptionIndex = questionWithOptions.options.indexOfFirst { it.id == selectedOptionId }
+                if (correctOptionIndex == -1) {
+                    _stateAnswerQuizz.value = AnswerQuizzState(
+                        error = GenericCodeModel("Opción seleccionada inválida para la pregunta: ${questionWithOptions.question.text}", "")
+                    )
+                    return@launch
+                }
+
                 AnswerDto(
                     questionId = questionWithOptions.question.id,
-                    optionId = selectedOptionId
+                    optionId = selectedOptionId // Ensure the selectedOptionId matches the backend's expected value
                 )
             }
 
@@ -327,12 +339,90 @@ class QuizzViewModel(
                         _stateAnswerQuizz.value = AnswerQuizzState(info = response)
 
                         // Optionally save the response locally
-                        response?.data?.let { saveAnswerDataToLocalDatabase(it) }
+                        response?.data?.let { answer ->
+                            saveAnswerDataToLocalDatabase(answer)
+                            _userInfo.value?.let {
+                                repositoryBundle.submissionsRepository.addOrUpdateSubmission(
+                                    LocalActivitySubmission(
+                                        courseId = answer.quizz.activity.courseId.toString(),
+                                        id = 0,
+                                        documentUrl = null,
+                                        activityId = answer.quizz.activityId.toString(),
+                                        grade = answer.grade,
+                                        studentId = it.idApi,
+                                        comment = "quizz",
+                                        submissionDate = answer.submission.createDate,
+
+                                        )
+                                )
+                            }
+
+
+                        }
                     }
                 }
             }.launchIn(viewModelScope)
         }
     }
+
+
+//    fun answerQuizzRemote(quizId: String) {
+//        viewModelScope.launch {
+//            // Validate quizState exists
+//            val currentQuiz = quizState.value
+//            if (currentQuiz == null) {
+//                _stateAnswerQuizz.value = AnswerQuizzState(error = GenericCodeModel("Quiz not loaded.", ""))
+//                return@launch
+//            }
+//
+//            // Map selected answers
+//            val selectedAnswers = currentQuiz.questions.map { questionWithOptions ->
+//                val selectedOptionId = selectedOptions.value[questionWithOptions.question.id]
+//                if (selectedOptionId == null) {
+//                    // Missing answer for this question
+//                    _stateAnswerQuizz.value = AnswerQuizzState(
+//                        error = GenericCodeModel("Por favor contesta todas las preguntas. Respuesta faltante: ${questionWithOptions.question.text}", "")
+//                    )
+//                    return@launch
+//                }
+//                AnswerDto(
+//                    questionId = questionWithOptions.question.id,
+//                    optionId = selectedOptionId
+//                )
+//            }
+//
+//            // Ensure there are answers to submit
+//            if (selectedAnswers.isEmpty()) {
+//                _stateAnswerQuizz.value = AnswerQuizzState(error = GenericCodeModel("No answers selected.", ""))
+//                return@launch
+//            }
+//
+//            // Build DTO
+//            val dto = AnswerQuizzDto(
+//                userId = _userInfo.value?.idApi?.toInt() ?: return@launch,
+//                answers = selectedAnswers
+//            )
+//
+//            // Make remote call
+//            answerQuizzUseCase(dto, idQuizz = quizId).onEach { result ->
+//                when (result) {
+//                    is Resource.Error -> {
+//                        _stateAnswerQuizz.value = AnswerQuizzState(error = result.message)
+//                    }
+//                    is Resource.Loading -> {
+//                        _stateAnswerQuizz.value = AnswerQuizzState(isLoading = true)
+//                    }
+//                    is Resource.Success -> {
+//                        val response = result.data
+//                        _stateAnswerQuizz.value = AnswerQuizzState(info = response)
+//
+//                        // Optionally save the response locally
+//                        response?.data?.let { saveAnswerDataToLocalDatabase(it) }
+//                    }
+//                }
+//            }.launchIn(viewModelScope)
+//        }
+//    }
 
     private suspend fun saveAnswerDataToLocalDatabase(data: AnswerQuizzDataDto) {
         data.submission.answers.forEach { answer ->
@@ -370,7 +460,7 @@ class QuizzViewModel(
             }
 
             // Validation passed, create DTO and submit
-            userInfo.value?.let {
+            userInfo.value?.let { it ->
                 val dto = CreateQuizzDto(
                     title = title.value,
                     description = description.value,
@@ -403,7 +493,22 @@ class QuizzViewModel(
                             // Save the quiz data into the local database
                             result.data?.let {
                                 repositoryBundle.activitiesRepository.insertActivity(it.toLocalActivities(idCourse))
-
+    
+                                it.data.activity.post?.let {
+                                    repositoryBundle.postsRepositoryImpl.insertPost(
+                                        LocalPost(
+                                            createdAt = it.createdAt,
+                                            id = 0,
+                                            courseId = it.courseId.toString(),
+                                            content = it.content,
+                                            authorId = it.authorId.toString(),
+                                            title = it.title,
+                                            mediaUrl = it.file,
+                                            idApi = it.id.toString(),
+                                        )
+                                    )
+                                }
+                                
                                 //POR HACER
 
 //                                repositoryBundle.postsRepositoryImpl.insertPost(
@@ -429,6 +534,8 @@ class QuizzViewModel(
         _stateAnswerQuizz.value = AnswerQuizzState(isLoading = false, null, null
         )
         _stateCreateQuizz.value = CreateQuizzState(false, null, null)
+
+        selectedOptions.value = emptyMap()
     }
 //    fun createQuizRemote(idCourse: String) {
 //        viewModelScope.launch {

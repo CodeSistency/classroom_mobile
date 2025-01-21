@@ -94,39 +94,24 @@ import kotlinx.serialization.Serializable
 
 
 
-@Serializable
-data class QuizOptionDto(
-    val id: Int,
-    val text: String,
-    @SerialName("questionId")
-    val questionId: Int
-)
 
-@Serializable
-data class QuizQuestionDto(
-    val id: Int,
-    @SerialName("quizzId")
-    val quizzId: Int, // Changed to non-nullable since it's present in the response
-    val text: String,
-    val answer: Int,
-    val options: List<QuizOptionDto>
-)
 
 @Serializable
 data class QuizActivityDto(
     val id: Int,
     @SerialName("courseId")
-    val courseId: Int? = null, // Marked as nullable to handle missing data
+    val courseId: Int, // Marked as nullable to handle missing data
     val title: String,
     val description: String,
     @SerialName("grade")
-    val grade: Double? = null, // Make grade nullable if the response can have missing values
+    val grade: Double = 0.0, // Make grade nullable if the response can have missing values
     @SerialName("startDate")
-    val startDate: String? = null, // Nullable to handle missing values
+    val startDate: String = "", // Nullable to handle missing values
     @SerialName("endDate")
-    val endDate: String? = null, // Nullable to handle missing values
+    val endDate: String = "", // Nullable to handle missing values
     val email: String,
     val digital: Boolean,
+    val post: PostDto? = null, // Added `post` field
     val isQuizz: Boolean,
     @SerialName("statusId")
     val statusId: Int? = null // Nullable to handle missing values
