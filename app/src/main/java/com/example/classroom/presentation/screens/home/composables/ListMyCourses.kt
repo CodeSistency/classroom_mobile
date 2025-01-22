@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.classroom.common.composables.RetryComponent.RetryComponent
 import com.example.classroom.common.composables.card.ActionIcon
 import com.example.classroom.common.composables.card.SwipeableItemWithActions
 import com.example.classroom.common.composables.lists.PaginatedList
@@ -86,18 +87,28 @@ fun ListMyCourses(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = "No hay cursos")
-                Spacer(modifier = Modifier.height(10.dp))
-                IconButton(onClick = {
+
+                RetryComponent(mensaje = "No hay cursos", onRetryClick = {
                     scope.launch {
                         val userInfo = viewModel.userInfo.firstOrNull()
                         if (userInfo != null) {
                             viewModel.getCourses(userInfo.idApi)
                         }
                     }
-                }) {
-                    Icon(Icons.Outlined.Sync, contentDescription = null)
-                }
+                })
+                
+//                Text(text = "No hay cursos")
+//                Spacer(modifier = Modifier.height(10.dp))
+//                IconButton(onClick = {
+//                    scope.launch {
+//                        val userInfo = viewModel.userInfo.firstOrNull()
+//                        if (userInfo != null) {
+//                            viewModel.getCourses(userInfo.idApi)
+//                        }
+//                    }
+//                }) {
+//                    Icon(Icons.Outlined.Sync, contentDescription = null)
+//                }
             }
         } else {
             LazyColumn(

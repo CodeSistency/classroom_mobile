@@ -28,7 +28,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.example.classroom.common.composables.RetryComponent.RetryComponent
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import proyecto.person.appconsultapopular.common.shimmerEffects.ListShimmer
 
@@ -69,15 +71,22 @@ fun ListPosts(viewModel: PostsViewModel, courseId: String, scope: CoroutineScope
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = "No hay publicaciones")
-                        Spacer(modifier = Modifier.height(10.dp))
-                        IconButton(onClick = {
+
+                        RetryComponent(mensaje = "No hay cursos", onRetryClick = {
                             scope.launch {
                                 viewModel.getPostsByCourseRemote(courseId)
                             }
-                        }) {
-                            Icon(Icons.Outlined.Sync, contentDescription = null)
-                        }
+                        })
+                        
+//                        Text(text = "No hay publicaciones")
+//                        Spacer(modifier = Modifier.height(10.dp))
+//                        IconButton(onClick = {
+//                            scope.launch {
+//                                viewModel.getPostsByCourseRemote(courseId)
+//                            }
+//                        }) {
+//                            Icon(Icons.Outlined.Sync, contentDescription = null)
+//                        }
                     }
                 } else {
                     LazyColumn(modifier = Modifier.fillMaxSize()) {

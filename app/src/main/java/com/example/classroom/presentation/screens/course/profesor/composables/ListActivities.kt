@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.classroom.common.composables.RetryComponent.RetryComponent
 import com.example.classroom.presentation.screens.activity.ActivityViewmodel
 import com.example.classroom.presentation.screens.activity.addActivity.AddActivityViewModel
 import com.example.classroom.presentation.screens.course.CourseViewmodel
@@ -76,15 +77,23 @@ fun ListActivities(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = "No hay actividades")
-                Spacer(modifier = Modifier.height(10.dp))
-                IconButton(onClick = {
+
+                RetryComponent(mensaje = "No hay actividades", onRetryClick = {
+
                     scope.launch {
                         viewModel.getActivitiesByCourse(id) // Manual refresh
                     }
-                }) {
-                    Icon(Icons.Outlined.Sync, contentDescription = null)
-                }
+                })
+
+//                Text(text = "No hay actividades")
+//                Spacer(modifier = Modifier.height(10.dp))
+//                IconButton(onClick = {
+//                    scope.launch {
+//                        viewModel.getActivitiesByCourse(id) // Manual refresh
+//                    }
+//                }) {
+//                    Icon(Icons.Outlined.Sync, contentDescription = null)
+//                }
             }
         } else {
             LazyColumn(

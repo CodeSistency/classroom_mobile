@@ -35,6 +35,7 @@ import com.example.classroom.common.composables.CustomButton.CustomButton
 import com.example.classroom.common.composables.CustomButton.NavigationButtonStyle
 import com.example.classroom.common.composables.CustomInput.CustomTextField
 import com.example.classroom.common.composables.FileUploadComponent.FileUploadComponent
+import com.example.classroom.common.composables.FormWrapper.FormWrapper
 import com.example.classroom.presentation.screens.submission.SubmissionViewModel
 import com.example.classroom.presentation.theme.Azul
 import com.example.classroom.presentation.theme.AzulGradient
@@ -70,21 +71,22 @@ fun SubmissionForm(
                 }
             }
         ){
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Text(text = "Enviar respuesta para la actividad", style = MaterialTheme.typography.h6)
+            FormWrapper {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(text = "Enviar respuesta para la actividad", style = MaterialTheme.typography.h6)
 
-                // File upload component
-                FileUploadComponent(
-                    onFileSelected = { uri -> selectedFileUri = uri },
-                    onFileCleared = { selectedFileUri = null }
-                )
+                    // File upload component
+                    FileUploadComponent(
+                        onFileSelected = { uri -> selectedFileUri = uri },
+                        onFileCleared = { selectedFileUri = null }
+                    )
 
-                // Message input field
+                    // Message input field
 //        OutlinedTextField(
 //            value = message,
 //            onValueChange = { message = it },
@@ -92,27 +94,72 @@ fun SubmissionForm(
 //            modifier = Modifier.fillMaxWidth()
 //        )
 
-                CustomTextField(value = message,
-                    onValueChange = { message = it },
-                    label = "Mensaje",
-                    modifier = Modifier.fillMaxWidth(),
-                    onNextClick = {})
+                    CustomTextField(value = message,
+                        onValueChange = { message = it },
+                        label = "Mensaje",
+                        modifier = Modifier.fillMaxWidth(),
+                        onNextClick = {})
 
-                // Submit button
-                CustomButton(
-                    onClick = {
-                        if (selectedFileUri != null && message.isNotBlank()) {
-                            onSubmit(selectedFileUri!!, message)
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    disabled = selectedFileUri == null && message.isBlank(),
-                    style = NavigationButtonStyle.SolidGradient,
-                    color1 = Azul,
-                    color2 = AzulGradient,
-                    text = "Enviar"
-                )
+                    // Submit button
+                    CustomButton(
+                        onClick = {
+                            if (selectedFileUri != null && message.isNotBlank()) {
+                                onSubmit(selectedFileUri!!, message)
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        disabled = selectedFileUri == null && message.isBlank(),
+                        style = NavigationButtonStyle.SolidGradient,
+                        color1 = Azul,
+                        color2 = AzulGradient,
+                        text = "Enviar"
+                    )
+                }
+
             }
+//            Column(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(16.dp),
+//                verticalArrangement = Arrangement.spacedBy(8.dp)
+//            ) {
+//                Text(text = "Enviar respuesta para la actividad", style = MaterialTheme.typography.h6)
+//
+//                // File upload component
+//                FileUploadComponent(
+//                    onFileSelected = { uri -> selectedFileUri = uri },
+//                    onFileCleared = { selectedFileUri = null }
+//                )
+//
+//                // Message input field
+////        OutlinedTextField(
+////            value = message,
+////            onValueChange = { message = it },
+////            label = { Text("Mensaje") },
+////            modifier = Modifier.fillMaxWidth()
+////        )
+//
+//                CustomTextField(value = message,
+//                    onValueChange = { message = it },
+//                    label = "Mensaje",
+//                    modifier = Modifier.fillMaxWidth(),
+//                    onNextClick = {})
+//
+//                // Submit button
+//                CustomButton(
+//                    onClick = {
+//                        if (selectedFileUri != null && message.isNotBlank()) {
+//                            onSubmit(selectedFileUri!!, message)
+//                        }
+//                    },
+//                    modifier = Modifier.fillMaxWidth(),
+//                    disabled = selectedFileUri == null && message.isBlank(),
+//                    style = NavigationButtonStyle.SolidGradient,
+//                    color1 = Azul,
+//                    color2 = AzulGradient,
+//                    text = "Enviar"
+//                )
+//            }
 
         }
     }

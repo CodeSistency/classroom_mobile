@@ -89,6 +89,7 @@ fun AnswerQuizScreen(viewModel: QuizzViewModel, quizId: String, navController: N
                 )
             }
         ) {
+
             quizState?.let { quiz ->
                 LazyColumn(
                     modifier = Modifier

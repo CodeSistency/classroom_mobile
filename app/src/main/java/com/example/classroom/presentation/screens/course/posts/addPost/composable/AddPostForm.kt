@@ -46,11 +46,13 @@ import com.example.classroom.common.composables.CustomButton.CustomButton
 import com.example.classroom.common.composables.CustomButton.NavigationButtonStyle
 import com.example.classroom.common.composables.CustomInput.CustomTextField
 import com.example.classroom.common.composables.FileUploadComponent.FileUploadComponent
+import com.example.classroom.common.composables.FormWrapper.FormWrapper
 import com.example.classroom.common.composables.customDialogs.SetupCustomDialog
 import com.example.classroom.common.composables.customDialogs.SetupCustomDialogState
 import com.example.classroom.presentation.navigation.Destination
 import com.example.classroom.presentation.screens.course.posts.addPost.AddPostViewModel
 import com.example.classroom.presentation.theme.Azul
+import com.example.classroom.presentation.theme.AzulGradient
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -76,7 +78,9 @@ fun AddPostForm(viewModel: AddPostViewModel, focusManager: FocusManager, courseI
         Scaffold(
             topBar = {
                 Row(
-                    modifier= Modifier.background(Azul).fillMaxWidth(),
+                    modifier= Modifier
+                        .background(Azul)
+                        .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(onClick = { navController.popBackStack() }) {
@@ -90,76 +94,77 @@ fun AddPostForm(viewModel: AddPostViewModel, focusManager: FocusManager, courseI
                 }
             }
         ) {
-            Column(modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Spacer(modifier = Modifier.padding(top = 10.dp))
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    Image(
-                        modifier = Modifier
-                            .size(width = 70.dp, height = 70.dp)
-                            .align(Alignment.Center)
-                            .padding(vertical = 10.dp),
-                        painter = painterResource(id = R.drawable.ic_logo),
-                        contentDescription = "logo"
+            FormWrapper {
+                Column(modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Spacer(modifier = Modifier.padding(top = 10.dp))
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        Image(
+                            modifier = Modifier
+                                .size(width = 70.dp, height = 70.dp)
+                                .align(Alignment.Center)
+                                .padding(vertical = 10.dp),
+                            painter = painterResource(id = R.drawable.ic_logo),
+                            contentDescription = "logo"
+                        )
+
+                    }
+                    CustomTextField(
+                        value = viewModel.title.value,
+                        onValueChange = {
+                            viewModel.title.value = it
+                            viewModel.validateTitle()
+                        },
+                        label = "Titulo",
+                        errorMessage = viewModel.titleError.value ?: "",
+                        onNextClick = {
+                            focusManager.moveFocus(FocusDirection.Down)
+                        }
                     )
 
-                }
-                CustomTextField(
-                    value = viewModel.title.value,
-                    onValueChange = {
-                        viewModel.title.value = it
-                        viewModel.validateTitle()
-                    },
-                    label = "Titulo",
-                    errorMessage = viewModel.titleError.value ?: "",
-                    onNextClick = {
-                        focusManager.moveFocus(FocusDirection.Down)
-                    }
-                )
+                    CustomTextField(
+                        value = viewModel.content.value,
+                        onValueChange = {
+                            viewModel.content.value = it
+                            viewModel.validateContent()
+                        },
+                        label = "Contenido",
+                        errorMessage = viewModel.contentError.value ?: "",
+                        onNextClick = {
+                            focusManager.moveFocus(FocusDirection.Down)
+                        }
+                    )
 
-                CustomTextField(
-                    value = viewModel.content.value,
-                    onValueChange = {
-                        viewModel.content.value = it
-                        viewModel.validateContent()
-                    },
-                    label = "Contenido",
-                    errorMessage = viewModel.contentError.value ?: "",
-                    onNextClick = {
-                        focusManager.moveFocus(FocusDirection.Down)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Checkbox(
+                            checked = isFileUploadChecked,
+                            onCheckedChange = { isChecked ->
+                                isFileUploadChecked = isChecked
+                                if (!isChecked) {
+                                    viewModel.selectedFileUri = null
+                                }
+                            }
+                        )
+                        Text(
+                            text = "Adjuntar archivo",
+                            style = MaterialTheme.typography.body1
+                        )
                     }
-                )
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Checkbox(
-                        checked = isFileUploadChecked,
-                        onCheckedChange = { isChecked ->
-                            isFileUploadChecked = isChecked
-                            if (!isChecked) {
+                    // Show FileUploadComponent if the checkbox is checked
+                    if (isFileUploadChecked) {
+                        FileUploadComponent(
+                            onFileSelected = { uri ->
+                                viewModel.selectedFileUri = uri
+                            },
+                            onFileCleared = {
                                 viewModel.selectedFileUri = null
                             }
-                        }
-                    )
-                    Text(
-                        text = "Adjuntar archivo",
-                        style = MaterialTheme.typography.body1
-                    )
-                }
-
-                // Show FileUploadComponent if the checkbox is checked
-                if (isFileUploadChecked) {
-                    FileUploadComponent(
-                        onFileSelected = { uri ->
-                            viewModel.selectedFileUri = uri
-                        },
-                        onFileCleared = {
-                            viewModel.selectedFileUri = null
-                        }
-                    )
-                }
+                        )
+                    }
 
 //        CustomTextField(
 //            value = viewModel.courseId.value.toString(),
@@ -187,21 +192,135 @@ fun AddPostForm(viewModel: AddPostViewModel, focusManager: FocusManager, courseI
 //            }
 //        )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                CustomButton(
-                    text = "Publicar",
-                    style = NavigationButtonStyle.SolidGradient,
-                    color1 = Color(0xFF4CAF50),
-                    color2 = Color(0xFF81C784),
-                    onClick = {
-                        scope.launch {
-                            viewModel.executeCourseRequest(idPost, courseId, isFileUploadChecked, context, false)
-                        }
-                    },
-                    disabled = !viewModel.isFormValid
-                )
+                    CustomButton(
+                        text = "Publicar",
+                        style = NavigationButtonStyle.SolidGradient,
+                        color1 = Azul,
+                        color2 = AzulGradient,
+                        onClick = {
+                            scope.launch {
+                                viewModel.executeCourseRequest(idPost, courseId, isFileUploadChecked, context, false)
+                            }
+                        },
+                        disabled = !viewModel.isFormValid
+                    )
+                }
+
             }
+//            Column(modifier = Modifier.padding(16.dp),
+//                verticalArrangement = Arrangement.spacedBy(8.dp)) {
+//                Spacer(modifier = Modifier.padding(top = 10.dp))
+//                Box(modifier = Modifier.fillMaxWidth()) {
+//                    Image(
+//                        modifier = Modifier
+//                            .size(width = 70.dp, height = 70.dp)
+//                            .align(Alignment.Center)
+//                            .padding(vertical = 10.dp),
+//                        painter = painterResource(id = R.drawable.ic_logo),
+//                        contentDescription = "logo"
+//                    )
+//
+//                }
+//                CustomTextField(
+//                    value = viewModel.title.value,
+//                    onValueChange = {
+//                        viewModel.title.value = it
+//                        viewModel.validateTitle()
+//                    },
+//                    label = "Titulo",
+//                    errorMessage = viewModel.titleError.value ?: "",
+//                    onNextClick = {
+//                        focusManager.moveFocus(FocusDirection.Down)
+//                    }
+//                )
+//
+//                CustomTextField(
+//                    value = viewModel.content.value,
+//                    onValueChange = {
+//                        viewModel.content.value = it
+//                        viewModel.validateContent()
+//                    },
+//                    label = "Contenido",
+//                    errorMessage = viewModel.contentError.value ?: "",
+//                    onNextClick = {
+//                        focusManager.moveFocus(FocusDirection.Down)
+//                    }
+//                )
+//
+//                Row(
+//                    verticalAlignment = Alignment.CenterVertically,
+//                    modifier = Modifier.fillMaxWidth()
+//                ) {
+//                    Checkbox(
+//                        checked = isFileUploadChecked,
+//                        onCheckedChange = { isChecked ->
+//                            isFileUploadChecked = isChecked
+//                            if (!isChecked) {
+//                                viewModel.selectedFileUri = null
+//                            }
+//                        }
+//                    )
+//                    Text(
+//                        text = "Adjuntar archivo",
+//                        style = MaterialTheme.typography.body1
+//                    )
+//                }
+//
+//                // Show FileUploadComponent if the checkbox is checked
+//                if (isFileUploadChecked) {
+//                    FileUploadComponent(
+//                        onFileSelected = { uri ->
+//                            viewModel.selectedFileUri = uri
+//                        },
+//                        onFileCleared = {
+//                            viewModel.selectedFileUri = null
+//                        }
+//                    )
+//                }
+//
+////        CustomTextField(
+////            value = viewModel.courseId.value.toString(),
+////            onValueChange = {
+////                viewModel.courseId.value = it.toIntOrNull() ?: 0
+////                viewModel.validateCourseId()
+////            },
+////            label = "Course ID",
+////            errorMessage = viewModel.courseIdError.value ?: "",
+////            onNextClick = {
+////                focusManager.moveFocus(FocusDirection.Down)
+////            }
+////        )
+////
+////        CustomTextField(
+////            value = viewModel.authorId.value.toString(),
+////            onValueChange = {
+////                viewModel.authorId.value = it.toIntOrNull() ?: 0
+////                viewModel.validateAuthorId()
+////            },
+////            label = "Author ID",
+////            errorMessage = viewModel.authorIdError.value ?: "",
+////            onNextClick = {
+////                focusManager.moveFocus(FocusDirection.Down)
+////            }
+////        )
+//
+//                Spacer(modifier = Modifier.height(16.dp))
+//
+//                CustomButton(
+//                    text = "Publicar",
+//                    style = NavigationButtonStyle.SolidGradient,
+//                    color1 = Color(0xFF4CAF50),
+//                    color2 = Color(0xFF81C784),
+//                    onClick = {
+//                        scope.launch {
+//                            viewModel.executeCourseRequest(idPost, courseId, isFileUploadChecked, context, false)
+//                        }
+//                    },
+//                    disabled = !viewModel.isFormValid
+//                )
+//            }
 
         }
     }

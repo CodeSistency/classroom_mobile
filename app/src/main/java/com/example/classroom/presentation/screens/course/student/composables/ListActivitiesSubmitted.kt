@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.classroom.common.composables.RetryComponent.RetryComponent
 import com.example.classroom.presentation.screens.activity.studentEvaluations.composable.EvaluationItem
 import com.example.classroom.presentation.screens.course.CourseViewmodel
 import kotlinx.coroutines.launch
@@ -84,15 +85,22 @@ fun ListActivitiesSubmitted(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = "No hay evaluaciones disponibles")
-                        Spacer(modifier = Modifier.height(10.dp))
-                        IconButton(onClick = {
+
+                        RetryComponent(mensaje = "No hay evaluaciones disponibles", onRetryClick = {
+
                             scope.launch {
-                                viewModel.getActivitiesByStudent(courseId, studentId)
+                                viewModel.getActivitiesByStudent(courseId, studentId)// Manual refresh
                             }
-                        }) {
-                            Icon(Icons.Outlined.Sync, contentDescription = null)
-                        }
+                        })
+//                        Text(text = "No hay evaluaciones disponibles")
+//                        Spacer(modifier = Modifier.height(10.dp))
+//                        IconButton(onClick = {
+//                            scope.launch {
+//                                viewModel.getActivitiesByStudent(courseId, studentId)
+//                            }
+//                        }) {
+//                            Icon(Icons.Outlined.Sync, contentDescription = null)
+//                        }
                     }
                 } else {
                     LazyColumn(

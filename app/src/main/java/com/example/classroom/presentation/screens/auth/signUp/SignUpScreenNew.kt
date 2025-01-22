@@ -62,6 +62,7 @@ import com.example.classroom.common.composables.CustomButton.NavigationButtonSty
 import com.example.classroom.common.composables.CustomDatePicker.CustomDatePicker
 import com.example.classroom.common.composables.CustomInput.CustomTextField
 import com.example.classroom.common.composables.CustomInput.ValidationRegex
+import com.example.classroom.common.composables.FormWrapper.FormWrapper
 import com.example.classroom.common.composables.customDialogs.SetupCustomDialog
 import com.example.classroom.common.composables.customDialogs.SetupCustomDialogState
 import com.example.classroom.common.composables.customSelect.CustomSelect
@@ -72,6 +73,7 @@ import com.example.classroom.presentation.navigation.Destination
 import com.example.classroom.presentation.screens.auth.AuthViewModel
 import com.example.classroom.presentation.screens.auth.composables.ItemInputField
 import com.example.classroom.presentation.theme.Azul
+import com.example.classroom.presentation.theme.AzulGradient
 import com.example.classroom.presentation.theme.PaddingCustom
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -131,178 +133,353 @@ fun SignUpScreenNew(
 
             },
         ) {
-            Column(Modifier.fillMaxSize()) {
-                Spacer(modifier = Modifier.padding(top = 10.dp))
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    Image(
-                        modifier = Modifier
-                            .size(width = 70.dp, height = 70.dp)
-                            .align(Alignment.Center)
-                            .padding(vertical = 10.dp),
-                        painter = painterResource(id = R.drawable.ic_logo),
-                        contentDescription = "logo"
-                    )
-
-                }
-
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    item {
-                        //Name input
-
-                        CustomTextField(
-                            value = viewModel.username.value,
-                            onValueChange = {
-                                viewModel.username.value = it
-                                viewModel.validateUsername()
-                            },
-                            label = "Nombre de usuario",
-                            validationRegex = ValidationRegex.Alphanumeric,
-                            errorMessage = viewModel.nameError.value ?: "",
-                            onNextClick = {
-                                focusManager.moveFocus(FocusDirection.Down)
-                            }
+            FormWrapper {
+                Column(Modifier.fillMaxSize()) {
+                    Spacer(modifier = Modifier.padding(top = 10.dp))
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        Image(
+                            modifier = Modifier
+                                .size(width = 70.dp, height = 70.dp)
+                                .align(Alignment.Center)
+                                .padding(vertical = 10.dp),
+                            painter = painterResource(id = R.drawable.ic_logo),
+                            contentDescription = "logo"
                         )
-
-                        Spacer(modifier = Modifier.height(2.dp))
-
-
-                        CustomTextField(
-                            value = viewModel.name.value,
-                            onValueChange = {
-                                viewModel.name.value = it
-                                viewModel.validateName()
-                            },
-                            label = "Nombre",
-                            validationRegex = ValidationRegex.Alphanumeric,
-                            errorMessage = viewModel.nameError.value ?: "",
-                            onNextClick = {
-                                focusManager.moveFocus(FocusDirection.Down)
-                            }
-                        )
-
-                        Spacer(modifier = Modifier.height(2.dp))
-
-                        // Lastname
-                        CustomTextField(
-                            value = viewModel.lastname.value,
-                            onValueChange = {
-                                viewModel.lastname.value = it
-                                viewModel.validateLastname()
-                            },
-                            label = "Apellido",
-                            validationRegex = ValidationRegex.Alphanumeric,
-                            errorMessage = viewModel.lastnameError.value ?: "",
-                            onNextClick = {
-                                focusManager.moveFocus(FocusDirection.Down)
-                            }
-                        )
-
-                        Spacer(modifier = Modifier.height(2.dp))
-
-                        // Password
-                        CustomTextField(
-                            value = viewModel.password.value,
-                            onValueChange = {
-                                viewModel.password.value = it
-                                viewModel.validatePassword()
-                            },
-                            label = "Contraseña",
-                            password = true, // Enable password visibility toggle
-                            errorMessage = viewModel.passwordError.value ?: "",
-                            onNextClick = {
-                                focusManager.moveFocus(FocusDirection.Down)
-                            }
-                        )
-
-                        Spacer(modifier = Modifier.height(2.dp))
-
-                        // Email
-                        CustomTextField(
-                            value = viewModel.email.value,
-                            onValueChange = {
-                                viewModel.email.value = it
-                                viewModel.validateEmail()
-                            },
-                            label = "Correo Electrónico",
-                            validationRegex = ValidationRegex.Email,
-                            errorMessage = viewModel.emailError.value ?: "",
-                            onNextClick = {
-                                focusManager.moveFocus(FocusDirection.Down)
-                            }
-                        )
-
-                        Spacer(modifier = Modifier.height(2.dp))
-
-
-                        // Phone
-                        CustomTextField(
-                            value = viewModel.phone.value,
-                            onValueChange = {
-                                viewModel.phone.value = it
-                                viewModel.validatePhone()
-                            },
-                            label = "Teléfono",
-                            validationRegex = ValidationRegex.Phone,
-                            errorMessage = viewModel.phoneError.value ?: "",
-                            onNextClick = {
-                                focusManager.moveFocus(FocusDirection.Down)
-                            },
-                            showCountryCode = true
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-                        // Birthdate
-                        CustomDatePicker(
-                            label = "Fecha de Nacimiento",
-                            selectedDate = viewModel.birthdate.value,
-                            onDateSelected = { viewModel.birthdate.value = it }
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        CustomSelect(
-                            label = "Género",
-                            options = Gender.values().toList(),
-                            selectedOption = listOf(viewModel.gender.value),
-                            onOptionSelected = { selected ->
-                                val invalidFields = viewModel.getInvalidFields()
-
-                                if (invalidFields.isEmpty()) {
-                                    println("All fields are valid")
-                                } else {
-                                    println("Invalid fields: $invalidFields")
-                                }
-
-                                if (selected.isNotEmpty()) viewModel.gender.value = selected.first()
-                            },
-                            multiple = false,
-                            optionDisplay = { it.displayName }
-                        )
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        // Submit Button
-                        CustomButton(
-                            text = "Registrarse",
-                            style = NavigationButtonStyle.SolidGradient,
-                            color1 = Color(0xFF4CAF50),
-                            color2 = Color(0xFF81C784),
-                            onClick = {
-                                scope.launch {
-                                    viewModel.executeSignUpNew()
-                                }
-                            },
-                            disabled = !viewModel.isFormValid
-                        )
-
 
                     }
+
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        item {
+                            //Name input
+
+                            CustomTextField(
+                                value = viewModel.username.value,
+                                onValueChange = {
+                                    viewModel.username.value = it
+                                    viewModel.validateUsername()
+                                },
+                                label = "Nombre de usuario",
+                                validationRegex = ValidationRegex.Alphanumeric,
+                                errorMessage = viewModel.nameError.value ?: "",
+                                onNextClick = {
+                                    focusManager.moveFocus(FocusDirection.Down)
+                                }
+                            )
+
+                            Spacer(modifier = Modifier.height(2.dp))
+
+
+                            CustomTextField(
+                                value = viewModel.name.value,
+                                onValueChange = {
+                                    viewModel.name.value = it
+                                    viewModel.validateName()
+                                },
+                                label = "Nombre",
+                                validationRegex = ValidationRegex.Alphanumeric,
+                                errorMessage = viewModel.nameError.value ?: "",
+                                onNextClick = {
+                                    focusManager.moveFocus(FocusDirection.Down)
+                                }
+                            )
+
+                            Spacer(modifier = Modifier.height(2.dp))
+
+                            // Lastname
+                            CustomTextField(
+                                value = viewModel.lastname.value,
+                                onValueChange = {
+                                    viewModel.lastname.value = it
+                                    viewModel.validateLastname()
+                                },
+                                label = "Apellido",
+                                validationRegex = ValidationRegex.Alphanumeric,
+                                errorMessage = viewModel.lastnameError.value ?: "",
+                                onNextClick = {
+                                    focusManager.moveFocus(FocusDirection.Down)
+                                }
+                            )
+
+                            Spacer(modifier = Modifier.height(2.dp))
+
+                            // Password
+                            CustomTextField(
+                                value = viewModel.password.value,
+                                onValueChange = {
+                                    viewModel.password.value = it
+                                    viewModel.validatePassword()
+                                },
+                                label = "Contraseña",
+                                password = true, // Enable password visibility toggle
+                                errorMessage = viewModel.passwordError.value ?: "",
+                                onNextClick = {
+                                    focusManager.moveFocus(FocusDirection.Down)
+                                }
+                            )
+
+                            Spacer(modifier = Modifier.height(2.dp))
+
+                            // Email
+                            CustomTextField(
+                                value = viewModel.email.value,
+                                onValueChange = {
+                                    viewModel.email.value = it
+                                    viewModel.validateEmail()
+                                },
+                                label = "Correo Electrónico",
+                                validationRegex = ValidationRegex.Email,
+                                errorMessage = viewModel.emailError.value ?: "",
+                                onNextClick = {
+                                    focusManager.moveFocus(FocusDirection.Down)
+                                }
+                            )
+
+                            Spacer(modifier = Modifier.height(2.dp))
+
+
+                            // Phone
+                            CustomTextField(
+                                value = viewModel.phone.value,
+                                onValueChange = {
+                                    viewModel.phone.value = it
+                                    viewModel.validatePhone()
+                                },
+                                label = "Teléfono",
+                                validationRegex = ValidationRegex.Phone,
+                                errorMessage = viewModel.phoneError.value ?: "",
+                                onNextClick = {
+                                    focusManager.moveFocus(FocusDirection.Down)
+                                },
+                                showCountryCode = true
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+                            // Birthdate
+                            CustomDatePicker(
+                                label = "Fecha de Nacimiento",
+                                selectedDate = viewModel.birthdate.value,
+                                onDateSelected = { viewModel.birthdate.value = it }
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            CustomSelect(
+                                label = "Género",
+                                options = Gender.values().toList(),
+                                selectedOption = listOf(viewModel.gender.value),
+                                onOptionSelected = { selected ->
+                                    val invalidFields = viewModel.getInvalidFields()
+
+                                    if (invalidFields.isEmpty()) {
+                                        println("All fields are valid")
+                                    } else {
+                                        println("Invalid fields: $invalidFields")
+                                    }
+
+                                    if (selected.isNotEmpty()) viewModel.gender.value = selected.first()
+                                },
+                                multiple = false,
+                                optionDisplay = { it.displayName }
+                            )
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            // Submit Button
+                            CustomButton(
+                                text = "Registrarse",
+                                style = NavigationButtonStyle.SolidGradient,
+                                color1 = Azul,
+                                color2 = AzulGradient,
+                                onClick = {
+                                    scope.launch {
+                                        viewModel.executeSignUpNew()
+                                    }
+                                },
+                                disabled = !viewModel.isFormValid
+                            )
+
+
+                        }
+                    }
                 }
+
             }
+//            Column(Modifier.fillMaxSize()) {
+//                Spacer(modifier = Modifier.padding(top = 10.dp))
+//                Box(modifier = Modifier.fillMaxWidth()) {
+//                    Image(
+//                        modifier = Modifier
+//                            .size(width = 70.dp, height = 70.dp)
+//                            .align(Alignment.Center)
+//                            .padding(vertical = 10.dp),
+//                        painter = painterResource(id = R.drawable.ic_logo),
+//                        contentDescription = "logo"
+//                    )
+//
+//                }
+//
+//                LazyColumn(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(16.dp),
+//                    verticalArrangement = Arrangement.spacedBy(8.dp)) {
+//                    item {
+//                        //Name input
+//
+//                        CustomTextField(
+//                            value = viewModel.username.value,
+//                            onValueChange = {
+//                                viewModel.username.value = it
+//                                viewModel.validateUsername()
+//                            },
+//                            label = "Nombre de usuario",
+//                            validationRegex = ValidationRegex.Alphanumeric,
+//                            errorMessage = viewModel.nameError.value ?: "",
+//                            onNextClick = {
+//                                focusManager.moveFocus(FocusDirection.Down)
+//                            }
+//                        )
+//
+//                        Spacer(modifier = Modifier.height(2.dp))
+//
+//
+//                        CustomTextField(
+//                            value = viewModel.name.value,
+//                            onValueChange = {
+//                                viewModel.name.value = it
+//                                viewModel.validateName()
+//                            },
+//                            label = "Nombre",
+//                            validationRegex = ValidationRegex.Alphanumeric,
+//                            errorMessage = viewModel.nameError.value ?: "",
+//                            onNextClick = {
+//                                focusManager.moveFocus(FocusDirection.Down)
+//                            }
+//                        )
+//
+//                        Spacer(modifier = Modifier.height(2.dp))
+//
+//                        // Lastname
+//                        CustomTextField(
+//                            value = viewModel.lastname.value,
+//                            onValueChange = {
+//                                viewModel.lastname.value = it
+//                                viewModel.validateLastname()
+//                            },
+//                            label = "Apellido",
+//                            validationRegex = ValidationRegex.Alphanumeric,
+//                            errorMessage = viewModel.lastnameError.value ?: "",
+//                            onNextClick = {
+//                                focusManager.moveFocus(FocusDirection.Down)
+//                            }
+//                        )
+//
+//                        Spacer(modifier = Modifier.height(2.dp))
+//
+//                        // Password
+//                        CustomTextField(
+//                            value = viewModel.password.value,
+//                            onValueChange = {
+//                                viewModel.password.value = it
+//                                viewModel.validatePassword()
+//                            },
+//                            label = "Contraseña",
+//                            password = true, // Enable password visibility toggle
+//                            errorMessage = viewModel.passwordError.value ?: "",
+//                            onNextClick = {
+//                                focusManager.moveFocus(FocusDirection.Down)
+//                            }
+//                        )
+//
+//                        Spacer(modifier = Modifier.height(2.dp))
+//
+//                        // Email
+//                        CustomTextField(
+//                            value = viewModel.email.value,
+//                            onValueChange = {
+//                                viewModel.email.value = it
+//                                viewModel.validateEmail()
+//                            },
+//                            label = "Correo Electrónico",
+//                            validationRegex = ValidationRegex.Email,
+//                            errorMessage = viewModel.emailError.value ?: "",
+//                            onNextClick = {
+//                                focusManager.moveFocus(FocusDirection.Down)
+//                            }
+//                        )
+//
+//                        Spacer(modifier = Modifier.height(2.dp))
+//
+//
+//                        // Phone
+//                        CustomTextField(
+//                            value = viewModel.phone.value,
+//                            onValueChange = {
+//                                viewModel.phone.value = it
+//                                viewModel.validatePhone()
+//                            },
+//                            label = "Teléfono",
+//                            validationRegex = ValidationRegex.Phone,
+//                            errorMessage = viewModel.phoneError.value ?: "",
+//                            onNextClick = {
+//                                focusManager.moveFocus(FocusDirection.Down)
+//                            },
+//                            showCountryCode = true
+//                        )
+//
+//                        Spacer(modifier = Modifier.height(8.dp))
+//                        // Birthdate
+//                        CustomDatePicker(
+//                            label = "Fecha de Nacimiento",
+//                            selectedDate = viewModel.birthdate.value,
+//                            onDateSelected = { viewModel.birthdate.value = it }
+//                        )
+//
+//                        Spacer(modifier = Modifier.height(8.dp))
+//
+//                        CustomSelect(
+//                            label = "Género",
+//                            options = Gender.values().toList(),
+//                            selectedOption = listOf(viewModel.gender.value),
+//                            onOptionSelected = { selected ->
+//                                val invalidFields = viewModel.getInvalidFields()
+//
+//                                if (invalidFields.isEmpty()) {
+//                                    println("All fields are valid")
+//                                } else {
+//                                    println("Invalid fields: $invalidFields")
+//                                }
+//
+//                                if (selected.isNotEmpty()) viewModel.gender.value = selected.first()
+//                            },
+//                            multiple = false,
+//                            optionDisplay = { it.displayName }
+//                        )
+//
+//                        Spacer(modifier = Modifier.height(16.dp))
+//
+//                        // Submit Button
+//                        CustomButton(
+//                            text = "Registrarse",
+//                            style = NavigationButtonStyle.SolidGradient,
+//                            color1 = Color(0xFF4CAF50),
+//                            color2 = Color(0xFF81C784),
+//                            onClick = {
+//                                scope.launch {
+//                                    viewModel.executeSignUpNew()
+//                                }
+//                            },
+//                            disabled = !viewModel.isFormValid
+//                        )
+//
+//
+//                    }
+//                }
+//            }
         }
     }
     LaunchedEffect(key1 = userInfo, block = {

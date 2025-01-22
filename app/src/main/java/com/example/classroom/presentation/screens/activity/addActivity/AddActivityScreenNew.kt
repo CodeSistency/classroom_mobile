@@ -62,6 +62,7 @@ import com.example.classroom.common.composables.CustomButton.NavigationButtonSty
 import com.example.classroom.common.composables.CustomDatePicker.CustomDatePicker
 import com.example.classroom.common.composables.CustomInput.CustomTextField
 import com.example.classroom.common.composables.CustomInput.ValidationRegex
+import com.example.classroom.common.composables.FormWrapper.FormWrapper
 import com.example.classroom.common.composables.customDialogs.SetupCustomDialog
 import com.example.classroom.common.composables.customDialogs.SetupCustomDialogState
 import com.example.classroom.common.composables.customSelect.CustomSelect
@@ -75,6 +76,7 @@ import com.example.classroom.presentation.screens.auth.composables.ItemInputFiel
 import com.example.classroom.presentation.screens.auth.signUp.SignUpFormEvent
 import com.example.classroom.presentation.screens.course.CourseViewmodel
 import com.example.classroom.presentation.theme.Azul
+import com.example.classroom.presentation.theme.AzulGradient
 import com.example.classroom.presentation.theme.PaddingCustom
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -104,120 +106,237 @@ fun AddActivityScreenNew(
             SnackbarHost(hostState = remember { SnackbarHostState() })
         }
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top
-        ) {
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Header with Icon and Title
-            Image(
-                modifier = Modifier
-                    .size(90.dp)
-                    .padding(8.dp),
-                painter = painterResource(id = R.drawable.ic_logo),
-                contentDescription = "logo"
-            )
-            Text(
-                text = "Registrar Actividad",
-                style = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.Bold),
-                color = MaterialTheme.colors.primary
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Fields Section with Padding and Spacing
+        FormWrapper {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colors.surface, shape = RoundedCornerShape(16.dp))
-                    .padding(24.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                    .fillMaxSize()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top
             ) {
-                CustomTextField(
-                    value = viewModel.title.value,
-                    onValueChange = {
-                        viewModel.title.value = it
-                        viewModel.validateTitle()
-                    },
-                    label = "Título",
-                    errorMessage = viewModel.titleError.value ?: "",
-                    onNextClick = {
-                        focusManager.moveFocus(FocusDirection.Down)
-                    }
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Header with Icon and Title
+                Image(
+                    modifier = Modifier
+                        .size(90.dp)
+                        .padding(8.dp),
+                    painter = painterResource(id = R.drawable.ic_logo),
+                    contentDescription = "logo"
+                )
+                Text(
+                    text = "Registrar Actividad",
+                    style = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colors.primary
                 )
 
-                CustomTextField(
-                    value = viewModel.description.value,
-                    onValueChange = { viewModel.description.value = it },
-                    label = "Descripción",
-                    onNextClick = {
-                        focusManager.moveFocus(FocusDirection.Down)
-                    }
-                )
+                Spacer(modifier = Modifier.height(24.dp))
 
-                CustomDatePicker(
-                    label = "Fecha de Inicio",
-                    selectedDate = viewModel.startDate.value,
-                    onDateSelected = {
-                        viewModel.startDate.value = it
-                        viewModel.validateStartDate()
-                    },
-//                        modifier = Modifier.weight(1f)
-                )
-
-//                Spacer(modifier = Modifier.height(5.dp))
-
-                CustomDatePicker(
-                    label = "Fecha de Finalización",
-                    selectedDate = viewModel.endDate.value,
-                    onDateSelected = {
-                        viewModel.endDate.value = it
-                        viewModel.validateEndDate()
-                    },
-//                        modifier = Modifier.weight(1f)
-                )
-
-//                Spacer(modifier = Modifier.height(5.dp))
-
-                if (id == null) {
-                    CustomSelect(
-                        label = "Status",
-                        options = Status.values().toList(),
-                        selectedOption = listOf(viewModel.status.value),
-                        onOptionSelected = { selected ->
-                            if (selected.isNotEmpty()) viewModel.status.value = selected.first()
-                            viewModel.validateStatus()
+                // Fields Section with Padding and Spacing
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colors.surface, shape = RoundedCornerShape(16.dp))
+                        .padding(24.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    CustomTextField(
+                        value = viewModel.title.value,
+                        onValueChange = {
+                            viewModel.title.value = it
+                            viewModel.validateTitle()
                         },
-                        multiple = false,
-                        optionDisplay = { it.displayName }
+                        label = "Título",
+                        errorMessage = viewModel.titleError.value ?: "",
+                        onNextClick = {
+                            focusManager.moveFocus(FocusDirection.Down)
+                        }
                     )
+
+                    CustomTextField(
+                        value = viewModel.description.value,
+                        onValueChange = { viewModel.description.value = it },
+                        label = "Descripción",
+                        onNextClick = {
+                            focusManager.moveFocus(FocusDirection.Down)
+                        }
+                    )
+
+                    CustomDatePicker(
+                        label = "Fecha de Inicio",
+                        selectedDate = viewModel.startDate.value,
+                        onDateSelected = {
+                            viewModel.startDate.value = it
+                            viewModel.validateStartDate()
+                        },
+//                        modifier = Modifier.weight(1f)
+                    )
+
+//                Spacer(modifier = Modifier.height(5.dp))
+
+                    CustomDatePicker(
+                        label = "Fecha de Finalización",
+                        selectedDate = viewModel.endDate.value,
+                        onDateSelected = {
+                            viewModel.endDate.value = it
+                            viewModel.validateEndDate()
+                        },
+//                        modifier = Modifier.weight(1f)
+                    )
+
+//                Spacer(modifier = Modifier.height(5.dp))
+
+                    if (id == null) {
+                        CustomSelect(
+                            label = "Status",
+                            options = Status.values().toList(),
+                            selectedOption = listOf(viewModel.status.value),
+                            onOptionSelected = { selected ->
+                                if (selected.isNotEmpty()) viewModel.status.value = selected.first()
+                                viewModel.validateStatus()
+                            },
+                            multiple = false,
+                            optionDisplay = { it.displayName }
+                        )
+                    }
                 }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // Button Section
+                CustomButton(
+                    text = "Crear Actividad",
+                    style = NavigationButtonStyle.SolidGradient,
+                    color1 = Azul,
+                    color2 = AzulGradient,
+                    onClick = {
+                        scope.launch {
+                            viewModel.executeActivityRequest(id, idCourse)
+                        }
+                    },
+                    disabled = !viewModel.isFormValid,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Button Section
-            CustomButton(
-                text = "Crear Actividad",
-                style = NavigationButtonStyle.SolidGradient,
-                color1 = MaterialTheme.colors.primary,
-                color2 = MaterialTheme.colors.primaryVariant,
-                onClick = {
-                    scope.launch {
-                        viewModel.executeActivityRequest(id, idCourse)
-                    }
-                },
-                disabled = !viewModel.isFormValid,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
-                    .clip(RoundedCornerShape(16.dp))
-            )
         }
+//        Column(
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .padding(16.dp),
+//            horizontalAlignment = Alignment.CenterHorizontally,
+//            verticalArrangement = Arrangement.Top
+//        ) {
+//            Spacer(modifier = Modifier.height(16.dp))
+//
+//            // Header with Icon and Title
+//            Image(
+//                modifier = Modifier
+//                    .size(90.dp)
+//                    .padding(8.dp),
+//                painter = painterResource(id = R.drawable.ic_logo),
+//                contentDescription = "logo"
+//            )
+//            Text(
+//                text = "Registrar Actividad",
+//                style = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.Bold),
+//                color = MaterialTheme.colors.primary
+//            )
+//
+//            Spacer(modifier = Modifier.height(24.dp))
+//
+//            // Fields Section with Padding and Spacing
+//            Column(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .background(MaterialTheme.colors.surface, shape = RoundedCornerShape(16.dp))
+//                    .padding(24.dp),
+//                verticalArrangement = Arrangement.spacedBy(16.dp)
+//            ) {
+//                CustomTextField(
+//                    value = viewModel.title.value,
+//                    onValueChange = {
+//                        viewModel.title.value = it
+//                        viewModel.validateTitle()
+//                    },
+//                    label = "Título",
+//                    errorMessage = viewModel.titleError.value ?: "",
+//                    onNextClick = {
+//                        focusManager.moveFocus(FocusDirection.Down)
+//                    }
+//                )
+//
+//                CustomTextField(
+//                    value = viewModel.description.value,
+//                    onValueChange = { viewModel.description.value = it },
+//                    label = "Descripción",
+//                    onNextClick = {
+//                        focusManager.moveFocus(FocusDirection.Down)
+//                    }
+//                )
+//
+//                CustomDatePicker(
+//                    label = "Fecha de Inicio",
+//                    selectedDate = viewModel.startDate.value,
+//                    onDateSelected = {
+//                        viewModel.startDate.value = it
+//                        viewModel.validateStartDate()
+//                    },
+////                        modifier = Modifier.weight(1f)
+//                )
+//
+////                Spacer(modifier = Modifier.height(5.dp))
+//
+//                CustomDatePicker(
+//                    label = "Fecha de Finalización",
+//                    selectedDate = viewModel.endDate.value,
+//                    onDateSelected = {
+//                        viewModel.endDate.value = it
+//                        viewModel.validateEndDate()
+//                    },
+////                        modifier = Modifier.weight(1f)
+//                )
+//
+////                Spacer(modifier = Modifier.height(5.dp))
+//
+//                if (id == null) {
+//                    CustomSelect(
+//                        label = "Status",
+//                        options = Status.values().toList(),
+//                        selectedOption = listOf(viewModel.status.value),
+//                        onOptionSelected = { selected ->
+//                            if (selected.isNotEmpty()) viewModel.status.value = selected.first()
+//                            viewModel.validateStatus()
+//                        },
+//                        multiple = false,
+//                        optionDisplay = { it.displayName }
+//                    )
+//                }
+//            }
+//
+//            Spacer(modifier = Modifier.height(24.dp))
+//
+//            // Button Section
+//            CustomButton(
+//                text = "Crear Actividad",
+//                style = NavigationButtonStyle.SolidGradient,
+//                color1 = MaterialTheme.colors.primary,
+//                color2 = MaterialTheme.colors.primaryVariant,
+//                onClick = {
+//                    scope.launch {
+//                        viewModel.executeActivityRequest(id, idCourse)
+//                    }
+//                },
+//                disabled = !viewModel.isFormValid,
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .height(50.dp)
+//                    .clip(RoundedCornerShape(16.dp))
+//            )
+//        }
     }
 
     LaunchedEffect(key1 = activityInfoState.value) {

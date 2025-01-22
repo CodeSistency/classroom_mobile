@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.classroom.common.composables.RetryComponent.RetryComponent
 import com.example.classroom.presentation.navigation.Destination
 import com.example.classroom.presentation.screens.activity.ActivityViewmodel
 import com.example.classroom.presentation.screens.course.CourseViewmodel
@@ -76,17 +77,25 @@ fun ListUsers(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = "No hay cursos")
-                Spacer(modifier = Modifier.height(10.dp))
-                IconButton(onClick = {
+
+                RetryComponent(mensaje = "No se consiguieron usuarios incritos", onRetryClick = {
                     scope.launch {
                         courseViewmodel.getUsersByCourseRemote(id)
                         courseViewmodel.getUsersByCourseLocal(id)
                         viewModel.getActivitiesByCourse(id)
                     }
-                }) {
-                    Icon(Icons.Outlined.Sync, contentDescription = null)
-                }
+                })
+//                Text(text = "No hay cursos")
+//                Spacer(modifier = Modifier.height(10.dp))
+//                IconButton(onClick = {
+//                    scope.launch {
+//                        courseViewmodel.getUsersByCourseRemote(id)
+//                        courseViewmodel.getUsersByCourseLocal(id)
+//                        viewModel.getActivitiesByCourse(id)
+//                    }
+//                }) {
+//                    Icon(Icons.Outlined.Sync, contentDescription = null)
+//                }
             }
         } else {
             LazyColumn(

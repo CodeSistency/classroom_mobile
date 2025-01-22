@@ -45,6 +45,7 @@ import androidx.navigation.NavController
 import com.example.classroom.common.composables.CustomButton.CustomButton
 import com.example.classroom.common.composables.CustomButton.NavigationButtonStyle
 import com.example.classroom.common.composables.CustomInput.CustomTextField
+import com.example.classroom.common.composables.FormWrapper.FormWrapper
 import com.example.classroom.common.composables.PreviewFile.FilePreview
 import com.example.classroom.common.composables.customDialogs.SetupCustomDialog
 import com.example.classroom.common.composables.customDialogs.SetupCustomDialogState
@@ -101,15 +102,16 @@ var context = LocalContext.current
                 }
             }
         ){
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                // Document preview and download
-                if (submission.documentUrl != null) {
-                    var downloadProgress by remember { mutableStateOf(0) }
+            FormWrapper {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    // Document preview and download
+                    if (submission.documentUrl != null) {
+                        var downloadProgress by remember { mutableStateOf(0) }
 
 //                    DocumentPreviewComponent(
 //                        documentUrl = submission.documentUrl,
@@ -121,32 +123,32 @@ var context = LocalContext.current
 //                        },
 //                        isDownloading = downloadProgress in 1..99 // Show progress indicator
 //                    )
-                    FilePreview(
-                        submission.documentUrl,
-                        fileName = ""
-                    )
-                } else {
-                    Text(text = "Ningun documento.", style = MaterialTheme.typography.body2)
-                }
+                        FilePreview(
+                            submission.documentUrl,
+                            fileName = ""
+                        )
+                    } else {
+                        Text(text = "Ningun documento.", style = MaterialTheme.typography.body2)
+                    }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                // Display student's comment
-                Text(text = "Comentario del estudiante:", style = MaterialTheme.typography.subtitle1)
-                submission.comment?.let {
-                    Text(
-                        text = it,
-                        style = MaterialTheme.typography.body2,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(Color.LightGray, shape = RoundedCornerShape(8.dp))
-                            .padding(8.dp)
-                    )
-                }
+                    // Display student's comment
+                    Text(text = "Comentario del estudiante:", style = MaterialTheme.typography.subtitle1)
+                    submission.comment?.let {
+                        Text(
+                            text = it,
+                            style = MaterialTheme.typography.body2,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(Color.LightGray, shape = RoundedCornerShape(8.dp))
+                                .padding(8.dp)
+                        )
+                    }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                // Grade input
+                    // Grade input
 //        Text(text = "Calificación (0-100):", style = MaterialTheme.typography.subtitle1)
 //        OutlinedTextField(
 //            value = grade.toString(),
@@ -163,51 +165,160 @@ var context = LocalContext.current
 //        )
 
 
-                CustomTextField(
-                    value = viewModel.grade.value.takeIf { it in 0.0..100.0 }?.toString() ?: "",
-                    onValueChange = { value ->
-                        val sanitizedValue = value.filter { it.isDigit() || it == '.' } // Allow only digits and dot
-                        val newGrade = sanitizedValue.toDoubleOrNull()
+                    CustomTextField(
+                        value = viewModel.grade.value.takeIf { it in 0.0..100.0 }?.toString() ?: "",
+                        onValueChange = { value ->
+                            val sanitizedValue = value.filter { it.isDigit() || it == '.' } // Allow only digits and dot
+                            val newGrade = sanitizedValue.toDoubleOrNull()
 
-                        if (newGrade != null && newGrade in 0.0..100.0) {
-                            viewModel.grade.value = newGrade // Update grade if within range
-                        } else if (value.isEmpty()) {
-                            viewModel.grade.value = 0.0 // Default to 0 if input is empty
+                            if (newGrade != null && newGrade in 0.0..100.0) {
+                                viewModel.grade.value = newGrade // Update grade if within range
+                            } else if (value.isEmpty()) {
+                                viewModel.grade.value = 0.0 // Default to 0 if input is empty
+                            }
+                        },
+                        label = "Calificación (0-100)",
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Done
+                        ),
+                        onNextClick = {
+                            // Handle done or next action
+                            Log.d("CustomTextField", "Grade input completed: ${viewModel.grade.value}")
                         }
-                    },
-                    label = "Calificación (0-100)",
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Done
-                    ),
-                    onNextClick = {
-                        // Handle done or next action
-                        Log.d("CustomTextField", "Grade input completed: ${viewModel.grade.value}")
-                    }
-                )
+                    )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                // Submit grade button
-                CustomButton(
-                    onClick = {
-                        scope.launch {
-                            viewModel.reviewActivity(
-                                body = ReviewEvaluationRequestDto(
-                                    activityId = submission.activityId.toInt(),
-                                    grade = viewModel.grade.value.toInt(),
+                    // Submit grade button
+                    CustomButton(
+                        onClick = {
+                            scope.launch {
+                                viewModel.reviewActivity(
+                                    body = ReviewEvaluationRequestDto(
+                                        activityId = submission.activityId.toInt(),
+                                        grade = viewModel.grade.value.toInt(),
+                                    )
                                 )
-                            )
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    text = "Guardar calificacion",
-                    style = NavigationButtonStyle.SolidGradient,
-                    color2 = Azul,
-                    color1 = AzulGradient
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        text = "Guardar calificacion",
+                        style = NavigationButtonStyle.SolidGradient,
+                        color2 = Azul,
+                        color1 = AzulGradient
 
-                )
+                    )
+                }
+
             }
+//            Column(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(16.dp),
+//                verticalArrangement = Arrangement.spacedBy(8.dp)
+//            ) {
+//                // Document preview and download
+//                if (submission.documentUrl != null) {
+//                    var downloadProgress by remember { mutableStateOf(0) }
+//
+////                    DocumentPreviewComponent(
+////                        documentUrl = submission.documentUrl,
+////                        fileType = getFileType(submission.documentUrl),
+////                        onDownloadFile = { url ->
+////                            viewModel.downloadAndOpenFile(context, url, "file_name.ext") { progress ->
+////                                downloadProgress = progress
+////                            }
+////                        },
+////                        isDownloading = downloadProgress in 1..99 // Show progress indicator
+////                    )
+//                    FilePreview(
+//                        submission.documentUrl,
+//                        fileName = ""
+//                    )
+//                } else {
+//                    Text(text = "Ningun documento.", style = MaterialTheme.typography.body2)
+//                }
+//
+//                Spacer(modifier = Modifier.height(16.dp))
+//
+//                // Display student's comment
+//                Text(text = "Comentario del estudiante:", style = MaterialTheme.typography.subtitle1)
+//                submission.comment?.let {
+//                    Text(
+//                        text = it,
+//                        style = MaterialTheme.typography.body2,
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .background(Color.LightGray, shape = RoundedCornerShape(8.dp))
+//                            .padding(8.dp)
+//                    )
+//                }
+//
+//                Spacer(modifier = Modifier.height(16.dp))
+//
+//                // Grade input
+////        Text(text = "Calificación (0-100):", style = MaterialTheme.typography.subtitle1)
+////        OutlinedTextField(
+////            value = grade.toString(),
+////            onValueChange = { value ->
+////                val newGrade = value.toFloatOrNull()
+////                if (newGrade != null && newGrade in 0f..100f) {
+////                    grade = newGrade
+////                    onGradeChange(newGrade)
+////                }
+////            },
+////            modifier = Modifier.fillMaxWidth(),
+////            singleLine = true,
+////            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
+////        )
+//
+//
+//                CustomTextField(
+//                    value = viewModel.grade.value.takeIf { it in 0.0..100.0 }?.toString() ?: "",
+//                    onValueChange = { value ->
+//                        val sanitizedValue = value.filter { it.isDigit() || it == '.' } // Allow only digits and dot
+//                        val newGrade = sanitizedValue.toDoubleOrNull()
+//
+//                        if (newGrade != null && newGrade in 0.0..100.0) {
+//                            viewModel.grade.value = newGrade // Update grade if within range
+//                        } else if (value.isEmpty()) {
+//                            viewModel.grade.value = 0.0 // Default to 0 if input is empty
+//                        }
+//                    },
+//                    label = "Calificación (0-100)",
+//                    keyboardOptions = KeyboardOptions.Default.copy(
+//                        keyboardType = KeyboardType.Number,
+//                        imeAction = ImeAction.Done
+//                    ),
+//                    onNextClick = {
+//                        // Handle done or next action
+//                        Log.d("CustomTextField", "Grade input completed: ${viewModel.grade.value}")
+//                    }
+//                )
+//
+//                Spacer(modifier = Modifier.height(16.dp))
+//
+//                // Submit grade button
+//                CustomButton(
+//                    onClick = {
+//                        scope.launch {
+//                            viewModel.reviewActivity(
+//                                body = ReviewEvaluationRequestDto(
+//                                    activityId = submission.activityId.toInt(),
+//                                    grade = viewModel.grade.value.toInt(),
+//                                )
+//                            )
+//                        }
+//                    },
+//                    modifier = Modifier.fillMaxWidth(),
+//                    text = "Guardar calificacion",
+//                    style = NavigationButtonStyle.SolidGradient,
+//                    color2 = Azul,
+//                    color1 = AzulGradient
+//
+//                )
+//            }
 
         }
     }
