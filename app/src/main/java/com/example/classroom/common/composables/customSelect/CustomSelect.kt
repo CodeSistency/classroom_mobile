@@ -35,7 +35,7 @@ fun <T> CustomSelect(
         selectedOption.firstOrNull()?.let { optionDisplay(it) } ?: ""
     }
 
-    Box(modifier = Modifier.padding(horizontal = 8.dp)){
+    Box(modifier = Modifier){
         Column(modifier = modifier) {
             Text(text = label, fontSize = 12.sp, color = Color.Gray)
 

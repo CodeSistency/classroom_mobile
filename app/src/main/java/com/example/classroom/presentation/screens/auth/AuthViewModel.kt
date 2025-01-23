@@ -370,8 +370,24 @@ class AuthViewModel(
     }
 
     fun cleanData() {
+
         _stateLoginUser.value = SignInState(isLoading = false, error = null, info = null)
         _stateRegisterUser.value = SignUpState(isLoading = false, error = null, info = null)
+
+                nameError.value = null
+                lastnameError.value = null
+                usernameError.value = null
+                passwordError.value = null
+                emailError.value = null
+                birthdateError.value = null
+                phoneError.value = null
+                name.value = ""
+                lastname.value = ""
+                username.value = ""
+                password.value = ""
+                email.value = ""
+                birthdate.value = ""
+                phone.value = ""
     }
 
     suspend fun insertUserDb(user: LocalUser){

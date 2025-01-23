@@ -148,12 +148,12 @@ fun SignUpScreenNew(
 
                     }
 
-                    LazyColumn(
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        item {
+
                             //Name input
 
                             CustomTextField(
@@ -303,7 +303,7 @@ fun SignUpScreenNew(
                             )
 
 
-                        }
+
                     }
                 }
 

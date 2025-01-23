@@ -26,6 +26,8 @@ import com.example.classroom.common.composables.customDialogs.dialogs.ErrorDialo
 import com.example.classroom.common.composables.customDialogs.dialogs.LoadingDialog
 import com.example.classroom.common.composables.customDialogs.dialogs.SuccessDialog
 import com.example.classroom.common.composables.customDialogs.dialogs.WarningDialog
+import com.example.classroom.presentation.theme.Exito
+import com.example.classroom.presentation.theme.Warning
 
 
 sealed class SetupCustomDialogState (val messageDialog: String? = null){
@@ -53,8 +55,8 @@ fun SetupCustomDialog(
                 title = "Error!",
                 icon = Icons.Default.Error,
                 iconColor = Color.Red,
-                message = setupCustomDialogState.messageDialog ?: "An unexpected error occurred.",
-                buttonText = "CLOSE",
+                message = setupCustomDialogState.messageDialog ?: "Un error inesperado ha ocurrido.",
+                buttonText = "CERRAR",
                 buttonColor = Color.Red,
                 onDismissRequest = onDismissRequest,
                 onClick = onClick
@@ -62,12 +64,12 @@ fun SetupCustomDialog(
         }
         is SetupCustomDialogState.Success -> {
             StyledDialog(
-                title = "Success!",
+                title = "Exitoso!",
                 icon = Icons.Default.CheckCircle,
                 iconColor = Color.Green,
-                message = setupCustomDialogState.messageDialog ?: "Operation completed successfully.",
+                message = setupCustomDialogState.messageDialog ?: "Operaciòn completada con exito.",
                 buttonText = "OK",
-                buttonColor = Color.Green,
+                buttonColor = Exito,
                 onDismissRequest = onDismissRequest,
                 onClick = onClick
             )
@@ -76,12 +78,12 @@ fun SetupCustomDialog(
             StyledDialog(
                 title = "Warning!",
                 icon = Icons.Default.Warning,
-                iconColor = Color.Yellow,
-                message = setupCustomDialogState.messageDialog ?: "Please be cautious.",
-                buttonText = "UNDERSTOOD",
-                buttonColor = Color.Yellow,
+                iconColor = Warning,
+                message = setupCustomDialogState.messageDialog ?: "Por favor se cuidadoso.",
+                buttonText = "ENTENDIDO",
+                buttonColor = Warning,
                 onDismissRequest = onDismissRequest,
-                secondaryButtonText = "CANCEL",
+                secondaryButtonText = "CANCELAR",
                 secondaryClick = customClick,
                 onClick = onClick
             )

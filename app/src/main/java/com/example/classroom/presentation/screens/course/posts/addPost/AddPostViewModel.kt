@@ -242,6 +242,7 @@ class AddPostViewModel(
 
     fun cleanData() {
         _statePost.value = AddPostState(null, false, null)
+        resetForm()
     }
 
 }

@@ -204,6 +204,7 @@ class AddActivityViewModel(
 
     fun cleanData() {
         _stateAddActivity.value = AddActivityState(false, null, null)
+        resetForm()
     }
 
 }

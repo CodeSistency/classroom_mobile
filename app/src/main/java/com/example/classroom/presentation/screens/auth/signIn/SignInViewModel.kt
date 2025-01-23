@@ -91,6 +91,10 @@ class SignInViewModel(
     fun cleanData(){
         _stateLoginUser.value = SignInState(isLoading = false, info = null,
             error = null)
+        emailError.value = null
+        passwordError.value = null
+        email.value = ""
+        password.value = ""
     }
     suspend fun insertUserDb(user: LocalUser){
         loginRepositoryImp.insertLocalUser(user)

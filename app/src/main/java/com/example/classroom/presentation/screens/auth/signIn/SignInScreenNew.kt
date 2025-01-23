@@ -52,6 +52,7 @@ import com.example.classroom.common.composables.CustomButton.NavigationButtonSty
 import com.example.classroom.common.composables.CustomInput.CustomTextField
 import com.example.classroom.common.composables.CustomInput.ValidationRegex
 import com.example.classroom.common.composables.FormWrapper.FormWrapper
+import com.example.classroom.common.composables.FormWrapper.FormWrapper2
 import com.example.classroom.common.composables.customDialogs.SetupCustomDialog
 import com.example.classroom.common.composables.customDialogs.SetupCustomDialogState
 import com.example.classroom.data.remote.dto.login.signIn.SignInRequestDto
@@ -108,88 +109,172 @@ fun SignInScreenNew(
                 SnackbarHost(hostState = snackbarHost)
             },
         ) {
-            FormWrapper {
-                Column(Modifier.fillMaxSize()) {
-                    Spacer(modifier = Modifier.padding(top = 10.dp))
-                    Box(modifier = Modifier.fillMaxWidth()) {
-                        Image(
-                            modifier = Modifier
-                                .size(width = 200.dp, height = 200.dp)
-                                .align(Alignment.Center)
-                                .padding(vertical = 20.dp),
-                            painter = painterResource(id = R.drawable.ic_logo),
-                            contentDescription = "logo"
-                        )
-
-                    }
-                    LazyColumn(   modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        item {
-                            // Email Input
-                            CustomTextField(
-                                value = viewModel.email.value,
-                                onValueChange = {
-                                    viewModel.email.value = it
-                                    viewModel.validateEmail()
-                                },
-                                label = "Correo Electrónico",
-                                validationRegex = ValidationRegex.Email,
-                                errorMessage = viewModel.emailError.value ?: "",
-                                onNextClick = {
-                                    focusManager.moveFocus(FocusDirection.Down)
-                                }
+            FormWrapper2 {
+                item {
+                    Column(Modifier.fillMaxSize()) {
+                        Spacer(modifier = Modifier.padding(top = 10.dp))
+                        Box(modifier = Modifier.fillMaxWidth()) {
+                            Image(
+                                modifier = Modifier
+                                    .size(width = 200.dp, height = 200.dp)
+                                    .align(Alignment.Center)
+                                    .padding(vertical = 20.dp),
+                                painter = painterResource(id = R.drawable.ic_logo),
+                                contentDescription = "logo"
                             )
 
-                            // Password Input
-                            CustomTextField(
-                                value = viewModel.password.value,
-                                onValueChange = {
-                                    viewModel.password.value = it
-                                    viewModel.validatePassword()
-                                },
-                                label = "Contraseña",
-                                password = true, // Enable password visibility toggle
-                                errorMessage = viewModel.passwordError.value ?: "",
-                                onNextClick = {
-                                    focusManager.moveFocus(FocusDirection.Down)
-                                }
-                            )
+                        }
+                        Column(   modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)) {
 
-                            Spacer(modifier = Modifier.height(16.dp))
-
-                            // Submit Button
-                            CustomButton(
-                                text = "Iniciar Sesión",
-                                style = NavigationButtonStyle.SolidGradient,
-                                color1 = Azul,
-                                color2 = AzulGradient,
-                                onClick = {
-                                    scope.launch {
-                                        viewModel.executeSignIn()
+                                // Email Input
+                                CustomTextField(
+                                    value = viewModel.email.value,
+                                    onValueChange = {
+                                        viewModel.email.value = it
+                                        viewModel.validateEmail()
+                                    },
+                                    label = "Correo Electrónico",
+                                    validationRegex = ValidationRegex.Email,
+                                    errorMessage = viewModel.emailError.value ?: "",
+                                    onNextClick = {
+                                        focusManager.moveFocus(FocusDirection.Down)
                                     }
-                                    // Trigger sign-in execution
-                                },
-                                disabled = !viewModel.isFormValid
-                            )
+                                )
+
+                                // Password Input
+                                CustomTextField(
+                                    value = viewModel.password.value,
+                                    onValueChange = {
+                                        viewModel.password.value = it
+                                        viewModel.validatePassword()
+                                    },
+                                    label = "Contraseña",
+                                    password = true, // Enable password visibility toggle
+                                    errorMessage = viewModel.passwordError.value ?: "",
+                                    onNextClick = {
+                                        focusManager.moveFocus(FocusDirection.Down)
+                                    }
+                                )
+
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                // Submit Button
+                                CustomButton(
+                                    text = "Iniciar Sesión",
+                                    style = NavigationButtonStyle.SolidGradient,
+                                    color1 = Azul,
+                                    color2 = AzulGradient,
+                                    onClick = {
+                                        scope.launch {
+                                            viewModel.executeSignIn()
+                                        }
+                                        // Trigger sign-in execution
+                                    },
+                                    disabled = !viewModel.isFormValid
+                                )
 //                        Box(modifier = Modifier.shadow(8.dp, RoundedCornerShape(16.dp)).fillMaxWidth().height(4.dp))
 
-                            Spacer(modifier = Modifier.height(15.dp))
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                Arrangement.Center,
-                            ) {
-                                Text(text = "¿No tienes una cuenta? Registrate",
-                                    modifier= Modifier.clickable{
-                                        navController.navigate(Destination.REGISTRO.screenRoute)
-                                    })
-                            }
+                                Spacer(modifier = Modifier.height(15.dp))
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    Arrangement.Center,
+                                ) {
+                                    Text(text = "¿No tienes una cuenta? Registrate",
+                                        modifier= Modifier.clickable{
+                                            navController.navigate(Destination.REGISTRO.screenRoute)
+                                        })
+                                }
+
                         }
                     }
-                }
 
+                }
             }
+//            FormWrapper {
+//                Column(Modifier.fillMaxSize()) {
+//                    Spacer(modifier = Modifier.padding(top = 10.dp))
+//                    Box(modifier = Modifier.fillMaxWidth()) {
+//                        Image(
+//                            modifier = Modifier
+//                                .size(width = 200.dp, height = 200.dp)
+//                                .align(Alignment.Center)
+//                                .padding(vertical = 20.dp),
+//                            painter = painterResource(id = R.drawable.ic_logo),
+//                            contentDescription = "logo"
+//                        )
+//
+//                    }
+//                    LazyColumn(   modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(16.dp),
+//                        verticalArrangement = Arrangement.spacedBy(8.dp)) {
+//                        item {
+//                            // Email Input
+//                            CustomTextField(
+//                                value = viewModel.email.value,
+//                                onValueChange = {
+//                                    viewModel.email.value = it
+//                                    viewModel.validateEmail()
+//                                },
+//                                label = "Correo Electrónico",
+//                                validationRegex = ValidationRegex.Email,
+//                                errorMessage = viewModel.emailError.value ?: "",
+//                                onNextClick = {
+//                                    focusManager.moveFocus(FocusDirection.Down)
+//                                }
+//                            )
+//
+//                            // Password Input
+//                            CustomTextField(
+//                                value = viewModel.password.value,
+//                                onValueChange = {
+//                                    viewModel.password.value = it
+//                                    viewModel.validatePassword()
+//                                },
+//                                label = "Contraseña",
+//                                password = true, // Enable password visibility toggle
+//                                errorMessage = viewModel.passwordError.value ?: "",
+//                                onNextClick = {
+//                                    focusManager.moveFocus(FocusDirection.Down)
+//                                }
+//                            )
+//
+//                            Spacer(modifier = Modifier.height(16.dp))
+//
+//                            // Submit Button
+//                            CustomButton(
+//                                text = "Iniciar Sesión",
+//                                style = NavigationButtonStyle.SolidGradient,
+//                                color1 = Azul,
+//                                color2 = AzulGradient,
+//                                onClick = {
+//                                    scope.launch {
+//                                        viewModel.executeSignIn()
+//                                    }
+//                                    // Trigger sign-in execution
+//                                },
+//                                disabled = !viewModel.isFormValid
+//                            )
+////                        Box(modifier = Modifier.shadow(8.dp, RoundedCornerShape(16.dp)).fillMaxWidth().height(4.dp))
+//
+//                            Spacer(modifier = Modifier.height(15.dp))
+//                            Row(
+//                                modifier = Modifier.fillMaxWidth(),
+//                                Arrangement.Center,
+//                            ) {
+//                                Text(text = "¿No tienes una cuenta? Registrate",
+//                                    modifier= Modifier.clickable{
+//                                        navController.navigate(Destination.REGISTRO.screenRoute)
+//                                    })
+//                            }
+//                        }
+//                    }
+//                }
+//
+//            }
 //            Column(Modifier.fillMaxSize()) {
 //                Spacer(modifier = Modifier.padding(top = 10.dp))
 //                Box(modifier = Modifier.fillMaxWidth()) {

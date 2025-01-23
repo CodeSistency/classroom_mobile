@@ -49,7 +49,7 @@ fun LoadingDialog() {
                 CircularProgressIndicator(modifier = Modifier.size(48.dp))
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = "Loading...",
+                    text = "Cargando...",
                     style = MaterialTheme.typography.body1,
                     textAlign = TextAlign.Center
                 )

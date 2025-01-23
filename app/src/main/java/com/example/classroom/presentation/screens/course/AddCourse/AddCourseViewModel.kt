@@ -210,6 +210,7 @@ class AddCourseViewModel(
 
     fun cleanData() {
         _stateCourse.value = AddCourseState(isLoading = false, info = null, error = null)
+        resetForm()
     }
 }
 
