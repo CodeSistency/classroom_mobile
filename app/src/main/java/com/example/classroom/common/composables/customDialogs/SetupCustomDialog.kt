@@ -66,7 +66,7 @@ fun SetupCustomDialog(
             StyledDialog(
                 title = "Exitoso!",
                 icon = Icons.Default.CheckCircle,
-                iconColor = Color.Green,
+                iconColor = Exito,
                 message = setupCustomDialogState.messageDialog ?: "Operaciòn completada con exito.",
                 buttonText = "OK",
                 buttonColor = Exito,
@@ -156,7 +156,10 @@ fun StyledDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(40.dp)
-                        .background(iconColor, shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+                        .background(
+                            iconColor,
+                            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+                        )
                         .padding(horizontal = 16.dp),
                     contentAlignment = Alignment.CenterStart
                 ) {
@@ -174,51 +177,57 @@ fun StyledDialog(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Column(modifier = Modifier.padding(top = 18.dp, start = 8.dp, end = 8.dp, bottom = 12.dp).defaultMinSize(
+                    minHeight = 130.dp
+                )) {
+//                    Spacer(modifier = Modifier.height(8.dp))
 
-                // Message Text
-                Text(
-                    text = message,
-                    style = MaterialTheme.typography.body1,
-                    textAlign = TextAlign.Center
-                )
+                    // Message Text
+                    Text(
+                        text = message,
+                        style = MaterialTheme.typography.body1,
+                        textAlign = TextAlign.Center
+                    )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
-                // Buttons
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // Secondary button (optional)
-                    if (secondaryButtonText != null && secondaryClick != null) {
-                        OutlinedButton(
-                            onClick = secondaryClick,
-                            modifier = Modifier.weight(1f),
+                    // Buttons
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // Secondary button (optional)
+                        if (secondaryButtonText != null && secondaryClick != null) {
+                            OutlinedButton(
+                                onClick = secondaryClick,
+                                modifier = Modifier.weight(1f),
+                                shape = RoundedCornerShape(50), // Rounded corners for the button
+                                border = BorderStroke(1.dp, iconColor)
+                            ) {
+                                Text(
+                                    text = secondaryButtonText,
+                                    style = TextStyle(color = iconColor)
+                                )
+                            }
+                        }
+
+                        // Primary button
+                        Button(
+                            onClick = onClick,
+                            modifier = Modifier.weight(0.75f),
                             shape = RoundedCornerShape(50), // Rounded corners for the button
-                            border = BorderStroke(1.dp, iconColor)
+                            colors = ButtonDefaults.buttonColors(backgroundColor = buttonColor)
                         ) {
                             Text(
-                                text = secondaryButtonText,
-                                style = TextStyle(color = iconColor)
+                                text = buttonText,
+                                color = Color.White
                             )
                         }
                     }
-
-                    // Primary button
-                    Button(
-                        onClick = onClick,
-                        modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(50), // Rounded corners for the button
-                        colors = ButtonDefaults.buttonColors(backgroundColor = buttonColor)
-                    ) {
-                        Text(
-                            text = buttonText,
-                            color = Color.White
-                        )
-                    }
                 }
+
+
             }
         }
     }

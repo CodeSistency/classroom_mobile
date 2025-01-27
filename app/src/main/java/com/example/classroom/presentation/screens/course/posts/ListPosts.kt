@@ -50,7 +50,9 @@ fun ListPosts(viewModel: PostsViewModel, courseId: String, scope: CoroutineScope
         refreshing = postsState.isLoading,
         onRefresh = {
             scope.launch {
-                viewModel.fetchPosts(courseId)
+                viewModel.getPostsByCourseRemote(courseId)
+
+//                viewModel.fetchPosts(courseId)
             }
         }
     )
@@ -72,7 +74,7 @@ fun ListPosts(viewModel: PostsViewModel, courseId: String, scope: CoroutineScope
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
 
-                        RetryComponent(mensaje = "No hay cursos", onRetryClick = {
+                        RetryComponent(mensaje = "No hay publicaciones", onRetryClick = {
                             scope.launch {
                                 viewModel.getPostsByCourseRemote(courseId)
                             }

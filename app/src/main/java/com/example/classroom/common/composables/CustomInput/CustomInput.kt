@@ -39,11 +39,16 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 
 enum class ValidationRegex(val pattern: Regex) {
     Email(Regex("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")),
     Phone(Regex("^\\+[0-9]{2,3} [0-9]{6,10}\$")),
-    Alphanumeric(Regex("^[A-Za-z0-9]+$"))
+    Alphanumeric(Regex("^[A-Za-z0-9]+$")),
+    AlphanumericWithSpaces(Regex("^[A-Za-z0-9 ]+$")),
+    AllCharacters(Regex("^.*\$"))
+
 }
 
 enum class TextFieldState {
@@ -64,7 +69,7 @@ fun CustomTextField(
     borderColor: Color = Color(0xFFB0BEC5),
     successColor: Color = Color(0xFF4CAF50),
     errorColor: Color = Color(0xFFF44336),
-    validationRegex: ValidationRegex = ValidationRegex.Alphanumeric,
+    validationRegex: ValidationRegex = ValidationRegex.AllCharacters,
     password: Boolean = false,
     errorMessage: String = "Invalid input",
     onNextClick: () -> Unit,
@@ -93,7 +98,7 @@ fun CustomTextField(
                         onClick = { expanded = true },
                         shape = RoundedCornerShape(12.dp),
                         border = BorderStroke(1.dp, borderColor),
-                        modifier = Modifier.padding(end = 8.dp)
+                        modifier = Modifier.padding(end = 8.dp).height(48.dp)
                     ) {
                         Text(text = selectedCountryCode, fontSize = 14.sp)
                         Icon(
@@ -140,12 +145,17 @@ fun CustomTextField(
                     }
 
                     // Update the full value including the country code
-                    onValueChange(formattedValue)
+                    onValueChange(if (showCountryCode) formattedValue else input)
 
                     // Validation logic
-                    textFieldState = if (validateInput(formattedValue)) {
+                    textFieldState = if (validateInput(if (showCountryCode) formattedValue else input)) {
                         displayErrorMessage = false
-                        if (phoneNumberPart.isNotEmpty()) TextFieldState.Success else TextFieldState.Default
+                        if (showCountryCode){
+                            if (phoneNumberPart.isNotEmpty()) TextFieldState.Success else TextFieldState.Default
+                        }else{
+                            TextFieldState.Success
+                        }
+
                     } else {
                         displayErrorMessage = true
                         TextFieldState.Error
@@ -157,6 +167,7 @@ fun CustomTextField(
                     .height(56.dp)
                     .background(Color.Transparent, shape),
                 shape = shape,
+
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     backgroundColor = Color.White,
                     focusedBorderColor = when (textFieldState) {
@@ -174,6 +185,12 @@ fun CustomTextField(
                         onNextClick()
                     }
                 ),
+                visualTransformation = if (password){
+                    if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation()
+                                                    }else{
+                    VisualTransformation.None
+                                                         },
+
                 enabled = enabled,
                 trailingIcon = {
                     if (password) {

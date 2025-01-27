@@ -492,7 +492,7 @@ class QuizzViewModel(
 
                             // Save the quiz data into the local database
                             result.data?.let {
-                                repositoryBundle.activitiesRepository.insertActivity(it.toLocalActivities(idCourse))
+                                repositoryBundle.activitiesRepository.insertActivity(it.toLocalActivities(idCourse, startDate.value, endDate.value))
     
                                 it.data.activity.post?.let {
                                     repositoryBundle.postsRepositoryImpl.insertPost(

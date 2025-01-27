@@ -41,9 +41,12 @@ fun CourseProfesorScreen(
     email: String,
     navController: NavController
 ){
+
+    val courseInfo = courseViewmodel.courseFlow.collectAsState(initial = null)
+
     Scaffold(
         topBar = {
-            TopBarProfessor(navController = navController)
+            TopBarProfessor(navController = navController, courseViewmodel)
         }
     ) {
         CourseProfessorPresentation(viewModel = viewModel, courseViewmodel = courseViewmodel, postsViewModel = App.appModule.postViewModel, addActivityViewModel = addActivityViewModel, id = id, addCourseViewModel = addCourseViewModel, navController =  navController)
@@ -52,20 +55,29 @@ fun CourseProfesorScreen(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.BottomEnd
                 ) {
-                    // Your main content goes here
-                    FloatingActionButton(
-                        modifier = Modifier.padding(bottom = 16.dp, end = 16.dp), // Add padding
-                        onClick = {
-                            isDialogOpen = true
-                        },
-                        backgroundColor = Azul
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = "Carta",
-                            tint = Color.White
-                        )
+            courseInfo.value.let {
+                if (it != null){
+                    if (it.verified){
+
+                        // Your main content goes here
+                        FloatingActionButton(
+                            modifier = Modifier.padding(bottom = 16.dp, end = 16.dp), // Add padding
+                            onClick = {
+                                isDialogOpen = true
+                            },
+                            backgroundColor = Azul
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = "Carta",
+                                tint = Color.White
+                            )
+                        }
+
                     }
+                }
+            }
+
                 }
         if (isDialogOpen){
             SelectedOptionDialog(dismissDialog = { isDialogOpen = false }, navController = navController, id, email)

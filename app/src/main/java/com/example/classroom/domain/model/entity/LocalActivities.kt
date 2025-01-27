@@ -112,7 +112,7 @@ fun GetActivitiesWithQuizzResponseDto.Activity.toLocalActivity(): LocalActivitie
 }
 
 
-fun CreateQuizzResponseDto.toLocalActivities(idCourse: String): LocalActivities {
+fun CreateQuizzResponseDto.toLocalActivities(idCourse: String, startDate: String, endDate: String): LocalActivities {
     val activity = this.data.activity
     return LocalActivities(
         idApi = activity.id.toString(),
@@ -120,8 +120,8 @@ fun CreateQuizzResponseDto.toLocalActivities(idCourse: String): LocalActivities 
         title = activity.title,
         description = activity.description,
         grade = activity.grade ?: 0.0,
-        startDate = activity.startDate ?: "",
-        endDate = activity.endDate ?: "",
+        startDate = startDate,
+        endDate = endDate,
         status = Status.OPEN,
         isQuizz = activity.isQuizz,
         quizzId = this.data.id.toString()

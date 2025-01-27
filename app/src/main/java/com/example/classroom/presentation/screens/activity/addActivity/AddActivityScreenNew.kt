@@ -127,7 +127,7 @@ fun AddActivityScreenNew(
                 Text(
                     text = "Registrar Actividad",
                     style = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colors.primary
+                    color = Color.Black
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))

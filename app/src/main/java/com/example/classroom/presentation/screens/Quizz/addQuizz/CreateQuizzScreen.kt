@@ -227,7 +227,7 @@ fun CreateQuizzScreen(viewModel: QuizzViewModel, courseId: String, navController
     var dialogState: SetupCustomDialogState by remember { mutableStateOf(SetupCustomDialogState.Default()) }
     var context = LocalContext.current
 
-    val isCreateButtonEnabled = (questions.size > 1 && questions.all { question ->
+    val isCreateButtonEnabled = (questions.size >= 1 && questions.all { question ->
         question.options.isNotEmpty() && question.answer in question.options.indices
     })
 

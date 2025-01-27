@@ -99,7 +99,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class QuizActivityDto(
     val id: Int,
-    @SerialName("courseId")
+    @SerialName("course_id")
     val courseId: Int, // Marked as nullable to handle missing data
     val title: String,
     val description: String,

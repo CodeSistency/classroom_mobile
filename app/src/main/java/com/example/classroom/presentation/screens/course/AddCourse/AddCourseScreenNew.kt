@@ -230,7 +230,7 @@ fun AddCourseScreenNew(
             Text(
                 text = if (id != null) "Actualizar Curso" else "Registrar Curso",
                 style = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.Bold),
-                color = MaterialTheme.colors.primary
+                color = Color.Black
             )
 
             Spacer(modifier = Modifier.height(24.dp))

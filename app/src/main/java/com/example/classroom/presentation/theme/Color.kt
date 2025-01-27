@@ -16,7 +16,7 @@ val secondary = Color(0xFFF44336)
 val secondaryVariant = Color(0xFFFFEB3B)
 val primaryDark = Color(0xFF3C4048)
 val Gris = Color(0xFFE3E3E3)
-val Exito = Color(0xFF0CFF51)
+val Exito = Color(0xFF1CCF4B)
 val Warning = Color(0xFFFFE70C)
 
 

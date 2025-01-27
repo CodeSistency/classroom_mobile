@@ -144,25 +144,27 @@ fun HomePresentation(viewModel: HomeViewmodel, navController: NavController, add
                             )
                         )
                     }
-                    val icon = if (userInfo.value.let { it != null }){
+//Para poner la imagen del usuario
 
-                            if (userInfo.value!!.gender == Gender.Man){
-                                painterResource(R.drawable.ic_male_avatar)
-                            }else if (userInfo.value!!.gender == Gender.Woman){
-                                painterResource(R.drawable.ic_female_avatar)
-                            }else{
-                                painterResource(R.drawable.ic_male_avatar)
-                            }
-
-                    }else{
-                        painterResource(R.drawable.ic_male_avatar)
-                    }
-                    Icon(
-                        icon, contentDescription = null,
-                        modifier = Modifier
-                            .size(70.dp)
-                            .background(Color.White, CircleShape)
-                            .padding(horizontal = 5.dp))
+//                    val icon = if (userInfo.value.let { it != null }){
+//
+//                            if (userInfo.value!!.gender == Gender.Man){
+//                                painterResource(R.drawable.ic_male_avatar)
+//                            }else if (userInfo.value!!.gender == Gender.Woman){
+//                                painterResource(R.drawable.ic_female_avatar)
+//                            }else{
+//                                painterResource(R.drawable.ic_male_avatar)
+//                            }
+//
+//                    }else{
+//                        painterResource(R.drawable.ic_male_avatar)
+//                    }
+//                    Icon(
+//                        icon, contentDescription = null,
+//                        modifier = Modifier
+//                            .size(70.dp)
+//                            .background(Color.White, CircleShape)
+//                            .padding(horizontal = 5.dp))
                 }
                 Spacer(modifier = Modifier.height(10.dp))
                 OutlinedTextField(
