@@ -40,6 +40,7 @@ import com.example.classroom.presentation.navigation.Destination
 import com.example.classroom.presentation.screens.activity.addActivity.AddActivityViewModel
 import com.example.classroom.presentation.theme.Azul2
 import com.example.classroom.presentation.theme.PaddingCustom
+import java.text.ParseException
 
 import java.text.SimpleDateFormat
 import java.util.*
@@ -60,7 +61,17 @@ fun CardActivity(
 
     val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     val currentDate = Date()
-    val endDate = dateFormatter.parse(activity.endDate) ?: currentDate
+    val endDate = if (activity.endDate.isNotBlank()) {
+        try {
+            dateFormatter.parse(activity.endDate) ?: currentDate
+        } catch (e: ParseException) {
+            currentDate // Fallback to current date in case of parsing failure
+        }
+    } else {
+        currentDate // Fallback if the date string is empty
+    }
+
+//    val endDate = dateFormatter.parse(activity.endDate) ?: currentDate
     val isDatePast = endDate.before(currentDate)
 
     Box(modifier = Modifier) {
