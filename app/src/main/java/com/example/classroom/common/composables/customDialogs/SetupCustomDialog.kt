@@ -127,8 +127,6 @@ fun SetupCustomDialog(
 //    }    }
 //}
 
-
-
 @Composable
 fun StyledDialog(
     title: String,
@@ -144,94 +142,208 @@ fun StyledDialog(
 ) {
     Dialog(onDismissRequest = onDismissRequest) {
         Card(
-            shape = RoundedCornerShape(16.dp), // Rounded corners for the dialog
-//            modifier = Modifier.padding(16.dp)
+            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier
+                .width(300.dp) // Tamaño fijo del diálogo
+                .wrapContentHeight() // Ajustar la altura según el contenido
         ) {
             Column(
-//                modifier = Modifier.padding(24.dp),
+//                modifier = Modifier.padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Header with color corresponding to the status (red for error, green for success, etc.)
+                // Encabezado
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
+
                         .height(40.dp)
                         .background(
                             iconColor,
                             shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
-                        )
-                        .padding(horizontal = 16.dp),
+                        ),
                     contentAlignment = Alignment.CenterStart
                 ) {
-                    Icon(
-                        icon,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.h6,
-                        color = Color.White,
-                        modifier = Modifier.padding(start = 32.dp) // Position the title properly
-                    )
-                }
-
-                Column(modifier = Modifier.padding(top = 18.dp, start = 8.dp, end = 8.dp, bottom = 12.dp).defaultMinSize(
-                    minHeight = 130.dp
-                )) {
-//                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // Message Text
-                    Text(
-                        text = message,
-                        style = MaterialTheme.typography.body1,
-                        textAlign = TextAlign.Center
-                    )
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    // Buttons
                     Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // Secondary button (optional)
-                        if (secondaryButtonText != null && secondaryClick != null) {
-                            OutlinedButton(
-                                onClick = secondaryClick,
-                                modifier = Modifier.weight(1f),
-                                shape = RoundedCornerShape(50), // Rounded corners for the button
-                                border = BorderStroke(1.dp, iconColor)
-                            ) {
-                                Text(
-                                    text = secondaryButtonText,
-                                    style = TextStyle(color = iconColor)
-                                )
-                            }
-                        }
-
-                        // Primary button
-                        Button(
-                            onClick = onClick,
-                            modifier = Modifier.weight(0.75f),
-                            shape = RoundedCornerShape(50), // Rounded corners for the button
-                            colors = ButtonDefaults.buttonColors(backgroundColor = buttonColor)
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(horizontal = 10.dp)
                         ) {
-                            Text(
-                                text = buttonText,
-                                color = Color.White
-                            )
-                        }
+                        Icon(
+                            icon,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = title,
+                            style = MaterialTheme.typography.h6,
+                            color = Color.White
+                        )
                     }
                 }
 
+                Spacer(modifier = Modifier.height(16.dp))
 
+                // Contenedor del mensaje centrado
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f, fill = false) // No ocupar todo el espacio vertical
+                        .padding(vertical = 16.dp), // Espaciado vertical
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = message,
+                        style = MaterialTheme.typography.body1,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(horizontal = 10.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Botones
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    // Botón secundario (opcional)
+                    if (secondaryButtonText != null && secondaryClick != null) {
+                        OutlinedButton(
+                            onClick = secondaryClick,
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(50),
+                            border = BorderStroke(1.dp, iconColor)
+                        ) {
+                            Text(
+                                text = secondaryButtonText,
+                                style = TextStyle(color = iconColor)
+                            )
+                        }
+                    }
+
+                    // Botón principal
+                    Button(
+                        onClick = onClick,
+                        modifier = Modifier.weight(1f).padding(10.dp),
+                        shape = RoundedCornerShape(50),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = buttonColor)
+                    ) {
+                        Text(
+                            text = buttonText,
+                            color = Color.White
+                        )
+                    }
+                }
             }
         }
     }
 }
+
+
+//@Composable
+//fun StyledDialog(
+//    title: String,
+//    icon: ImageVector,
+//    iconColor: Color,
+//    message: String,
+//    buttonText: String,
+//    buttonColor: Color,
+//    onDismissRequest: () -> Unit = {},
+//    secondaryButtonText: String? = null,
+//    secondaryClick: (() -> Unit)? = null,
+//    onClick: () -> Unit
+//) {
+//    Dialog(onDismissRequest = onDismissRequest) {
+//        Card(
+//            shape = RoundedCornerShape(16.dp), // Rounded corners for the dialog
+////            modifier = Modifier.padding(16.dp)
+//        ) {
+//            Column(
+////                modifier = Modifier.padding(24.dp),
+//                horizontalAlignment = Alignment.CenterHorizontally
+//            ) {
+//                // Header with color corresponding to the status (red for error, green for success, etc.)
+//                Box(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .height(40.dp)
+//                        .background(
+//                            iconColor,
+//                            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+//                        )
+//                        .padding(horizontal = 16.dp),
+//                    contentAlignment = Alignment.CenterStart
+//                ) {
+//                    Icon(
+//                        icon,
+//                        contentDescription = null,
+//                        tint = Color.White,
+//                        modifier = Modifier.size(24.dp)
+//                    )
+//                    Text(
+//                        text = title,
+//                        style = MaterialTheme.typography.h6,
+//                        color = Color.White,
+//                        modifier = Modifier.padding(start = 32.dp) // Position the title properly
+//                    )
+//                }
+//
+//                Column(modifier = Modifier.padding(top = 18.dp, start = 8.dp, end = 8.dp, bottom = 12.dp).defaultMinSize(
+//                    minHeight = 130.dp
+//                )) {
+////                    Spacer(modifier = Modifier.height(8.dp))
+//
+//                    // Message Text
+//                    Text(
+//                        text = message,
+//                        style = MaterialTheme.typography.body1,
+//                        textAlign = TextAlign.Center
+//                    )
+//
+//                    Spacer(modifier = Modifier.height(24.dp))
+//
+//                    // Buttons
+//                    Row(
+//                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+//                        modifier = Modifier.fillMaxWidth(),
+//                        verticalAlignment = Alignment.CenterVertically
+//                    ) {
+//                        // Secondary button (optional)
+//                        if (secondaryButtonText != null && secondaryClick != null) {
+//                            OutlinedButton(
+//                                onClick = secondaryClick,
+//                                modifier = Modifier.weight(1f),
+//                                shape = RoundedCornerShape(50), // Rounded corners for the button
+//                                border = BorderStroke(1.dp, iconColor)
+//                            ) {
+//                                Text(
+//                                    text = secondaryButtonText,
+//                                    style = TextStyle(color = iconColor)
+//                                )
+//                            }
+//                        }
+//
+//                        // Primary button
+//                        Button(
+//                            onClick = onClick,
+//                            modifier = Modifier.weight(0.75f),
+//                            shape = RoundedCornerShape(50), // Rounded corners for the button
+//                            colors = ButtonDefaults.buttonColors(backgroundColor = buttonColor)
+//                        ) {
+//                            Text(
+//                                text = buttonText,
+//                                color = Color.White
+//                            )
+//                        }
+//                    }
+//                }
+//
+//
+//            }
+//        }
+//    }
+//}
 @Composable
 fun CardDialogParent(
     showButton: Boolean = false,

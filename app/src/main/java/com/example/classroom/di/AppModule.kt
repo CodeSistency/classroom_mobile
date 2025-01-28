@@ -408,6 +408,4 @@ class AppModuleImpl(
         ).fallbackToDestructiveMigrationFrom(1,2).build()
     }
 
-
-
 }

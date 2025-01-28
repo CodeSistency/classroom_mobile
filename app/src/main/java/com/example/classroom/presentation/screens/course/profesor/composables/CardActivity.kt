@@ -171,7 +171,7 @@ fun CardActivity(
             loading = false,
             action = { action() },
             dismissDialog = { isDeleteOpen = false },
-            icon = painterResource(id = R.drawable.ic_logout)
+            icon = painterResource(id = R.drawable.ic_cancel)
         )
     }
 }

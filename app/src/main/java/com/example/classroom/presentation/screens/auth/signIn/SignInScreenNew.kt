@@ -185,6 +185,7 @@ fun SignInScreenNew(
                                     Text(text = "¿No tienes una cuenta? Registrate",
                                         modifier= Modifier.clickable{
                                             navController.navigate(Destination.REGISTRO.screenRoute)
+                                            viewModel.cleanData()
                                         })
                                 }
 

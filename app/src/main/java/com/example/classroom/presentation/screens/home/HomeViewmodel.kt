@@ -77,34 +77,6 @@ class HomeViewmodel(
 
 
 
-//    val listCoursesFlow: StateFlow<List<LocalCourses>> = channelFlow {
-//        _userInfo.filterNotNull().collectLatest { user ->
-//            Log.e("DB Flow", "Database emitted user: ${user}")
-//
-//            repositoryBundle.coursesRepository.getCoursesWithFlow().collect { courses ->
-//
-//                Log.e("DB Flow", "Database emitted courses: ${courses.size}")
-//
-//                Log.e("courses", courses.toString())
-//                send(courses.filter { it.owner != user.idApi })
-//            }
-//        }
-//    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
-//
-//    val listMyCoursesFlow: StateFlow<List<LocalCourses>> = channelFlow {
-//        _userInfo.filterNotNull().collectLatest { user ->
-//            Log.e("DB Flow", "Database emitted user: ${user}")
-//
-//            repositoryBundle.coursesRepository.getCoursesWithFlow().collect { courses ->
-//                Log.e("my courses", courses.toString())
-//                Log.e("DB Flow", "Database emitted courses: ${courses.size}")
-//
-//
-//                send(courses.filter { it.owner == user.idApi })
-//            }
-//        }
-//    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
-
 
 
     // Mutable states for filtering course lists
@@ -143,23 +115,6 @@ class HomeViewmodel(
             notificationDao.getUnseenCount().collect { count ->
                 _unseenCount.value = count
             }
-
-//            // Establece el flujo de cursos para todos los cursos
-//            repositoryBundle.coursesRepository.getCoursesWithFlow()
-//                .collect { courses ->
-//                    Log.e("cursos", courses.toString())
-//
-//                    _listCoursesFlow.value = courses
-//                }
-//
-//            // Establece el flujo de cursos solo para los cursos del usuario
-//            _userInfo.filterNotNull().collectLatest { user ->
-//                repositoryBundle.coursesRepository.getCoursesWithFlow()
-//                    .collect { courses ->
-//                        Log.e("mis cursos", courses.toString())
-//                        _listMyCoursesFlow.value = courses.filter { it.owner == user.idApi }
-//                    }
-//            }
 
         }
 
@@ -208,47 +163,6 @@ class HomeViewmodel(
                 }
         }
 
-//        _userInfo.filterNotNull().collectLatest { user ->
-//
-//            _listCoursesFlow.value = courses.filter { it.idApi == user.idApi }
-//
-//            Log.e("lista de cursos", _listCoursesFlow.value.toString())
-//
-//            _listMyCoursesFlow.value = courses.filter { it.idApi.toString() != user.idApi.toString() }
-//
-//            Log.e("lista de mis cursos", _listMyCoursesFlow.value.toString())
-//
-//
-//            observeListAndFilter()
-//        }
-
-
-
-
-//        _userInfo.filterNotNull().collectLatest { user ->
-//            repositoryBundle.coursesRepository.getCoursesWithFlow()
-//                .collect { courses ->
-//                    Log.e("mis cursos", courses.toString())
-//                    Log.e("user", user.idApi.toString())
-//                    _listCoursesFlow.value = courses.filter {
-//                        it.owner != user.idApi }
-//                }
-//        }
-//
-//        // Establece el flujo de cursos solo para los cursos del usuario
-//        _userInfo.filterNotNull().collectLatest { user ->
-//            repositoryBundle.coursesRepository.getCoursesWithFlow()
-//                .collect { courses ->
-//                    Log.e("mis cursos", courses.toString())
-//                    Log.e("user", user.idApi.toString())
-//                    _listMyCoursesFlow.value = courses.filter {
-//                        it.owner == user.idApi }
-//
-//                    Log.e("mis cursos 2", _listMyCoursesFlow.toString())
-//                }
-//        }
-
-//        observeListAndFilter()
 
 
     }
@@ -319,6 +233,8 @@ class HomeViewmodel(
                         _coursesPaginationState.value = _coursesPaginationState.value.copy(
                             items = it.filter { course -> course.idApi != id }
                         )
+
+
                     }
                 }
             }
@@ -377,39 +293,6 @@ class HomeViewmodel(
         }
     }
 
-//    private fun filterCourses() {
-//        viewModelScope.launch {
-////            val allCourses = _coursesPaginationState.value.items
-////
-////            val allMyCourses = _myCoursesPaginationState.value.items
-//
-//            Log.e("list courses", listCoursesFlow.value.toString())
-//            Log.e("list my courses", listMyCoursesFlow.value.toString())
-//
-//            _userInfo.filterNotNull().collectLatest { user ->
-//
-//                Log.e("userInfo", user.toString())
-//
-//                // Filter for all courses list
-//                _filteredListCoursesFlow.value = if (coursesInput.value.isNotEmpty()) {
-//                    listCoursesFlow.value.filter { it.title.contains(coursesInput.value, ignoreCase = true) && it.owner != user.idApi }
-//                } else {
-//                    listCoursesFlow.value
-//                }
-//
-//                // Filter for my courses list
-//                _filteredListMyCoursesFlow.value = if (myCoursesInput.value.isNotEmpty()) {
-//                    listMyCoursesFlow.value.filter { it.title.contains(myCoursesInput.value, ignoreCase = true) && it.owner == user.idApi }
-//                } else {
-//                    listMyCoursesFlow.value.filter { it.owner == _userInfo.value?.idApi }
-//                }
-//            }
-//
-//
-//
-//        }
-//    }
-
 
     // Observe changes in listCoursesFlow and coursesInput separately to update _filteredListCoursesFlow
     private fun observeListAndFilter() {
@@ -425,54 +308,6 @@ class HomeViewmodel(
             }
         }
     }
-
-//    private fun observeListAndFilter() {
-//        // Observe changes in listCoursesFlow and coursesInput separately to update _filteredListCoursesFlow
-//        viewModelScope.launch {
-//            listCoursesFlow.collectLatest { courses ->
-//                val input = coursesInput.value
-//                _filteredListCoursesFlow.value = if (input.isEmpty()) {
-//                    courses
-//                } else {
-//                    courses.filter { it.title.startsWith(input, ignoreCase = true) }
-//                }
-//            }
-//        }
-//
-//        viewModelScope.launch {
-//            coursesInput.collectLatest { input ->
-//                val courses = listCoursesFlow.value
-//                _filteredListCoursesFlow.value = if (input.isEmpty()) {
-//                    courses
-//                } else {
-//                    courses.filter { it.title.startsWith(input, ignoreCase = true) }
-//                }
-//            }
-//        }
-//
-//        // Observe changes in listMyCoursesFlow and myCoursesInput separately to update _filteredListMyCoursesFlow
-//        viewModelScope.launch {
-//            listMyCoursesFlow.collectLatest { courses ->
-//                val input = myCoursesInput.value
-//                _filteredListMyCoursesFlow.value = if (input.isEmpty()) {
-//                    courses
-//                } else {
-//                    courses.filter { it.title.startsWith(input, ignoreCase = true) }
-//                }
-//            }
-//        }
-//
-//        viewModelScope.launch {
-//            myCoursesInput.collectLatest { input ->
-//                val courses = listMyCoursesFlow.value
-//                _filteredListMyCoursesFlow.value = if (input.isEmpty()) {
-//                    courses
-//                } else {
-//                    courses.filter { it.title.startsWith(input, ignoreCase = true) }
-//                }
-//            }
-//        }
-//    }
 
 
 
