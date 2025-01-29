@@ -154,20 +154,22 @@ class SubmissionViewModel(
                     }
                     Log.e("submitStudentResponse", "File uploaded successfully: $fileUrl")
                 } catch (e: Exception) {
-                    onSubmissionFailure("File upload failed after retries: ${e.message}")
+                    onSubmissionFailure("${e.message}")
                     return@launch
                 }
 
                 // Step 2: Retry Activity Submission
                 try {
                     retryOperation(times = 3, delayMillis = 2000L) {
+                        var dto =  SendEvaluationRequestDto(
+                            userId = userId.toInt(),
+                            activityId = activityId.toInt(),
+                            message = message,
+                            document = fileUrl
+                        )
+                        Log.e("dto", dto.toString())
                         studentSendActivityUseCase(
-                            SendEvaluationRequestDto(
-                                userId = userId.toInt(),
-                                activityId = activityId.toInt(),
-                                message = message,
-                                document = fileUrl!!
-                            ),
+                            dto,
                             idCourse
                         ).collect { result ->
                             when (result) {
