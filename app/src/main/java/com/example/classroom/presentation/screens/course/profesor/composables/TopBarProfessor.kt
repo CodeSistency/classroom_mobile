@@ -18,11 +18,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.classroom.App
+import com.example.classroom.presentation.navigation.Destination
+import com.example.classroom.presentation.screens.course.AddCourse.AddCourseViewModel
 import com.example.classroom.presentation.screens.course.CourseViewmodel
 import com.example.classroom.presentation.theme.Azul
 
 @Composable
-fun TopBarProfessor(navController: NavController, courseViewmodel: CourseViewmodel){
+fun TopBarProfessor(navController: NavController, courseViewmodel: CourseViewmodel, addCourseViewModel: AddCourseViewModel = App.appModule.addCourseViewModel){
     val courseInfo = courseViewmodel.courseFlow.collectAsState(initial = null)
 
     Row(
@@ -41,11 +44,12 @@ fun TopBarProfessor(navController: NavController, courseViewmodel: CourseViewmod
 
                     // Your main content goes here
                     //Aqui es donde se va a poder editar el curso
-//                    IconButton(onClick = {
-//
-//                    }) {
-//                        Icon(imageVector = Icons.Default.Edit, contentDescription = null,  tint = Color.White)
-//                    }
+                    IconButton(onClick = {
+                        addCourseViewModel.fillForm(it)
+                        navController.navigate("${Destination.REGISTRO_COURSE.screenRoute}?id=${it.idApi}")
+                    }) {
+                        Icon(imageVector = Icons.Default.Edit, contentDescription = null,  tint = Color.White)
+                    }
 
                 }
             }

@@ -16,6 +16,9 @@ interface PostsRepository {
 
     suspend fun deletePost(post: LocalPost)
 
+    suspend fun deletePostById(idApi: String)
+
+
     fun getPostsByCourse(courseId: String): Flow<List<LocalPost>>
 
     suspend fun getPostById(postId: Int): LocalPost?

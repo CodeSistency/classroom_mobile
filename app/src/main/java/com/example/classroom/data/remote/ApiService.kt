@@ -16,12 +16,14 @@ import com.example.classroom.domain.model.entity.LocalActivities
 import com.example.classroom.domain.model.entity.LocalCourses
 import kotlinx.coroutines.flow.Flow
 import com.example.classroom.common.ResponseGenericAPi
+import com.example.classroom.data.remote.dto.activities.DeleteActivityResponseDto
 import com.example.classroom.data.remote.dto.activities.GetActivitiesWithQuizzResponseDto
 import com.example.classroom.data.remote.dto.chat.ChatRoomDTO
 import com.example.classroom.data.remote.dto.chat.MessageDTO
 import com.example.classroom.data.remote.dto.chat.TypingStatusDTO
 import com.example.classroom.data.remote.dto.chat.UserStatusDTO
 import com.example.classroom.data.remote.dto.cloud.CloudResposeDto
+import com.example.classroom.data.remote.dto.courses.DeleteCourseResponseDto
 import com.example.classroom.data.remote.dto.courses.GetUsersByCourseResponse
 import com.example.classroom.data.remote.dto.evaluations.evaluationsSent.EvaluationsSentResponseDto
 import com.example.classroom.data.remote.dto.evaluations.reviewEvaluationDto.ReviewEvaluationRequestDto
@@ -49,7 +51,7 @@ interface ApiService {
     //Course Methods
     suspend fun insertCourseRemote(course: CourseRequestDto) : ResponseGenericAPi<CourseResponseDto>
     suspend fun updateCourseRemote(course: CourseRequestDto, id: String) : ResponseGenericAPi<CourseResponseDto>
-    suspend fun deleteCourseRemote(id: String) : ResponseGenericAPi<Boolean>
+    suspend fun deleteCourseRemote(id: String) : ResponseGenericAPi<DeleteCourseResponseDto>
     suspend fun getCoursesRemote(id: String) : ResponseGenericAPi<GetCoursesResponseDto>
     suspend fun getCourseByIdRemote(id: String) : ResponseGenericAPi<CourseResponseDto>
     suspend fun getUsersByCourseRemote(id: String) : ResponseGenericAPi<GetUsersByCourseResponse>
@@ -60,7 +62,7 @@ interface ApiService {
     //Activity Methods
     suspend fun insertActivityRemote(activity: ActivityRequestDto) : ResponseGenericAPi<ActivityResponseDto>
     suspend fun updateActivityRemote(activity: ActivityRequestDto, id: String) : ResponseGenericAPi<ActivityResponseDto>
-    suspend fun deleteActivityRemote(id: String) : ResponseGenericAPi<Boolean>
+    suspend fun deleteActivityRemote(id: String) : ResponseGenericAPi<DeleteActivityResponseDto>
     suspend fun getActivitiesRemote(id: String) : ResponseGenericAPi<GetActivitiesResponseDto>
     suspend fun getActivitiesByCourseRemote(id: String) : ResponseGenericAPi<GetActivitiesWithQuizzResponseDto>
     suspend fun getActivitiesByUserRemote(id: String) : ResponseGenericAPi<GetActivitiesResponseDto>

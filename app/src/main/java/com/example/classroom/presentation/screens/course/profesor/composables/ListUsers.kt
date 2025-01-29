@@ -101,7 +101,7 @@ fun ListUsers(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(bottom = 5.dp)
+                    .padding(bottom = 45.dp)
             ) {
                 items(items) { student ->
                     Box(modifier = Modifier.padding(vertical = 6.dp, horizontal = 2.dp)) {

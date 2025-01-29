@@ -131,17 +131,17 @@ fun CardActivity(
                 }
 
                 Row {
-                    IconButton(onClick = {
-                        viewModel.fillForm(activity)
-                        navController.navigate(Destination.REGISTRO_ACTIVITY.screenRoute + "?idCourse=${activity.idCourse}&id=${activity.idApi}")
-                    }) {
-                        Icon(
-                            Icons.Default.Edit,
-                            contentDescription = null,
-                            tint = Color.Gray,
-                            modifier = Modifier.size(25.dp)
-                        )
-                    }
+//                    IconButton(onClick = {
+//                        viewModel.fillForm(activity)
+//                        navController.navigate(Destination.REGISTRO_ACTIVITY.screenRoute + "?idCourse=${activity.idCourse}&id=${activity.idApi}")
+//                    }) {
+//                        Icon(
+//                            Icons.Default.Edit,
+//                            contentDescription = null,
+//                            tint = Color.Gray,
+//                            modifier = Modifier.size(25.dp)
+//                        )
+//                    }
                     IconButton(onClick = {
                         isDeleteOpen = true
                     }) {

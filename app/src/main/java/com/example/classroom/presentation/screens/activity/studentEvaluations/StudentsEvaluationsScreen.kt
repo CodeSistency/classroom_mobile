@@ -143,11 +143,11 @@ fun StudentsEvaluationsScreen(
             }
 
             // PullRefreshIndicator to show loading at the top
-            PullRefreshIndicator(
-                refreshing = uiState.isLoading,
-                state = pullRefreshState,
-                modifier = Modifier.align(Alignment.TopCenter)
-            )
+//            PullRefreshIndicator(
+//                refreshing = uiState.isLoading,
+//                state = pullRefreshState,
+//                modifier = Modifier.align(Alignment.TopCenter)
+//            )
         }
     }
 }

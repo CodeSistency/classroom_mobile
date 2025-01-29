@@ -48,6 +48,7 @@ fun CardCourses(
     course: LocalCourses,
     email: String,
     isOwner: Boolean,
+    isMyCourse:Boolean = false,
     msgDelete: String,
     msgDeleteBtn: String,
     action: () -> Unit,
@@ -110,15 +111,18 @@ fun CardCourses(
 //                        )
 //                    }
 //                    Spacer(modifier = Modifier.width(3.dp))
-                    IconButton(onClick = {
-                        isDeleteOpen = true
-                    }) {
-                        Icon(painterResource(id = R.drawable.ic_cancel),
-                            contentDescription = null,
-                            tint = Color.Gray,
-                            modifier = Modifier.size(35.dp)
-                        )
+                    if (isMyCourse){
+                        IconButton(onClick = {
+                            isDeleteOpen = true
+                        }) {
+                            Icon(painterResource(id = R.drawable.ic_cancel),
+                                contentDescription = null,
+                                tint = Color.Gray,
+                                modifier = Modifier.size(35.dp)
+                            )
+                        }
                     }
+
                 }
 
             }

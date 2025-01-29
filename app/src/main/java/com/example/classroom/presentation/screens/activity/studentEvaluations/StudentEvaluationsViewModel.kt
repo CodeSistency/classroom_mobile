@@ -118,5 +118,9 @@ class StudentEvaluationsViewModel(
             }
         }
     }
+
+    fun cleanData(){
+        _stateStudentEvaluations.value = StudentEvaluationsState(false, null, null)
+    }
 }
 

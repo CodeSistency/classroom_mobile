@@ -22,6 +22,9 @@ interface LocalPostDao {
     @Delete
     suspend fun deletePost(post: LocalPost)
 
+    @Query("DELETE FROM localPost_table WHERE  idApi = :idApi")
+    suspend fun deletePostsById(idApi: String)
+
     @Query("SELECT * FROM localPost_table WHERE course_id = :courseId")
     fun getPostsByCourse(courseId: String): Flow<List<LocalPost>>
 

@@ -49,6 +49,14 @@ import com.example.classroom.domain.model.entity.LocalPost
 import com.example.classroom.presentation.theme.PaddingCustom
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 //@Composable
 //fun CardPostItem(post: LocalPost, viewModel: PostsViewModel, scope: CoroutineScope) {
@@ -163,50 +171,78 @@ fun CardPostItem(post: LocalPost, viewModel: PostsViewModel, scope: CoroutineSco
                             fontWeight = FontWeight.Bold
                         )
                     )
+
+                    val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+                    inputFormat.timeZone = TimeZone.getTimeZone("UTC") // Ajustar zona horaria
+
+                    val formattedDate = try {
+                        val date = inputFormat.parse(post.createdAt)
+                        val calendar = Calendar.getInstance().apply {
+                            time = date ?: Date()
+                        }
+                        val year = calendar.get(Calendar.YEAR)
+
+                        // Forzar el formato "YYYY/00/00"
+                        "$year/00/00"
+                    } catch (e: Exception) {
+                        "2000/00/00" // En caso de error
+                    }
+
                     Text(
-                        text = "Created at: ${post.createdAt}",
+                        text = "$formattedDate",
                         style = TextStyle(
                             color = Color.Gray,
                             fontSize = 12.sp
                         )
                     )
                 }
-                if (userInfo?.idApi ?: 999999 == post.authorId){
-                    IconButton(onClick = { isDeleteOpen = true }) {
-                        Icon(
-                            painterResource(id = R.drawable.ic_cancel),
-                            contentDescription = null,
-                            tint = Color.Gray,
-                            modifier = Modifier.size(24.dp)
-                        )
+
+                userInfo?.let {
+
+                    if (it.idApi == post.authorId){
+                        IconButton(onClick = { isDeleteOpen = true }) {
+                            Icon(
+                                painterResource(id = R.drawable.ic_cancel),
+                                contentDescription = null,
+                                tint = Color.Gray,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
                     }
                 }
+
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            if (post.content.isNotBlank()){
+                Spacer(modifier = Modifier.height(8.dp))
 
-            // Content
-            Text(
-                text = post.content,
-                style = TextStyle(
-                    color = Color.Black,
-                    fontSize = 14.sp
+                // Content
+
+                Text(
+                    text = post.content,
+                    style = TextStyle(
+                        color = Color.Black,
+                        fontSize = 14.sp
+                    )
                 )
-            )
+            }
+
 
 
             // Media preview
             if (!post.mediaUrl.isNullOrEmpty()){
                 post.mediaUrl.let { url ->
+                    Log.e("mediaurl1", url)
+
                     val mediaUrl = getSupabaseFileUrl(url, isPublic = true, useSupabase = false)
 
-                    Log.e("mediaurl", mediaUrl)
+                    Log.e("mediaurl2", mediaUrl)
                     Spacer(modifier = Modifier.height(8.dp))
 
                     FilePreview(
                         fileUrl = mediaUrl,
                         fileName = "",
-                        modifier = Modifier.padding(16.dp)
+//                        modifier = Modifier.padding(16.dp)
                     )
 
 //                    when {
@@ -244,7 +280,7 @@ fun CardPostItem(post: LocalPost, viewModel: PostsViewModel, scope: CoroutineSco
             loading = false,
             action = { scope.launch { viewModel.deletePostCourseRemote(post.idApi) } },
             dismissDialog = { isDeleteOpen = false },
-            icon = painterResource(id = R.drawable.ic_person_remove)
+            icon = painterResource(id = R.drawable.ic_cancel)
         )
     }
 }

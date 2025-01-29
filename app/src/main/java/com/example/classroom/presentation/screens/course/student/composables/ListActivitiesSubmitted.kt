@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.CircularProgressIndicator
@@ -24,6 +25,7 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,10 +50,12 @@ fun ListActivitiesSubmitted(
     // Trigger data loading when the screen is first displayed
     LaunchedEffect(true) {
         viewModel.observeLocalEvaluations(courseId, studentId)
-        viewModel.getActivitiesByStudent(courseId, studentId)
+//        viewModel.getActivitiesByStudent(courseId, studentId)
+        viewModel.getLocalEvaluations(courseId, studentId)
     }
 
     val uiState = viewModel.stateStudentEvaluations.value
+    val lista = viewModel.listActivitiesSubmittedFlow.collectAsState()
 
     // Pull-to-refresh state, using the uiState's isLoading directly
     val pullRefreshState = rememberPullRefreshState(
@@ -77,9 +81,11 @@ fun ListActivitiesSubmitted(
                     CircularProgressIndicator()
                 }
             }
-            uiState.info != null -> {
-                val evaluations = uiState.info.orEmpty()
-                if (evaluations.isEmpty()) {
+            else -> {
+                Log.e("evaluaciones UI", lista.value.toString())
+
+
+                if (lista.value.isEmpty()) {
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.Center,
@@ -104,11 +110,13 @@ fun ListActivitiesSubmitted(
                     }
                 } else {
                     LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(bottom = 45.dp),
                         contentPadding = PaddingValues(6.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        items(evaluations) { evaluation ->
+                        items(lista.value) { evaluation ->
                             CardActivitySubmitted(
                                 evaluation = evaluation,
                                 viewModel = viewModel,
@@ -118,6 +126,49 @@ fun ListActivitiesSubmitted(
                     }
                 }
             }
+//            uiState.info != null -> {
+//                Log.e("evaluaciones UI", uiState.info.toString())
+//
+//                val evaluations = uiState.info.orEmpty()
+//                if (evaluations.isEmpty()) {
+//                    Column(
+//                        modifier = Modifier.fillMaxSize(),
+//                        verticalArrangement = Arrangement.Center,
+//                        horizontalAlignment = Alignment.CenterHorizontally
+//                    ) {
+//
+//                        RetryComponent(mensaje = "No hay evaluaciones disponibles", onRetryClick = {
+//
+//                            scope.launch {
+//                                viewModel.getActivitiesByStudent(courseId, studentId)// Manual refresh
+//                            }
+//                        })
+////                        Text(text = "No hay evaluaciones disponibles")
+////                        Spacer(modifier = Modifier.height(10.dp))
+////                        IconButton(onClick = {
+////                            scope.launch {
+////                                viewModel.getActivitiesByStudent(courseId, studentId)
+////                            }
+////                        }) {
+////                            Icon(Icons.Outlined.Sync, contentDescription = null)
+////                        }
+//                    }
+//                } else {
+//                    LazyColumn(
+//                        modifier = Modifier.fillMaxSize().padding(bottom = 45.dp),
+//                        contentPadding = PaddingValues(6.dp),
+//                        verticalArrangement = Arrangement.spacedBy(12.dp)
+//                    ) {
+//                        items(evaluations) { evaluation ->
+//                            CardActivitySubmitted(
+//                                evaluation = evaluation,
+//                                viewModel = viewModel,
+//                                navController = navController,
+//                            )
+//                        }
+//                    }
+//                }
+//            }
         }
 
         // PullRefreshIndicator shows the refresh progress at the top of the screen

@@ -51,9 +51,14 @@ fun ListActivities(
     val state by viewModel.stateGetActivities
 
     LaunchedEffect(true) {
-        if (items.isEmpty() && id.isNotEmpty()) {
             viewModel.getActivitiesLocalByCourse(id)
-        }
+
+        Log.e("filtered activities", items.toString())
+
+
+//        if (items.isEmpty() && id.isNotEmpty()) {
+//            viewModel.getActivitiesLocalByCourse(id)
+//        }
     }
 
     // Pull-to-refresh state
@@ -99,7 +104,7 @@ fun ListActivities(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(bottom = 5.dp)
+                    .padding(bottom = 45.dp)
             ) {
                 items(items) { activity ->
                     Box(modifier = Modifier.padding(vertical = 6.dp, horizontal = 2.dp)) {

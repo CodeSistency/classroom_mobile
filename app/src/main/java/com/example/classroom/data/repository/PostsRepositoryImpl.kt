@@ -25,6 +25,10 @@ class PostsRepositoryImpl(private val localPostDao: LocalPostDao, private val ap
         return localPostDao.deletePost(post)
     }
 
+    override suspend fun deletePostById(idApi: String) {
+        return localPostDao.deletePostsById(idApi)
+    }
+
     override fun getPostsByCourse(courseId: String): Flow<List<LocalPost>> {
         return localPostDao.getPostsByCourse(courseId)
     }

@@ -43,12 +43,14 @@ import proyecto.person.appconsultapopular.common.HttpRoutes
 import com.example.classroom.common.ResponseGenericAPi
 import com.example.classroom.common.json
 import com.example.classroom.common.parseResponseToGenericObject
+import com.example.classroom.data.remote.dto.activities.DeleteActivityResponseDto
 import com.example.classroom.data.remote.dto.activities.GetActivitiesWithQuizzResponseDto
 import com.example.classroom.data.remote.dto.chat.ChatRoomDTO
 import com.example.classroom.data.remote.dto.chat.MessageDTO
 import com.example.classroom.data.remote.dto.chat.TypingStatusDTO
 import com.example.classroom.data.remote.dto.chat.UserStatusDTO
 import com.example.classroom.data.remote.dto.cloud.CloudResposeDto
+import com.example.classroom.data.remote.dto.courses.DeleteCourseResponseDto
 import com.example.classroom.data.remote.dto.courses.GetUsersByCourseResponse
 import com.example.classroom.data.remote.dto.evaluations.evaluationsSent.EvaluationsSentResponseDto
 import com.example.classroom.data.remote.dto.evaluations.reviewEvaluationDto.ReviewEvaluationRequestDto
@@ -190,7 +192,7 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
         return@withContext parseResponseToGenericObject(response, true)
     }
 
-    override suspend fun deleteCourseRemote(id: String): ResponseGenericAPi<Boolean> = withContext(
+    override suspend fun deleteCourseRemote(id: String): ResponseGenericAPi<DeleteCourseResponseDto> = withContext(
     Dispatchers.IO)  {
         val response = client.delete{
             url("${Constants.BASE_URL}${HttpRoutes.COURSES_ENDPOINT}${id}")
@@ -314,12 +316,12 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
     }
 
     @OptIn(InternalAPI::class)
-    override suspend fun deleteActivityRemote(id: String) : ResponseGenericAPi<Boolean> = withContext(
+    override suspend fun deleteActivityRemote(id: String) : ResponseGenericAPi<DeleteActivityResponseDto> = withContext(
         Dispatchers.IO)  {
-        val response = client.post{
+        val response = client.delete{
             url("${Constants.BASE_URL}${HttpRoutes.ACTIVITIES_ENDPOINT}/${id}")
             contentType(ContentType.Application.Json)
-            body = json.toString()
+//            body = json.toString()
         }
         return@withContext parseResponseToGenericObject(response, true)
 

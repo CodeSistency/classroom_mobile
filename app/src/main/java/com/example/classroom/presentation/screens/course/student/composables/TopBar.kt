@@ -29,14 +29,6 @@ fun TopBarStudentCourse(navController: NavController){
         }) {
             Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null, tint = Color.White)
         }
-        // Add edit icon like in the professor's presentation
-        Icon(
-            imageVector = Icons.Default.Edit,
-            contentDescription = "Edit Course",
-            tint = Color.White,
-            modifier = Modifier.clickable {
-                // Action on click, if needed
-            }
-        )
+
     }
 }

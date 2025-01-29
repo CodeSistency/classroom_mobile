@@ -89,7 +89,7 @@ fun ListActivities(viewModel: ActivityViewmodel, scope: CoroutineScope, id: Stri
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(bottom = 5.dp)
+                    .padding(bottom = 45.dp)
             ) {
                 items(items.value) { activity ->
                     Box(modifier = Modifier.padding(vertical = 6.dp, horizontal = 2.dp)) {

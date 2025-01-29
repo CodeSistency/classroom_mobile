@@ -50,6 +50,7 @@ import com.example.classroom.common.composables.PreviewFile.FilePreview
 import com.example.classroom.common.composables.customDialogs.SetupCustomDialog
 import com.example.classroom.common.composables.customDialogs.SetupCustomDialogState
 import com.example.classroom.common.composables.previewDocument.DocumentPreviewComponent
+import com.example.classroom.common.getSupabaseFileUrl
 import com.example.classroom.data.remote.dto.evaluations.reviewEvaluationDto.ReviewEvaluationRequestDto
 import com.example.classroom.domain.model.entity.LocalActivitySubmission
 import com.example.classroom.presentation.navigation.Destination
@@ -123,8 +124,14 @@ var context = LocalContext.current
 //                        },
 //                        isDownloading = downloadProgress in 1..99 // Show progress indicator
 //                    )
+
+                        Log.e("submission document", submission.documentUrl)
+
+                        val mediaUrl = getSupabaseFileUrl(submission.documentUrl, isPublic = true, useSupabase = false)
+
+                        Log.e("mediaurl", mediaUrl)
                         FilePreview(
-                            submission.documentUrl,
+                            mediaUrl,
                             fileName = ""
                         )
                     } else {
@@ -202,6 +209,7 @@ var context = LocalContext.current
                                 )
                             }
                         },
+                        disabled = viewModel.grade.value < 1,
                         modifier = Modifier.fillMaxWidth(),
                         text = "Guardar calificacion",
                         style = NavigationButtonStyle.SolidGradient,
@@ -327,9 +335,11 @@ var context = LocalContext.current
         when{
             state.value.isLoading -> {
                 dialogState = SetupCustomDialogState.Loading()
+                viewModel.cleanData()
             }
             state.value.error != null -> {
                 dialogState = SetupCustomDialogState.Error(state.value.error!!.uiMessage)
+                viewModel.cleanData()
             }
 
             else -> {

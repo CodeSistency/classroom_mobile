@@ -103,7 +103,7 @@ fun CourseProfessorPresentation(
     }
 
     val deleteStudentState = courseViewmodel.stateDeleteStudents.collectAsState()
-    val deleteActivityState = viewModel.stateAddActivity.value
+    val deleteActivityState = viewModel.stateDeleteActivity.value
     val deletePostState = postsViewModel.deletePostState.collectAsState()
 
 
@@ -404,6 +404,7 @@ fun CourseProfessorPresentation(
                 if (deletePostState.value.info != null){
                     dialogState = SetupCustomDialogState.Success(message = "La publicacion ha sido eliminada exitosamente")
                     delay(1000)
+
                 }
             }
         }

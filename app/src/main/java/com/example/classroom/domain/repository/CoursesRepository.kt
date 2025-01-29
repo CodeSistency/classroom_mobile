@@ -6,6 +6,7 @@ import com.example.classroom.data.remote.dto.courses.GetCoursesResponseDto
 import com.example.classroom.domain.model.entity.LocalCourses
 import kotlinx.coroutines.flow.Flow
 import com.example.classroom.common.ResponseGenericAPi
+import com.example.classroom.data.remote.dto.courses.DeleteCourseResponseDto
 import com.example.classroom.data.remote.dto.courses.GetUsersByCourseResponse
 import com.example.classroom.domain.model.entity.LocalUser
 
@@ -13,7 +14,7 @@ interface CoursesRepository {
     //Remote Methods
     suspend fun insertCourseRemote(course: CourseRequestDto) : ResponseGenericAPi<CourseResponseDto>
     suspend fun updateCourseRemote(course: CourseRequestDto, id: String) : ResponseGenericAPi<CourseResponseDto>
-    suspend fun deleteCourseRemote(id: String) : ResponseGenericAPi<Boolean>
+    suspend fun deleteCourseRemote(id: String) : ResponseGenericAPi<DeleteCourseResponseDto>
     suspend fun getCoursesRemote(id: String) : ResponseGenericAPi<GetCoursesResponseDto>
     suspend fun getUsersByCourseRemote(id: String) : ResponseGenericAPi<GetUsersByCourseResponse>
     suspend fun getCourseByIdRemote(id: String) : ResponseGenericAPi<CourseResponseDto>

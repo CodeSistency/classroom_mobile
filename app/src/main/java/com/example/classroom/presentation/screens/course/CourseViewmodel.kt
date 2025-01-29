@@ -325,8 +325,8 @@ class CourseViewmodel(
         Log.e("submitted", "courseid ${courseId} studentId ${studentId}")
         viewModelScope.launch {
             repositoryBundle.submissionsRepository
-                .getSubmissionsForStudent(courseId, studentId)
-                .distinctUntilChanged() // Only emit new data if it's actually different
+                .getSubmissionsForStudentByCourse(courseId, studentId)
+//                .distinctUntilChanged() // Only emit new data if it's actually different
                 .collect { evaluations ->
                     Log.e("observeLocalEvaluations", "Received local data: $evaluations")
 
@@ -348,6 +348,42 @@ class CourseViewmodel(
                     }
                 }
         }
+    }
+
+    fun getLocalEvaluations(courseId: String, studentId: String) {
+        Log.e("submitted", "courseid ${courseId} studentId ${studentId}")
+        viewModelScope.launch {
+            repositoryBundle.submissionsRepository.getSubmissionsForStudentByCourse(studentId, courseId).collect {
+                Log.e("evaluaciones", _listActivitiesFlow.value.toString())
+                _listActivitiesSubmittedFlow.value = it
+            }
+
+        }
+//        viewModelScope.launch {
+//            repositoryBundle.submissionsRepository
+//                .getSubmissionsForStudentByCourse(courseId, studentId)
+////                .distinctUntilChanged() // Only emit new data if it's actually different
+//                .collect { evaluations ->
+//                    Log.e("observeLocalEvaluations", "Received local data: $evaluations")
+//
+//                    if (!evaluations.isNullOrEmpty()) {
+//                        // Only update if evaluations is non-null and non-empty
+//                        _listActivitiesSubmittedFlow.value = evaluations
+//                        _stateStudentEvaluations.value = _stateStudentEvaluations.value.copy(
+//                            info = evaluations,
+//                            isLoading = false,
+//                            error = null
+//                        )
+//                    }else{
+//                        _listActivitiesSubmittedFlow.value = emptyList()
+//                        _stateStudentEvaluations.value = _stateStudentEvaluations.value.copy(
+//                            info = emptyList(),
+//                            isLoading = false,
+//                            error = null
+//                        )
+//                    }
+//                }
+//        }
     }
     // Fetch evaluations remotely and sync with the local database
     fun getActivitiesByStudent(courseId: String, userId: String) {
@@ -375,7 +411,11 @@ class CourseViewmodel(
                         Log.e("getActivitiesByStudent", "Successfully fetched remote data")
                         result.data?.let { evaluations ->
                             // Insert the data into the local database
+                            Log.e("evaluaciones", evaluations.toString())
                             repositoryBundle.submissionsRepository.addSubmissionsWithoutDuplicates(evaluations)
+                            delay(300)
+                            getLocalEvaluations(studentId = userId, courseId = courseId)
+//                            observeLocalEvaluations(studentId = userId, courseId = courseId)
                         }
                         // Reset `isLoading` and error without clearing `info`
                         _stateStudentEvaluations.value = _stateStudentEvaluations.value.copy(

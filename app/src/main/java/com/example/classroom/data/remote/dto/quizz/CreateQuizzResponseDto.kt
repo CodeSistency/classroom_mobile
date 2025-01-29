@@ -45,23 +45,41 @@ data class QuizzDto(
     val activityId: Int
 )
 
-@Serializable
-data class QuizQuestionDto(
-    val id: Int,
-    @SerialName("quizzId")
-    val quizzId: Int,
-    val text: String,
-    val answer: Int, // Answer is a 1-based index
-    val options: List<QuizOptionDto>
-)
+//@Serializable
+//data class QuizQuestionDto(
+//    val id: Int,
+//    @SerialName("quizzId")
+//    val quizzId: Int,
+//    val text: String,
+//    val answer: Int, // Answer is a 1-based index
+//    val options: List<QuizOptionDto>
+//)
+//
+//@Serializable
+//data class QuizOptionDto(
+//    val id: Int,
+//    val text: String,
+//    @SerialName("questionId")
+//    val questionId: Int
+//)
 
-@Serializable
-data class QuizOptionDto(
-    val id: Int,
-    val text: String,
-    @SerialName("questionId")
-    val questionId: Int
-)
+
+//@Serializable
+//data class QuizQuestionDto(
+//    val id: Int,
+//    val quizzId: Int,
+//    val text: String,
+//    val answer: Int,
+//    val options: List<QuizOptionDto>
+//)
+//
+//@Serializable
+//data class QuizOptionDto(
+//    val id: Int,
+//    val text: String,
+//    @SerialName("questionId") // Ensure this matches JSON
+//    val questionId: Int
+//)
 
 //@Serializable
 //data class CreateQuizzResponseDto(

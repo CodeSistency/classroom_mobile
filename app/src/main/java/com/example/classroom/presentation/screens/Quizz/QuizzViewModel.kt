@@ -348,7 +348,7 @@ class QuizzViewModel(
                                         id = 0,
                                         documentUrl = null,
                                         activityId = answer.quizz.activityId.toString(),
-                                        grade = answer.grade,
+                                        grade = answer.grade.toDouble(),
                                         studentId = it.idApi,
                                         comment = "quizz",
                                         submissionDate = answer.submission.createDate,
@@ -536,6 +536,11 @@ class QuizzViewModel(
         _stateCreateQuizz.value = CreateQuizzState(false, null, null)
 
         selectedOptions.value = emptyMap()
+
+        quizState.value = null
+
+        questions.value = mutableListOf()
+
     }
 //    fun createQuizRemote(idCourse: String) {
 //        viewModelScope.launch {

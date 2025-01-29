@@ -54,15 +54,37 @@ fun SubmissionStudentScreen(
         navController = navController
     )
 
+//    LaunchedEffect(key1 = state.value, block = {
+//        Log.e("POST STATE", state.value.toString())
+//        when{
+//            state.value.isLoading -> {
+//                dialogState = SetupCustomDialogState.Loading()
+//            }
+//
+//        }
+//    })
     LaunchedEffect(key1 = state.value, block = {
-        Log.e("POST STATE", state.value.toString())
         when{
             state.value.isLoading -> {
                 dialogState = SetupCustomDialogState.Loading()
+                viewModel.cleanData()
+            }
+            state.value.error != null -> {
+                dialogState = SetupCustomDialogState.Error(state.value.error!!.uiMessage)
+                viewModel.cleanData()
             }
 
+            else -> {
+                if (state.value.info != null){
+                    dialogState = SetupCustomDialogState.Success(message = "Se ha calificado la evaluacion exitosamente")
+                    delay(1000)
+                    navController.popBackStack()
+                    viewModel.cleanData()
+                }
+            }
         }
     })
+
 
     SetupCustomDialog(setupCustomDialogState = dialogState, showDialog = dialogState != SetupCustomDialogState.Default()) {
         dialogState = SetupCustomDialogState.Default()

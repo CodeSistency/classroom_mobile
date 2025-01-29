@@ -19,6 +19,7 @@ import com.example.classroom.domain.use_case.courses.JoinCourseUseCase
 import com.example.classroom.presentation.screens.course.states.JoinUserState
 import com.example.classroom.presentation.screens.home.composables.SelectedOption
 import com.example.classroom.presentation.screens.home.states.CourseState
+import com.example.classroom.presentation.screens.home.states.DeleteCourseState
 import com.example.classroom.presentation.screens.home.states.JoinCourseState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -95,6 +96,9 @@ class HomeViewmodel(
 
     private val _stateJoinCourse = mutableStateOf(JoinCourseState())
     val stateJoinCourse: State<JoinCourseState> = _stateJoinCourse
+
+    private val _stateDeleteCourse = mutableStateOf(DeleteCourseState())
+    val stateDeleteCourse: State<DeleteCourseState> = _stateDeleteCourse
 
     init {
         // Load user info and courses in the background
@@ -219,21 +223,21 @@ class HomeViewmodel(
             when (result) {
                 is Resource.Error -> {
                     Log.e("HOME_VM:", "Error ${result.message?.uiMessage}")
-                    _stateCourse.value = _stateCourse.value.copy(error = result.message, isLoading = false)
+                    _stateDeleteCourse.value = _stateDeleteCourse.value.copy(error = result.message, isLoading = false)
                 }
                 is Resource.Loading -> {
-                    _stateCourse.value = _stateCourse.value.copy(error = null, isLoading = true)
+                    _stateDeleteCourse.value = _stateDeleteCourse.value.copy(error = null, isLoading = true)
                 }
                 is Resource.Success -> {
-                    _stateCourse.value = _stateCourse.value.copy(error = null, isLoading = false)
-                    _stateCourse.value.info?.let {
+                    _stateDeleteCourse.value = _stateDeleteCourse.value.copy(error = null, isLoading = false, info = true)
+                    _stateDeleteCourse.value.info?.let {
                         repositoryBundle.coursesRepository.deleteCourse(id)
 
                         // After deletion, update the pagination state
-                        _coursesPaginationState.value = _coursesPaginationState.value.copy(
-                            items = it.filter { course -> course.idApi != id }
-                        )
-
+//                        _coursesPaginationState.value = _coursesPaginationState.value.copy(
+//                            items = it.filter { course -> course.idApi != id }
+//                        )
+                        getCoursesFlow()
 
                     }
                 }

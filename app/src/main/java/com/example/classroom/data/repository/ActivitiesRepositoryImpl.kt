@@ -9,6 +9,7 @@ import com.example.classroom.domain.model.entity.LocalActivities
 import com.example.classroom.domain.repository.ActivitiesRepository
 import kotlinx.coroutines.flow.Flow
 import com.example.classroom.common.ResponseGenericAPi
+import com.example.classroom.data.remote.dto.activities.DeleteActivityResponseDto
 import com.example.classroom.data.remote.dto.activities.GetActivitiesWithQuizzResponseDto
 
 class ActivitiesRepositoryImpl(
@@ -21,7 +22,7 @@ class ActivitiesRepositoryImpl(
     override suspend fun updateActivityRemote(activity: ActivityRequestDto, id: String) : ResponseGenericAPi<ActivityResponseDto> {
         return apiService.updateActivityRemote(activity, id)
     }
-    override suspend fun deleteActivityRemote(id: String): ResponseGenericAPi<Boolean> {
+    override suspend fun deleteActivityRemote(id: String): ResponseGenericAPi<DeleteActivityResponseDto> {
         return apiService.deleteActivityRemote(id)
     }
     override suspend fun getActivitiesRemote(id: String): ResponseGenericAPi<GetActivitiesResponseDto> {

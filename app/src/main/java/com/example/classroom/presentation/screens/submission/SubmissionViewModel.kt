@@ -92,9 +92,7 @@ class SubmissionViewModel(
         }
     }
 
-    fun cleanData() {
-        _stateReviewActivity.value = ReviewActivityState(error = null, info = null, isLoading = false)
-    }
+
 
     // Update the grade locally
     fun updateGrade(newGrade: Double) {
@@ -196,13 +194,13 @@ class SubmissionViewModel(
                         }
                     }
                 } catch (e: Exception) {
-                    onSubmissionFailure("Submission failed after retries: ${e.message}")
+                    onSubmissionFailure("${e.message}")
                     return@launch
                 }
 
             } catch (e: Exception) {
                 e.printStackTrace()
-                onSubmissionFailure("An unexpected error occurred: ${e.message}")
+                onSubmissionFailure("${e.message}")
             }
         }
     }
@@ -235,6 +233,11 @@ class SubmissionViewModel(
         }
     }
 
+    fun cleanData(){
+        _stateReviewActivity.value = ReviewActivityState(false, null, null)
+        _stateSendActivity.value = SendActivityState(false, null, null)
+
+    }
     @SuppressLint("Range")
     fun downloadAndOpenFile(
         context: Context,
@@ -345,6 +348,7 @@ class SubmissionViewModel(
 
         }.launchIn(viewModelScope)
     }
+
 
 
 

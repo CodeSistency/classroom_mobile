@@ -53,7 +53,9 @@ fun EvaluationItem(
                 .background(Color.White, shape)
                 .fillMaxWidth()
                 .clickable {
-                    navController.navigate("${Destination.PROFESSOR_REVIEW_EVALUATION.screenRoute}?idStudent=${idStudent}&idActivity=${evaluation.activityId}&idCourse=${idCourse}")
+                    if (evaluation.grade < 1){
+                        navController.navigate("${Destination.PROFESSOR_REVIEW_EVALUATION.screenRoute}?idStudent=${idStudent}&idActivity=${evaluation.activityId}&idCourse=${idCourse}")
+                    }
                 }
                 .padding(16.dp)
         ) {

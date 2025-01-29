@@ -41,8 +41,8 @@ class PostsViewModel(
     private val _postsState = MutableStateFlow(PostsState())
     val postsState: StateFlow<PostsState> = _postsState
 
-    private val _deletePostState = MutableStateFlow(PostsState())
-    val deletePostState: StateFlow<PostsState> = _deletePostState
+    private val _deletePostState = MutableStateFlow(DeletePostState())
+    val deletePostState: StateFlow<DeletePostState> = _deletePostState
 
     private val _postsFlow = MutableStateFlow<List<LocalPost>>(emptyList())
     val postsFlow: StateFlow<List<LocalPost>> = _postsFlow
@@ -109,13 +109,16 @@ class PostsViewModel(
     suspend fun deletePostCourseRemote(id: String) {
         deletePostUseCase(id).onEach { result ->
             when (result) {
-                is Resource.Error -> _postsState.value.copy(error = result.message?.uiMessage)
-                is Resource.Loading -> _postsState.value.copy(isLoading = true, error = null)
+                is Resource.Error -> _deletePostState.value.copy(error = result.message?.uiMessage)
+                is Resource.Loading -> _deletePostState.value.copy(isLoading = true, error = null)
                 is Resource.Success -> {
-                    _postsState.value.copy(isLoading = false, error = null, )
-                    _postsState.value.info?.let {
-//                        repositoryBundle.activitiesRepository.insertAllActivities(it)
+                    _deletePostState.value.copy(isLoading = false, error = null, )
+                    result.data?.let {
+
+                        repositoryBundle.postsRepositoryImpl.deletePostById(id)
                     }
+
+
                 }
             }
         }.launchIn(viewModelScope)
@@ -161,5 +164,10 @@ class PostsViewModel(
         } catch (e: Exception) {
             Toast.makeText(context, "Failed to download file: ${e.message}", Toast.LENGTH_LONG).show()
         }
+    }
+
+    fun cleanData (){
+        _postsState.value = PostsState(null, false, null)
+        _deletePostState.value = DeletePostState(null, false, null)
     }
 }

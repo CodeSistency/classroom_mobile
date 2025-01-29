@@ -45,6 +45,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.classroom.R
+import com.example.classroom.common.composables.customDialogs.SetupCustomDialog
+import com.example.classroom.common.composables.customDialogs.SetupCustomDialogState
 import com.example.classroom.common.composables.customTab.CustomTab
 import com.example.classroom.domain.model.entity.Gender
 import com.example.classroom.presentation.screens.course.AddCourse.AddCourseViewModel
@@ -55,6 +57,7 @@ import com.example.classroom.presentation.theme.Azul3
 import com.example.classroom.presentation.theme.AzulGradient
 import com.example.classroom.presentation.theme.Gris
 import com.example.classroom.presentation.theme.PaddingCustom
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import proyecto.person.appconsultapopular.common.shimmerEffects.ListShimmer
 
@@ -66,6 +69,9 @@ fun HomePresentation(viewModel: HomeViewmodel, navController: NavController, add
     val (selected, setSelected) = remember { mutableStateOf(0) }
     val userInfo = viewModel.userInfo.collectAsStateWithLifecycle(initialValue = null)
     var scope = rememberCoroutineScope()
+
+    var dialogState: SetupCustomDialogState by remember { mutableStateOf(SetupCustomDialogState.Default()) }
+    val deleteState = viewModel.stateDeleteCourse
 
     var coursesInput = viewModel.coursesInput.collectAsState()
     var myCoursesInput = viewModel.myCoursesInput.collectAsState()
@@ -257,6 +263,27 @@ fun HomePresentation(viewModel: HomeViewmodel, navController: NavController, add
             }
            
         }
+    }
+
+    LaunchedEffect(deleteState.value) {
+        when {
+            deleteState.value.isLoading -> dialogState = SetupCustomDialogState.Loading()
+            deleteState.value.error != null -> dialogState = SetupCustomDialogState.Error(deleteState.value.error?.uiMessage)
+            deleteState.value.info != null -> {
+//                dialogState = SetupCustomDialogState.Success("Respuestas enviadas correctamente")
+//                delay(1000)
+//                viewModel.cleanData()
+
+//                navController.popBackStack()
+            }
+        }
+    }
+
+    SetupCustomDialog(
+        setupCustomDialogState = dialogState,
+        showDialog = dialogState != SetupCustomDialogState.Default()
+    ) {
+        dialogState = SetupCustomDialogState.Default()
     }
 }
 

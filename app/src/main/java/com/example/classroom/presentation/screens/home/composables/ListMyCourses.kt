@@ -122,6 +122,7 @@ fun ListMyCourses(
                             course = course,
                             msgDelete = "¿Estás seguro de eliminar tu clase?",
                             msgDeleteBtn = "Eliminar",
+                            isMyCourse = true,
                             isOwner = true,
                             action = {
                                 scope.launch {

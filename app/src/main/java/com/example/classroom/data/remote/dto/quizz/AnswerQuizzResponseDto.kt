@@ -116,6 +116,7 @@ data class QuizActivityDto(
     @SerialName("statusId")
     val statusId: Int? = null // Nullable to handle missing values
 )
+
 //@Serializable
 //data class QuizActivityDto(
 //    val id: Int,
@@ -136,6 +137,63 @@ data class QuizActivityDto(
 //    val statusId: Int // Corrected naming to match response
 //)
 
+//@Serializable
+//data class SubmittedAnswerDto(
+//    val id: Int,
+//    val optionId: Int
+//)
+//
+//@Serializable
+//data class QuizSubmissionDto(
+//    val id: Int,
+//    val quizzId: Int,
+//    val userId: Int,
+//    @SerialName("grade")
+//    val grade: String, // Changed to String to match the response format
+//    @SerialName("create_date")
+//    val createDate: String, // Corrected naming to match response
+//    val answers: List<SubmittedAnswerDto>
+//)
+//
+//@Serializable
+//data class QuizDto(
+//    val id: Int,
+//    val activityId: Int,
+//    val activity: QuizActivityDto,
+//    val question: List<QuizQuestionDto>,
+//    val title: String,
+//    val description: String,
+//    val totalQuestions: Int
+//)
+//
+//
+//
+////@Serializable
+////data class AnswerQuizzDataDto(
+////    val grade: Double,
+////    val submission: QuizSubmissionDto,
+////    val quizz: QuizDto
+////)
+//@Serializable
+//data class AnswerQuizzDataDto(
+//    @SerialName("grade")
+//    val grade: String, // Change from Double to String
+//    val submission: QuizSubmissionDto,
+//    val quizz: QuizDto
+//)
+//
+//
+//
+//
+//
+//
+//@Serializable
+//data class AnswerQuizzResponseDto(
+//    val code: Int,
+//    val message: String,
+//    val data: AnswerQuizzDataDto
+//)
+
 @Serializable
 data class SubmittedAnswerDto(
     val id: Int,
@@ -148,17 +206,53 @@ data class QuizSubmissionDto(
     val quizzId: Int,
     val userId: Int,
     @SerialName("grade")
-    val grade: String, // Changed to String to match the response format
+    val grade: String, // Matches "100.00"
     @SerialName("create_date")
-    val createDate: String, // Corrected naming to match response
+    val createDate: String, // Matches "2025-01-29T15:20:05.142Z"
     val answers: List<SubmittedAnswerDto>
 )
 
 @Serializable
-data class QuizDto(
+data class QuizOptionDto(
+    val id: Int,
+    val text: String,
+    @SerialName("questionId")
+    val questionId: Int
+)
+
+@Serializable
+data class QuizQuestionDto(
+    val id: Int,
+    val quizzId: Int,
+    val text: String,
+    val answer: Int,
+    val options: List<QuizOptionDto>
+)
+
+@Serializable
+data class QuizActivityDto2(
+    val id: Int,
+    val courseId: Int,
+    val title: String,
+    val description: String,
+    @SerialName("grade")
+    val grade: String, // Matches "0"
+    @SerialName("startDate")
+    val startDate: String, // Matches "02/01/2025"
+    @SerialName("endDate")
+    val endDate: String, // Matches "31/01/2025"
+    val email: String,
+    val digital: Boolean,
+    @SerialName("isQuizz")
+    val isQuizz: Boolean,
+    val statusId: Int
+)
+
+@Serializable
+data class QuizDto2(
     val id: Int,
     val activityId: Int,
-    val activity: QuizActivityDto,
+    val activity: QuizActivityDto2,
     val question: List<QuizQuestionDto>,
     val title: String,
     val description: String,
@@ -167,9 +261,10 @@ data class QuizDto(
 
 @Serializable
 data class AnswerQuizzDataDto(
-    val grade: Double,
+    @SerialName("grade")
+    val grade: Int, // Matches 100 from JSON
     val submission: QuizSubmissionDto,
-    val quizz: QuizDto
+    val quizz: QuizDto2
 )
 
 @Serializable

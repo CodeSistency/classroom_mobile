@@ -63,22 +63,25 @@ fun TopBarHome(
                 tint = Color.White
             )
         }
-        IconButton(onClick = {
-            scope.launch { drawerState.open() }
-        }) {
-            BadgedBox(
-                badge = {
-                    if (unseenCount > 0) {
-                        Badge { Text(unseenCount.toString()) }
-                    }
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Notifications,
-                    contentDescription = null,
-                    tint = Color.White
-                )
-            }
-        }
+
+        //Notificaciones
+
+//        IconButton(onClick = {
+//            scope.launch { drawerState.open() }
+//        }) {
+//            BadgedBox(
+//                badge = {
+//                    if (unseenCount > 0) {
+//                        Badge { Text(unseenCount.toString()) }
+//                    }
+//                }
+//            ) {
+//                Icon(
+//                    imageVector = Icons.Default.Notifications,
+//                    contentDescription = null,
+//                    tint = Color.White
+//                )
+//            }
+//        }
     }
 }
