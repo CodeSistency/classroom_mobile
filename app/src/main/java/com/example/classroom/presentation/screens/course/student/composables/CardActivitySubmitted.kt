@@ -84,7 +84,7 @@ fun CardActivitySubmitted(
                         Text(
                             text = "Calificación: ${evaluation.grade}",
                             style = TextStyle(
-                                color = MaterialTheme.colors.primary,
+                                color = Color.Black,
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Bold,
                                 // fontFamily = InterTight (uncomment if using custom font)

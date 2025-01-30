@@ -1,5 +1,6 @@
 package com.example.classroom.presentation.screens.course.student.composables
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -128,6 +129,7 @@ fun CardActivity(
                                 "${Destination.ANSWER_QUIZZ.screenRoute}?quizzId=${activity.quizzId}"
                             )
                         } else {
+                            Log.e("user student id", userId.toString())
                             navController.navigate(
                                 "${Destination.STUDENT_UPLOAD_EVALUATION.screenRoute}?idStudent=$userId&idActivity=${activity.idApi}&idCourse=$courseId"
                             )

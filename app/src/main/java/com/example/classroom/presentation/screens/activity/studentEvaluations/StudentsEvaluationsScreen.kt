@@ -123,7 +123,8 @@ fun StudentsEvaluationsScreen(
                                     evaluation = evaluation,
                                     navController = navController,
                                     idCourse = courseId,
-                                    idStudent = studentId
+                                    idStudent = studentId,
+                                    viewModel = viewModel
                                 )
                             }
                         }

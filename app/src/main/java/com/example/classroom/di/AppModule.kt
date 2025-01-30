@@ -78,6 +78,7 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import proyecto.person.appconsultapopular.data.local.db.AppDatabase
+import java.util.concurrent.TimeUnit
 
 
 interface AppModule {
@@ -138,6 +139,7 @@ class AppModuleImpl(
         ApiServiceImpl(apiClient)
     }
 
+
     override val apiClient: HttpClient by lazy {
         HttpClient(OkHttp) {
             expectSuccess = false
@@ -155,12 +157,44 @@ class AppModuleImpl(
             }
 
             install(HttpTimeout) {
-                requestTimeoutMillis = 100000
+                requestTimeoutMillis = 120000 // 2 minutes
+                connectTimeoutMillis = 60000 // 1 minute
+                socketTimeoutMillis = 120000 // 2 minutes
+            }
 
-//                requestTimeoutMillis = 60000
+            engine {
+                config {
+                    retryOnConnectionFailure(true) // 🔹 Automatically retry failed requests
+                    connectTimeout(60, TimeUnit.SECONDS)
+                    writeTimeout(120, TimeUnit.SECONDS) // 🔹 Prevents premature disconnection
+                    readTimeout(120, TimeUnit.SECONDS)
+                }
             }
         }
     }
+//    override val apiClient: HttpClient by lazy {
+//        HttpClient(OkHttp) {
+//            expectSuccess = false
+//
+//            install(Logging) {
+//                level = LogLevel.ALL
+//            }
+//
+//            install(ContentNegotiation) {
+//                json(Json {
+//                    prettyPrint = true
+//                    isLenient = true
+//                    ignoreUnknownKeys = true
+//                })
+//            }
+//
+//            install(HttpTimeout) {
+//                requestTimeoutMillis = 100000
+//
+////                requestTimeoutMillis = 60000
+//            }
+//        }
+//    }
     override val repositoryBundle: RepositoryBundle by lazy {
         RepositoryBundle(
             loginRepository = LoginRepositoryImpl(apiService, db.appDao),

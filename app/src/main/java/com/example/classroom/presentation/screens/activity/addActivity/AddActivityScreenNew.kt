@@ -61,28 +61,16 @@ import com.example.classroom.common.composables.CustomButton.CustomButton
 import com.example.classroom.common.composables.CustomButton.NavigationButtonStyle
 import com.example.classroom.common.composables.CustomDatePicker.CustomDatePicker
 import com.example.classroom.common.composables.CustomInput.CustomTextField
-import com.example.classroom.common.composables.CustomInput.ValidationRegex
 import com.example.classroom.common.composables.FormWrapper.FormWrapper
 import com.example.classroom.common.composables.customDialogs.SetupCustomDialog
 import com.example.classroom.common.composables.customDialogs.SetupCustomDialogState
 import com.example.classroom.common.composables.customSelect.CustomSelect
-import com.example.classroom.common.composables.datePicker.DatePickerWithDialog
-import com.example.classroom.data.remote.dto.activities.ActivityRequestDto
-import com.example.classroom.data.remote.dto.courses.CourseRequestDto
 import com.example.classroom.domain.model.entity.Status
-import com.example.classroom.presentation.screens.activity.ActivityViewmodel
-import com.example.classroom.presentation.screens.activity.addActivity.states.ActivityFormEvent
-import com.example.classroom.presentation.screens.auth.composables.ItemInputField
-import com.example.classroom.presentation.screens.auth.signUp.SignUpFormEvent
-import com.example.classroom.presentation.screens.course.CourseViewmodel
 import com.example.classroom.presentation.theme.Azul
 import com.example.classroom.presentation.theme.AzulGradient
-import com.example.classroom.presentation.theme.PaddingCustom
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import proyecto.person.appconsultapopular.common.SnackbarDelegate
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)

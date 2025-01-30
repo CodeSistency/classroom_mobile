@@ -27,71 +27,71 @@ data class ResponseGenericAPi<T>(
     val messageError: ErrorMensaje?
 )
 
-//suspend inline fun <reified T> parseResponseToGenericObject(response: HttpResponse, isUsedResponse: Boolean = true): ResponseGenericAPi<T>{
-//    Log.e("RawResponseStatus", response.status.value.toString()) // Log raw response
-//
-//    return when{
-//
-//        response.status.value < 300 ->{
-//            Log.e("RawResponseBody", response.bodyAsText()) // Log raw response
-//
-//            ResponseGenericAPi(
-//                statusCode = response.status,
-//                responseData = if (isUsedResponse) response.body<T>() else null,
-//                messageError = null
-//            )
-//        }
-//        else -> {
-//            ResponseGenericAPi(
-//                statusCode = response.status,
-//                responseData = null,
-//                messageError = response.body<ErrorMensaje>()
-//            )
-//        }
-//    }
-//}
+suspend inline fun <reified T> parseResponseToGenericObject(response: HttpResponse, isUsedResponse: Boolean = true): ResponseGenericAPi<T>{
+    Log.e("RawResponseStatus", response.status.value.toString()) // Log raw response
 
-suspend inline fun <reified T> parseResponseToGenericObject(
-    response: HttpResponse,
-    isUsedResponse: Boolean = true
-): ResponseGenericAPi<T> {
-    Log.e("RawResponseStatus", response.status.value.toString())
-    val rawBody = response.bodyAsText()
-    Log.e("RawResponseBody", rawBody)
+    return when{
 
-    // Parse the response body as a JsonObject to extract `code` and `message`
-    val json = Json { ignoreUnknownKeys = true }
-    val decodedResponse = json.decodeFromString<JsonObject>(rawBody)
+        response.status.value < 300 ->{
+            Log.e("RawResponseBody", response.bodyAsText()) // Log raw response
 
-    val responseCode = decodedResponse["code"]?.jsonPrimitive?.intOrNull ?: -1
-    val message = decodedResponse["message"]?.jsonPrimitive?.contentOrNull
-    val dataElement = decodedResponse["data"]
-
-    return try {
-        if (responseCode in 200..299) {
-            // Success based on the `code` in the response
             ResponseGenericAPi(
-                statusCode = HttpStatusCode.OK, // Always OK for successful cases
+                statusCode = response.status,
                 responseData = if (isUsedResponse) response.body<T>() else null,
                 messageError = null
             )
-        } else {
-            // Failure based on the `code` in the response
+        }
+        else -> {
             ResponseGenericAPi(
-                statusCode = HttpStatusCode.BadRequest, // Use BadRequest for logical errors
+                statusCode = response.status,
                 responseData = null,
-                messageError = ErrorMensaje(responseCode, message ?: "Error desconocido")
+                messageError = response.body<ErrorMensaje>()
             )
         }
-    } catch (e: Exception) {
-        Log.e("DataParsingError", "Error parsing response: ${e.message}")
-        ResponseGenericAPi(
-            statusCode = HttpStatusCode.InternalServerError, // Custom fallback
-            responseData = null,
-            messageError = ErrorMensaje(-1, "Error desconocido al procesar la respuesta")
-        )
     }
 }
+
+//suspend inline fun <reified T> parseResponseToGenericObject(
+//    response: HttpResponse,
+//    isUsedResponse: Boolean = true
+//): ResponseGenericAPi<T> {
+//    Log.e("RawResponseStatus", response.status.value.toString())
+//    val rawBody = response.bodyAsText()
+//    Log.e("RawResponseBody", rawBody)
+//
+//    // Parse the response body as a JsonObject to extract `code` and `message`
+//    val json = Json { ignoreUnknownKeys = true }
+//    val decodedResponse = json.decodeFromString<JsonObject>(rawBody)
+//
+//    val responseCode = decodedResponse["code"]?.jsonPrimitive?.intOrNull ?: -1
+//    val message = decodedResponse["message"]?.jsonPrimitive?.contentOrNull
+//    val dataElement = decodedResponse["data"]
+//
+//    return try {
+//        if (responseCode in 200..299) {
+//            // Success based on the `code` in the response
+//            ResponseGenericAPi(
+//                statusCode = HttpStatusCode.OK, // Always OK for successful cases
+//                responseData = if (isUsedResponse) response.body<T>() else null,
+//                messageError = null
+//            )
+//        } else {
+//            // Failure based on the `code` in the response
+//            ResponseGenericAPi(
+//                statusCode = HttpStatusCode.BadRequest, // Use BadRequest for logical errors
+//                responseData = null,
+//                messageError = ErrorMensaje(responseCode, message ?: "Error desconocido")
+//            )
+//        }
+//    } catch (e: Exception) {
+//        Log.e("DataParsingError", "Error parsing response: ${e.message}")
+//        ResponseGenericAPi(
+//            statusCode = HttpStatusCode.InternalServerError, // Custom fallback
+//            responseData = null,
+//            messageError = ErrorMensaje(-1, "Error desconocido al procesar la respuesta")
+//        )
+//    }
+//}
 
 
 @Serializable

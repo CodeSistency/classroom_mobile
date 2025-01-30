@@ -2,6 +2,7 @@ package com.example.classroom.presentation.screens.activity.addActivity
 
 import android.util.Log
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -45,7 +46,7 @@ class AddActivityViewModel(
 
     var title = mutableStateOf("")
     var description = mutableStateOf("")
-    var grade = mutableStateOf(1.0)
+    var grade = mutableDoubleStateOf(0.0)
     var email = mutableStateOf("")
     var startDate = mutableStateOf("")
     var endDate = mutableStateOf("")
@@ -127,7 +128,7 @@ class AddActivityViewModel(
                 idCourse = idCourse.toInt(),
                 title = title.value,
                 description = description.value.takeIf { it.isNotBlank() },
-                grade = grade.value,
+                grade = 0.0,
                 email = it.email,
                 startDate = startDate.value,
                 endDate = endDate.value,

@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.classroom.common.uiState.UiState
 import com.example.classroom.data.repository.RepositoryBundle
+import com.example.classroom.domain.model.entity.LocalActivities
 import com.example.classroom.domain.model.entity.LocalActivitySubmission
 import com.example.classroom.domain.model.entity.toLocal
 import com.example.classroom.domain.use_case.evaluations.getActivitiesSubmittedByStudent.GetActivitiesSubmitedByStudent
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
@@ -35,7 +37,15 @@ class StudentEvaluationsViewModel(
     private val _stateStudentEvaluations = mutableStateOf(StudentEvaluationsState())
     val stateStudentEvaluations: State<StudentEvaluationsState> = _stateStudentEvaluations
 
+    private val _listActivitiesFlow = MutableStateFlow<List<LocalActivities>>(emptyList())
+    val listActivitiesFlow: StateFlow<List<LocalActivities>> = _listActivitiesFlow
 
+
+    init {
+        viewModelScope.launch {
+            _listActivitiesFlow.value = repositoryBundle.activitiesRepository.getActivitiesWithFlow().first()
+        }
+    }
     fun observeLocalEvaluationsList(activityId: String, studentId: String) {
         viewModelScope.launch {
             repositoryBundle.submissionsRepository
