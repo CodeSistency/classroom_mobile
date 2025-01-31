@@ -180,7 +180,20 @@ interface AppDao {
 
 
     // SUBMISSIONS
+    @Transaction
+    suspend fun updateSubmissionTransaction(updatedSubmission: LocalActivitySubmission) {
+        val existingSubmission = getSubmissionById(updatedSubmission.id)
+        if (existingSubmission != null) {
+            deleteSubmissionById(updatedSubmission.id) // Borra el anterior si existe
+        }
+        insertSubmission(updatedSubmission) // Inserta el nuevo registro
+    }
 
+    @Query("SELECT * FROM localActivitySubmission_table WHERE id = :id LIMIT 1")
+    suspend fun getSubmissionById(id: Int): LocalActivitySubmission?
+
+    @Query("DELETE FROM localActivitySubmission_table WHERE id = :id")
+    suspend fun deleteSubmissionById(id: Int)
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrUpdateSubmission(submission: LocalActivitySubmission)
 
@@ -205,17 +218,17 @@ interface AppDao {
     suspend fun insertSubmissions(submissions: List<LocalActivitySubmission>)
 
     // Define a transaction for adding non-duplicate submissions
-    @Transaction
-    suspend fun addSubmissionsWithoutDuplicates(submissions: List<LocalActivitySubmission>) {
-        for (submission in submissions) {
-            // Check if the submission already exists
-            val existing = getSubmission(submission.activityId, submission.studentId)
-            if (existing == null) {
-                // Insert only if it doesn't already exist
-                insertSubmission(submission)
-            }
-        }
-    }
+//    @Transaction
+//    suspend fun addSubmissionsWithoutDuplicates(submissions: List<LocalActivitySubmission>) {
+//        for (submission in submissions) {
+//            // Check if the submission already exists
+//            val existing = getSubmission(submission.activityId, submission.studentId)
+//            if (existing == null) {
+//                // Insert only if it doesn't already exist
+//                insertSubmission(submission)
+//            }
+//        }
+//    }
 
 
     @Query("SELECT * FROM localActivitySubmission_table WHERE activity_id = :activityId")
@@ -252,7 +265,14 @@ interface AppDao {
 
     // QUIZZES
 
+    @Query("DELETE FROM localActivitySubmission_table")
+    suspend fun deleteAllSubmissions()
 
 
 
+    @Transaction
+    suspend fun addSubmissionsWithoutDuplicates(newSubmissions: List<LocalActivitySubmission>) {
+        deleteAllSubmissions()
+        insertSubmissions(newSubmissions)
+    }
 }

@@ -144,10 +144,10 @@ class AppModuleImpl(
         HttpClient(OkHttp) {
             expectSuccess = false
 
-            install(Logging) {
-                level = LogLevel.ALL
-            }
-
+//            install(Logging) {
+//                level = LogLevel.ALL
+//            }
+//
             install(ContentNegotiation) {
                 json(Json {
                     prettyPrint = true

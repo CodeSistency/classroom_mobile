@@ -310,7 +310,7 @@ fun CourseStudentPresentation(
                         ) { page ->
                             when(page){
                                 0 -> {
-                                    ListActivities(viewModel = viewModel, scope = scope, id = id, userId = it.first().idApi, navController = navController)
+                                    ListActivities(viewModel = viewModel, courseViewmodel, scope = scope, id = id, userId = it.first().idApi, navController = navController)
                                 }
                                 1 -> {
                                     ListPosts(viewModel = App.appModule.postViewModel, courseId = id, scope)

@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.classroom.common.composables.RetryComponent.RetryComponent
 import com.example.classroom.presentation.screens.activity.ActivityViewmodel
+import com.example.classroom.presentation.screens.course.CourseViewmodel
 import com.example.classroom.presentation.screens.home.HomeViewmodel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
@@ -38,15 +39,29 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun ListActivities(viewModel: ActivityViewmodel, scope: CoroutineScope, id: String, userId: String, navController: NavController) {
+fun ListActivities(
+    viewModel: ActivityViewmodel, courseViewModel: CourseViewmodel,
+    scope: CoroutineScope, id: String, userId: String, navController: NavController) {
+
     val items = viewModel.filteredListActivitiesByCourseFlow.collectAsState(initial = listOf())
     val state by viewModel.stateGetActivities
+
 
     LaunchedEffect(key1 = true) {
         if (items.value.isEmpty() && id.isNotEmpty()) {
             viewModel.getActivitiesLocalByCourse(id)
         }
+
+        courseViewModel.observeLocalEvaluations(id, userId)
+//        viewModel.getActivitiesByStudent(courseId, studentId)
+        courseViewModel.getLocalEvaluations(id, userId)
     }
+
+
+    
+    LaunchedEffect(key1 = true, block = {
+        viewModel.getLocalEvaluations(id, userId)
+    })
 
     // Pull-to-refresh state
     val pullRefreshState = rememberPullRefreshState(
@@ -97,6 +112,7 @@ fun ListActivities(viewModel: ActivityViewmodel, scope: CoroutineScope, id: Stri
                             activity = activity,
                             userId = userId,
                             navController = navController,
+                            viewModel = viewModel,
                             courseId = id,
                         ) {}
                     }

@@ -203,7 +203,7 @@ var context = LocalContext.current
                             scope.launch {
                                 viewModel.reviewActivity(
                                     body = ReviewEvaluationRequestDto(
-                                        activityId = submission.activityId.toInt(),
+                                        activityId = submission.idApi.toInt(),
                                         grade = viewModel.grade.value.toInt(),
                                     )
                                 )

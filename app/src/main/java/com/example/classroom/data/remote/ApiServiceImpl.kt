@@ -66,6 +66,7 @@ import com.example.classroom.data.remote.dto.quizz.CreateQuizzDto
 import com.example.classroom.data.remote.dto.quizz.CreateQuizzResponseDto
 import com.example.classroom.data.remote.dto.quizz.QuizzResponseDto
 import com.example.classroom.domain.model.entity.areatoInt
+import io.ktor.client.plugins.onUpload
 import io.ktor.client.request.delete
 import io.ktor.client.request.forms.InputProvider
 import io.ktor.client.request.forms.MultiPartFormDataContent
@@ -408,94 +409,139 @@ class ApiServiceImpl(private val client: HttpClient): ApiService {
 
     }
 
-    @OptIn(InternalAPI::class)
-    override suspend fun uploadFile(fileUri: Uri, context: Context, useSupabase: Boolean): ResponseGenericAPi<CloudResposeDto> {
-        return withContext(Dispatchers.IO) {
+//    override suspend fun uploadFile(fileUri: Uri, context: Context, useSupabase: Boolean): ResponseGenericAPi<CloudResposeDto> {
+//        return withContext(Dispatchers.IO) {
+//            val originalFileName = extractOriginalFileName(fileUri, context)
+//
+//            // Convert URI to File
+//            val file = uriToFile(context, fileUri)
+//
+//            if (!file.exists() || file.length() == 0L) {
+//                throw IOException("File is empty or does not exist: ${file.absolutePath}")
+//            }
+//
+//            Log.d("FILE_UPLOAD", "Uploading file: ${file.name}, Size: ${file.length()} bytes")
+//
+//            val response: HttpResponse = client.submitFormWithBinaryData(
+//                url = "${Constants.BASE_URL}/cloud/send/file",
+//                formData = formData {
+//                    append("file", InputProvider { FileInputStream(file).asInput() }, Headers.build {
+//                        append(HttpHeaders.ContentType, "multipart/form-data") // ✅ Correct Content-Type
+//                        append(HttpHeaders.ContentDisposition, "form-data; name=\"file\"; filename=\"${file.name}\"") // ✅ Proper format
+//                    })
+//                    append("useSupabase", useSupabase.toString()) // ✅ Pass other params correctly
+//                }
+//            ) {
+//                onUpload { bytesSentTotal, contentLength ->
+//                    Log.e("UPLOADING", "Sent $bytesSentTotal bytes from $contentLength")
+//                }
+//            }
+//
+//            Log.d("FILE_UPLOAD", "Server response: ${response.status}, Body: ${response.bodyAsText()}")
+//
+//            return@withContext parseResponseToGenericObject(response, true)
+//        }
+//    }
+
+
+//    override suspend fun uploadFile(fileUri: Uri, context: Context, useSupabase: Boolean): ResponseGenericAPi<CloudResposeDto> {
+//        return withContext(Dispatchers.IO) {
+//            val originalFileName = extractOriginalFileName(fileUri, context)
+//
+//            // Convert `fileUri` to a real `File`
+//            val file = uriToFile(context, fileUri)
+//
+//            if (!file.exists() || file.length() == 0L) {
+//                throw IOException("File is empty or does not exist: ${file.absolutePath}")
+//            }
+//
+//            Log.d("FILE_UPLOAD", "Uploading file: ${file.name}, Size: ${file.length()} bytes")
+//
+//            val response: HttpResponse = client.submitFormWithBinaryData(
+//                url = "${Constants.BASE_URL}/cloud/send/file",
+//                formData = formData {
+//                    append("file", file.readBytes(), Headers.build {
+//                        append(HttpHeaders.ContentDisposition, "filename=${originalFileName}")
+//                    })
+//                    append("useSupabase", useSupabase.toString())
+//                }
+//            ) {
+//                onUpload { bytesSentTotal, contentLength ->
+//                    Log.e("UPLOADING", "Sent $bytesSentTotal bytes from $contentLength")
+//                }
+//            }
+//
+//            Log.d("FILE_UPLOAD", "Server response: ${response.status}, Body: ${response.bodyAsText()}")
+//
+//            return@withContext parseResponseToGenericObject(response, true)
+//        }
+//    }
+
+
+    override suspend fun uploadFile(fileUri: Uri, context: Context, useSupabase: Boolean): ResponseGenericAPi<CloudResposeDto> =
+        withContext(Dispatchers.IO) {
+            // Extract the original file name
             val originalFileName = extractOriginalFileName(fileUri, context)
 
-            val fileBytes = context.contentResolver.openFileDescriptor(fileUri, "r")?.use { descriptor ->
-                FileInputStream(descriptor.fileDescriptor).use { it.readBytes() }
+            val fileDescriptor = context.contentResolver.openFileDescriptor(fileUri, "r")?.fileDescriptor
+            val fileBytes = fileDescriptor?.let { fd ->
+                FileInputStream(fd).use { it.readBytes() }
             } ?: throw IOException("Unable to read file: $fileUri")
 
             if (fileBytes.isEmpty()) {
                 throw IOException("File is empty, failed to read")
             }
 
-            Log.d("FILE_UPLOAD", "Uploading file: $originalFileName, Size: ${fileBytes.size} bytes")
+            Log.d("FILE_UPLOAD", "Final file size after read: ${fileBytes.size} bytes")
+            // Open the file as a stream and convert to bytes
+//            val fileBytes = context.contentResolver.openFileDescriptor(fileUri, "r")?.use { descriptor ->
+//                FileInputStream(descriptor.fileDescriptor).use { it.readBytes() }
+//            } ?: throw IllegalArgumentException("Unable to read file from URI: $fileUri")
+//            val fileBytes = context.contentResolver.openInputStream(fileUri)?.use { inputStream ->
+//                inputStream.readBytes()
+//            } ?: throw IllegalArgumentException("Unable to read file from URI: $fileUri")
 
-            // Build the request
+            // Log file details
+            Log.d("FILE_UPLOAD", "File URI: $fileUri")
+            Log.d("FILE_UPLOAD", "Original file name: $originalFileName")
+            Log.d("FILE_UPLOAD", "File size: ${fileBytes.size} bytes")
 
-
+            // Make the POST request
             val response = client.submitFormWithBinaryData(
                 url = "${Constants.BASE_URL}/cloud/send/file",
+
+//                url = "https://class-room-nest.onrender.com/cloud/send/file",
                 formData = formData {
                     append("file", fileBytes, Headers.build {
-                        append(HttpHeaders.ContentDisposition, "form-data; name=\"file\"; filename=\"$originalFileName\"") // ✅ Correct format
-//                        append(HttpHeaders.ContentType, "application/octet-stream") // ✅ Explicit binary type
+                        append(HttpHeaders.ContentDisposition, "filename=${originalFileName}")
                     })
                     append("useSupabase", useSupabase.toString())
                 }
             )
 
-            Log.d("FILE_UPLOAD", "Server response: ${response.status}, Body: ${response.bodyAsText()}")
+            Log.e("response", response.bodyAsText())
+
+
+            // Log response details
+//            val rawResponse = response.bodyAsText()
+//            Log.d("FILE_UPLOAD", "Response code: ${response.status.value}")
+//            Log.d("FILE_UPLOAD", "Response body: $rawResponse")
 
             return@withContext parseResponseToGenericObject(response, true)
         }
-    }
-
-//    override suspend fun uploadFile(fileUri: Uri, context: Context, useSupabase: Boolean): ResponseGenericAPi<CloudResposeDto> =
-//        withContext(Dispatchers.IO) {
-//            // Extract the original file name
-//            val originalFileName = extractOriginalFileName(fileUri, context)
-//
-//            val fileDescriptor = context.contentResolver.openFileDescriptor(fileUri, "r")?.fileDescriptor
-//            val fileBytes = fileDescriptor?.let { fd ->
-//                FileInputStream(fd).use { it.readBytes() }
-//            } ?: throw IOException("Unable to read file: $fileUri")
-//
-//            if (fileBytes.isEmpty()) {
-//                throw IOException("File is empty, failed to read")
-//            }
-//
-//            Log.d("FILE_UPLOAD", "Final file size after read: ${fileBytes.size} bytes")
-//            // Open the file as a stream and convert to bytes
-////            val fileBytes = context.contentResolver.openFileDescriptor(fileUri, "r")?.use { descriptor ->
-////                FileInputStream(descriptor.fileDescriptor).use { it.readBytes() }
-////            } ?: throw IllegalArgumentException("Unable to read file from URI: $fileUri")
-////            val fileBytes = context.contentResolver.openInputStream(fileUri)?.use { inputStream ->
-////                inputStream.readBytes()
-////            } ?: throw IllegalArgumentException("Unable to read file from URI: $fileUri")
-//
-//            // Log file details
-//            Log.d("FILE_UPLOAD", "File URI: $fileUri")
-//            Log.d("FILE_UPLOAD", "Original file name: $originalFileName")
-//            Log.d("FILE_UPLOAD", "File size: ${fileBytes.size} bytes")
-//
-//            // Make the POST request
-//            val response = client.submitFormWithBinaryData(
-//                url = "${Constants.BASE_URL}/cloud/send/file",
-//
-////                url = "https://class-room-nest.onrender.com/cloud/send/file",
-//                formData = formData {
-//                    append("file", fileBytes, Headers.build {
-//                        append(HttpHeaders.ContentDisposition, "filename=${originalFileName}")
-//                    })
-//                    append("useSupabase", useSupabase.toString())
-//                }
-//            )
-//
-//            Log.e("response", response.bodyAsText())
-//
-//
-//            // Log response details
-////            val rawResponse = response.bodyAsText()
-////            Log.d("FILE_UPLOAD", "Response code: ${response.status.value}")
-////            Log.d("FILE_UPLOAD", "Response body: $rawResponse")
-//
-//            return@withContext parseResponseToGenericObject(response, true)
-//        }
 
     // Helper function to extract the original filename from the URI
+
+    private fun uriToFile(context: Context, uri: Uri): File {
+        val inputStream = context.contentResolver.openInputStream(uri)
+        val tempFile = File(context.cacheDir, "upload_temp_${System.currentTimeMillis()}.tmp")
+
+        tempFile.outputStream().use { outputStream ->
+            inputStream?.copyTo(outputStream)
+        }
+
+        return tempFile
+    }
     private fun extractOriginalFileName(fileUri: Uri, context: Context): String {
         val cursor = context.contentResolver.query(fileUri, null, null, null, null)
         cursor?.use {

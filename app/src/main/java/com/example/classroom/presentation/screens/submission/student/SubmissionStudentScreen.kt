@@ -76,7 +76,7 @@ fun SubmissionStudentScreen(
 
             else -> {
                 if (state.value.info != null){
-                    dialogState = SetupCustomDialogState.Success(message = "Se ha calificado la evaluacion exitosamente")
+                    dialogState = SetupCustomDialogState.Success(message = "Se ha subido la evaluacion exitosamente")
                     delay(1000)
                     navController.popBackStack()
                     viewModel.cleanData()

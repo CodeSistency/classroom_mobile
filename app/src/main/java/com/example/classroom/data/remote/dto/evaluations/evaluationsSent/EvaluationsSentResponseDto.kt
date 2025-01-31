@@ -15,6 +15,8 @@ data class EvaluationsSentResponseDto(
 ) {
     @Serializable
     data class Data(
+        @SerialName("id")
+        val idApi: Int,
         @SerialName("activity_id")
         val activityId: Int,
         @SerialName("user_id")

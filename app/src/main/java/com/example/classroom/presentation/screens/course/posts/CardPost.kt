@@ -172,20 +172,17 @@ fun CardPostItem(post: LocalPost, viewModel: PostsViewModel, scope: CoroutineSco
                         )
                     )
 
-                    val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
-                    inputFormat.timeZone = TimeZone.getTimeZone("UTC") // Ajustar zona horaria
+                    val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US).apply {
+                        timeZone = TimeZone.getTimeZone("UTC") // Parse in UTC
+                    }
+
+                    val outputFormat = SimpleDateFormat("yyyy/MM/dd", Locale.US) // Desired output format
 
                     val formattedDate = try {
                         val date = inputFormat.parse(post.createdAt)
-                        val calendar = Calendar.getInstance().apply {
-                            time = date ?: Date()
-                        }
-                        val year = calendar.get(Calendar.YEAR)
-
-                        // Forzar el formato "YYYY/00/00"
-                        "$year/00/00"
+                        outputFormat.format(date ?: Date()) // Format the date properly
                     } catch (e: Exception) {
-                        "2000/00/00" // En caso de error
+                        "2000/01/01" // Default fallback in case of error
                     }
 
                     Text(

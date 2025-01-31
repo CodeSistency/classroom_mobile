@@ -213,7 +213,8 @@ class Seeders(
                 comment = "Completed the lab report with findings",
                 documentUrl = "https://example.com/doc1",
                 grade = 90.0,
-                courseId = "id1"
+                courseId = "id1",
+                idApi = ""
             ),
             LocalActivitySubmission(
 //                idApi = "sub2",
@@ -224,7 +225,8 @@ class Seeders(
                 comment = "Finished the math homework",
                 documentUrl = "https://example.com/doc2",
                 grade = 85.0,
-                courseId = "id2"
+                courseId = "id2",
+                idApi = ""
             )
         )
         submissions.forEach { dao.insertOrUpdateSubmission(it) }

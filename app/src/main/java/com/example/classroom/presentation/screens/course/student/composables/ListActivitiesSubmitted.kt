@@ -126,49 +126,7 @@ fun ListActivitiesSubmitted(
                     }
                 }
             }
-//            uiState.info != null -> {
-//                Log.e("evaluaciones UI", uiState.info.toString())
-//
-//                val evaluations = uiState.info.orEmpty()
-//                if (evaluations.isEmpty()) {
-//                    Column(
-//                        modifier = Modifier.fillMaxSize(),
-//                        verticalArrangement = Arrangement.Center,
-//                        horizontalAlignment = Alignment.CenterHorizontally
-//                    ) {
-//
-//                        RetryComponent(mensaje = "No hay evaluaciones disponibles", onRetryClick = {
-//
-//                            scope.launch {
-//                                viewModel.getActivitiesByStudent(courseId, studentId)// Manual refresh
-//                            }
-//                        })
-////                        Text(text = "No hay evaluaciones disponibles")
-////                        Spacer(modifier = Modifier.height(10.dp))
-////                        IconButton(onClick = {
-////                            scope.launch {
-////                                viewModel.getActivitiesByStudent(courseId, studentId)
-////                            }
-////                        }) {
-////                            Icon(Icons.Outlined.Sync, contentDescription = null)
-////                        }
-//                    }
-//                } else {
-//                    LazyColumn(
-//                        modifier = Modifier.fillMaxSize().padding(bottom = 45.dp),
-//                        contentPadding = PaddingValues(6.dp),
-//                        verticalArrangement = Arrangement.spacedBy(12.dp)
-//                    ) {
-//                        items(evaluations) { evaluation ->
-//                            CardActivitySubmitted(
-//                                evaluation = evaluation,
-//                                viewModel = viewModel,
-//                                navController = navController,
-//                            )
-//                        }
-//                    }
-//                }
-//            }
+
         }
 
         // PullRefreshIndicator shows the refresh progress at the top of the screen

@@ -165,7 +165,7 @@ class AddPostViewModel(
                                 is Resource.Error -> {
                                     Log.e("fileurl error", result.message?.uiMessage.toString())
 
-                                    _statePost.value = AddPostState(error = "File upload error: ${result.message?.uiMessage}")
+                                    _statePost.value = AddPostState(error = "${result.message?.uiMessage}")
                                     return@collect
                                 }
                                 is Resource.Success -> {

@@ -12,6 +12,7 @@ import com.example.classroom.data.remote.dto.activities.ActivityRequestDto
 import com.example.classroom.data.remote.dto.activities.GetActivitiesWithQuizzResponseDto
 import com.example.classroom.data.repository.RepositoryBundle
 import com.example.classroom.domain.model.entity.LocalActivities
+import com.example.classroom.domain.model.entity.LocalActivitySubmission
 import com.example.classroom.domain.model.entity.LocalUser
 import com.example.classroom.domain.model.entity.OptionEntity
 import com.example.classroom.domain.model.entity.QuestionEntity
@@ -77,6 +78,9 @@ class ActivityViewmodel(
     private val _listActivitiesByCourseOwnerFlow = MutableStateFlow<List<LocalActivities>>(emptyList())
     val listActivitiesByCourseOwnerFlow: StateFlow<List<LocalActivities>> = _listActivitiesByCourseOwnerFlow
 
+    private val _listActivitiesSubmitted = MutableStateFlow<List<LocalActivitySubmission>>(emptyList())
+    val listActivitiesSubmitted: StateFlow<List<LocalActivitySubmission>> = _listActivitiesSubmitted
+
     // UI State for activity form
     var stateActivityForm by mutableStateOf(ActivityFormState())
 
@@ -116,6 +120,19 @@ class ActivityViewmodel(
         }
     }
 
+    fun getLocalEvaluations(courseId: String, studentId: String) {
+        Log.e("submitted", "courseid ${courseId} studentId ${studentId}")
+        viewModelScope.launch {
+            repositoryBundle.submissionsRepository.getSubmissionsForStudentByCourse(
+                studentId,
+                courseId
+            ).collect {
+                Log.e("evaluaciones", _listActivitiesFlow.value.toString())
+                _listActivitiesSubmitted.value = it
+            }
+
+        }
+    }
     fun filterActivities(query: String) {
         _filteredListActivitiesByCourseFlow.value = if (query.isBlank()) {
             _listActivitiesFlow.value

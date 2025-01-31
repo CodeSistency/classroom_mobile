@@ -1,5 +1,6 @@
 package com.example.classroom.presentation.screens.course.student.composables
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -31,6 +32,10 @@ import com.example.classroom.presentation.navigation.Destination
 import com.example.classroom.presentation.screens.course.CourseViewmodel
 import com.example.classroom.presentation.theme.Azul2
 import com.example.classroom.presentation.theme.PaddingCustom
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 
 @Composable
@@ -43,101 +48,87 @@ fun CardActivitySubmitted(
 
     val activities by viewModel.listActivitiesFlow.collectAsState()
 
-    val activity = activities.first { it.idApi == evaluation.activityId }
+//    val activity = activities.first { it.idApi == evaluation.activityId }
+    val activity = activities.firstOrNull { it.idApi == evaluation.activityId }
 
+    val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US).apply {
+        timeZone = TimeZone.getTimeZone("UTC") // Parse in UTC
+    }
 
-    Box(modifier = Modifier){
-        Box(
-            modifier = Modifier
-                .shadow(8.dp, shape)
-                .background(Color.White, shape)
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+    val outputFormat = SimpleDateFormat("yyyy/MM/dd", Locale.US) // Desired output format
+
+    val formattedDate = try {
+        val date = inputFormat.parse(evaluation.submissionDate)
+        outputFormat.format(date ?: Date()) // Format the date properly
+    } catch (e: Exception) {
+        "2000/01/01" // Default fallback in case of error
+    }
+
+    if (activity != null) {
+        Box(modifier = Modifier) {
+            Box(
+                modifier = Modifier
+                    .shadow(8.dp, shape)
+                    .background(Color.White, shape)
+                    .fillMaxWidth()
+                    .padding(16.dp)
             ) {
-                Column {
-                    Text(
-                        text = "Actividad: ${activity.title}",
-                        style = TextStyle(
-                            color = Color.DarkGray,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            // fontFamily = InterTight (uncomment if using custom font)
-                        )
-                    )
-                    Spacer(modifier = Modifier.height(5.dp))
-                    Text(
-                        text = "Fecha de evaluación: ${evaluation.submissionDate}",
-                        style = TextStyle(
-                            color = Color.Gray,
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Bold,
-                            // fontFamily = InterTight (uncomment if using custom font)
-                        )
-                    )
-
-                    // Display grade if available
-                    if (evaluation.grade > 0) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column {
                         Text(
-                            text = "Calificación: ${evaluation.grade}",
+                            text = "Actividad: ${activity.title}",
                             style = TextStyle(
-                                color = Color.Black,
-                                fontSize = 10.sp,
+                                color = Color.DarkGray,
+                                fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold,
-                                // fontFamily = InterTight (uncomment if using custom font)
                             )
                         )
-                    } else {
+                        Spacer(modifier = Modifier.height(5.dp))
                         Text(
-                            text = "Sin calificación",
+                            text = "Fecha de evaluación: $formattedDate",
                             style = TextStyle(
                                 color = Color.Gray,
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Bold,
-                                // fontFamily = InterTight (uncomment if using custom font)
                             )
                         )
+
+                        if (evaluation.grade > 0) {
+                            Text(
+                                text = "Calificación: ${evaluation.grade}",
+                                style = TextStyle(
+                                    color = Color.Black,
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Bold,
+                                )
+                            )
+                        } else {
+                            Text(
+                                text = "Sin calificación",
+                                style = TextStyle(
+                                    color = Color.Gray,
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Bold,
+                                )
+                            )
+                        }
                     }
                 }
-
-                // Optional Icon Buttons for editing or deleting (similar to CardActivity)
-//                Row {
-//                    IconButton(onClick = {
-//                        navController.navigate("${Destination.PROFESSOR_REVIEW_EVALUATION.screenRoute}?idStudent=${idStudent}&idActivity=${evaluation.idApi}&idCourse=${idCourse}")
-//                    }) {
-//                        Icon(
-//                            Icons.Default.Edit,
-//                            contentDescription = "Edit Evaluation",
-//                            tint = Color.Gray,
-//                            modifier = Modifier.size(25.dp)
-//                        )
-//                    }
-//                    IconButton(onClick = {
-//                        // Handle delete or additional actions
-//                    }) {
-//                        Icon(
-//                            painter = painterResource(id = R.drawable.ic_cancel),
-//                            contentDescription = "Delete Evaluation",
-//                            tint = Color.Gray,
-//                            modifier = Modifier.size(25.dp)
-//                        )
-//                    }
-//                }
             }
+
+            Box(
+                modifier = Modifier
+                    .height(90.dp)
+                    .width(5.dp)
+                    .background(Azul2, shape)
+                    .align(Alignment.CenterStart)
+            )
         }
-// Optional left bar for styling (if needed)
-
-        Box(
-            modifier = Modifier
-                .height(90.dp)
-                .width(5.dp)
-                .background(Azul2, shape)
-                .align(Alignment.CenterStart)
-        )
+    } else {
+        Log.e("CardActivitySubmitted", "Activity with ID ${evaluation.activityId} not found.")
     }
-
 
 }

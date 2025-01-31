@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.SendAndArchive
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,6 +45,7 @@ import com.example.classroom.R
 import com.example.classroom.domain.model.entity.LocalActivities
 import com.example.classroom.domain.model.entity.Status
 import com.example.classroom.presentation.navigation.Destination
+import com.example.classroom.presentation.screens.activity.ActivityViewmodel
 import com.example.classroom.presentation.theme.Azul2
 import com.example.classroom.presentation.theme.PaddingCustom
 import java.text.SimpleDateFormat
@@ -56,8 +58,14 @@ fun CardActivity(
     userId: String,
     courseId: String,
     navController: NavController,
+    viewModel: ActivityViewmodel,
     action: () -> Unit
 ) {
+
+    val activities by viewModel.listActivitiesSubmitted.collectAsState()
+
+    val activitySubmitted = activities.firstOrNull { it.activityId == activity.idApi && it.studentId == userId && it.courseId == courseId }
+
     val shape = RoundedCornerShape(PaddingCustom.MEDIUM.size)
     var isSendActivityOpen by remember { mutableStateOf(false) }
 
@@ -66,6 +74,7 @@ fun CardActivity(
     val currentDate = Date()
     val endDate = dateFormatter.parse(activity.endDate) ?: currentDate
     val isDatePast = endDate.before(currentDate)
+
 
     Box(modifier = Modifier) {
         Box(
@@ -85,7 +94,8 @@ fun CardActivity(
                             color = Color.DarkGray,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
-                        )
+                        ),
+                        modifier = Modifier.fillMaxWidth(0.70f)
                     )
                     Spacer(modifier = Modifier.height(5.dp))
 
@@ -119,6 +129,8 @@ fun CardActivity(
 //                            )
                         }
                     }
+
+
                 }
 
                 // Disable interaction if the date has passed
@@ -143,12 +155,14 @@ fun CardActivity(
                         )
                     }
                 } else {
-                    Icon(
-                        Icons.Default.Block,
-                        contentDescription = "Disabled",
-                        tint = Color.LightGray,
-                        modifier = Modifier.size(35.dp)
-                    )
+                    if (activitySubmitted != null){
+                        Row(modifier = Modifier) {
+                            Text(text = "Entregada${if(activitySubmitted.grade > 0) ": ${activitySubmitted.grade}" else ""} ")
+                        }
+                    }else{
+                        Text(text = "No entregada")
+
+                    }
                 }
             }
         }

@@ -12,6 +12,7 @@ import com.example.classroom.data.remote.dto.login.signIn.SignInResponseDto
 @Entity(tableName = "localActivitySubmission_table")
 data class LocalActivitySubmission(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @ColumnInfo(name = "idAp") val idApi: String,
     @ColumnInfo(name = "activity_id") val activityId: String,
     @ColumnInfo(name = "course_id") val courseId: String,
     @ColumnInfo(name = "student_id") val studentId: String,
@@ -31,6 +32,7 @@ fun ReviewEvaluationsResponseDto.toActivitySubmission(): LocalActivitySubmission
         submissionDate = "",
         documentUrl = "",
         studentId = "",
+        idApi = ""
 
     )
 }
@@ -45,6 +47,7 @@ fun SendEvaluationResponseDto.toActivitySubmission(idCourse: String): LocalActiv
         submissionDate = data.createDate,
         documentUrl = data.document,
         studentId = data.userId.toString(),
+        idApi = data.id.toString()
 
         )
 }
@@ -60,7 +63,7 @@ fun EvaluationsSentResponseDto.toActivitiesSubmission(idCourse: String): List<Lo
             submissionDate = it.createDate,
             documentUrl = it.document,
             studentId = it.userId.toString(),
-
+idApi = it.idApi.toString()
             )
     }
 }

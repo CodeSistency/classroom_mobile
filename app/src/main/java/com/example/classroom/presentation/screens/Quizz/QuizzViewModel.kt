@@ -352,7 +352,7 @@ class QuizzViewModel(
                                         studentId = it.idApi,
                                         comment = "quizz",
                                         submissionDate = answer.submission.createDate,
-
+idApi = answer.submission.id.toString()
                                         )
                                 )
                             }
