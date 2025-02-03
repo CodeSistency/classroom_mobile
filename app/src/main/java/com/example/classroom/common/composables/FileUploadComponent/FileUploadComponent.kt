@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -41,6 +42,7 @@ import coil.compose.AsyncImage
 import com.example.classroom.common.composables.CustomButton.CustomButton
 import com.example.classroom.common.composables.CustomButton.NavigationButtonStyle
 import com.example.classroom.presentation.theme.Azul
+import com.example.classroom.presentation.theme.Azul2
 import com.example.classroom.presentation.theme.AzulGradient
 
 @Composable
@@ -152,7 +154,10 @@ fun FileUploadComponent(
                     selectedFileUri = null
                     onFileCleared()
                 },
-                modifier = Modifier.align(Alignment.End)
+                modifier = Modifier.align(Alignment.End),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = Azul2
+                )
             ) {
                 Text("Limpiar")
             }

@@ -60,183 +60,87 @@ import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
+import com.example.classroom.presentation.theme.Azul2
 import proyecto.person.appconsultapopular.common.Constants
-
-
-//@Composable
-//fun FilePreview(
-//    fileUrl: String,
-//    fileName: String,
-//    modifier: Modifier = Modifier
-//) {
-//    val context = LocalContext.current
-//    val extension = fileUrl.substringAfterLast('.', "").lowercase()
-//    val mimeType = getMimeTypeFromExtension(extension)
-//    val isImageFile = mimeType.startsWith("image/")
-//
-//    var downloadStatus by remember { mutableStateOf(DownloadStatus.Idle) }
-//    var downloadId by remember { mutableStateOf<Long?>(null) }
-//    var downloadedFileUri by remember { mutableStateOf<Uri?>(null) }
-//
-//    var url = fileUrl.replace("localhost", Constants.HOST)
-//
-//    DisposableEffect(Unit) {
-//        val receiver = object : BroadcastReceiver() {
-//            override fun onReceive(context: Context, intent: Intent) {
-//                val completedId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
-//
-//                if (completedId == downloadId) {
-//                    val (status, reason) = getDownloadStatusAndReason(context, completedId)
-//                    if (status == DownloadManager.STATUS_SUCCESSFUL) {
-//                        val localUri = getLocalUriFromDownloadId(context, completedId)
-//                        downloadedFileUri = localUri
-//                        if (!isImageFile && localUri != null) {
-//                            openFileWithIntent(context, localUri, mimeType)
-//                        }
-//                        downloadStatus = DownloadStatus.Completed
-//                    } else {
-//                        downloadStatus = DownloadStatus.Error
-//                    }
-//                    downloadId = null
-//                }
-//            }
-//        }
-//
-//        val filter = IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
-//
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-//            context.registerReceiver(receiver, filter, Context.RECEIVER_EXPORTED)
-//        } else {
-//            context.registerReceiver(receiver, filter)
-//        }
-//
-//        onDispose {
-//            context.unregisterReceiver(receiver)
-//        }
-//    }
-//
-//    Column(modifier = modifier) {
-//        Text(text = fileName, fontSize = 16.sp, fontWeight = FontWeight.Medium)
-//
-//        if (isImageFile) {
-//            ImagePreviewWithRetry(url = url, modifier = Modifier.fillMaxWidth())
-//        } else {
-//            Row {
-//                Text(text = extension.uppercase(), fontSize = 15.sp)
-//                Spacer(Modifier.weight(1f))
-//                Icon(
-//                    imageVector = Icons.Default.Download,
-//                    contentDescription = "Download doc",
-//                    tint = Color(0xFF4B6BEF),
-//                    modifier = Modifier
-//                        .size(28.dp)
-//                        .clickable {
-//                            if (downloadStatus != DownloadStatus.Downloading) {
-//                                downloadStatus = DownloadStatus.Downloading
-//                                downloadId = enqueueDownload(context, fileUrl, fileName, mimeType)
-//                            }
-//                        }
-//                )
-//            }
-//        }
-//
-//        when (downloadStatus) {
-//            DownloadStatus.Downloading -> Text("Downloading...", fontSize = 13.sp)
-//            DownloadStatus.Completed -> Text("Download Complete!", color = Color(0xFF388E3C))
-//            DownloadStatus.Error -> Text("Download failed!", color = Color.Red)
-//            else -> {}
-//        }
-//    }
-//}
 
 @Composable
 fun FilePreview(
     fileUrl: String,
+    // We’ll ignore the passed-in fileName and parse from URL
+    // but you could still display the passed-in name in the UI if you want.
     fileName: String,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
 
-    // Detect if the file is an image
-    val extension = fileUrl.substringAfterLast('.', "").lowercase()
+    // 1) Replace "localhost" with the actual host in all cases
+    val finalUrl = fileUrl.replace("localhost", Constants.HOST)
+
+    // 2) Extract the file name from the finalUrl
+    //    If it’s empty, we make a fallback name to avoid "Downloading file"
+    val extractedFileName = finalUrl.substringAfterLast('/')
+        .ifEmpty { "download_${System.currentTimeMillis()}" }
+
+    // 3) Determine if it’s an image from the extension
+    val extension = extractedFileName.substringAfterLast('.', "").lowercase()
     val mimeType = getMimeTypeFromExtension(extension)
     val isImageFile = mimeType.startsWith("image/")
 
-    // Download states (for saving the file)
+    // Download states
     var downloadStatus by remember { mutableStateOf(DownloadStatus.Idle) }
     var downloadId by remember { mutableStateOf<Long?>(null) }
 
-    // Fullscreen image states (after the file is downloaded, if you want to open it)
+    // Fullscreen image states
     var showFullScreenImage by remember { mutableStateOf(false) }
     var fullImageUri by remember { mutableStateOf<Uri?>(null) }
 
-    var url = fileUrl.replace("localhost", Constants.HOST)
-
-    // BroadcastReceiver to check success/failure of the DownloadManager
+    // 4) Register the BroadcastReceiver for DownloadManager
     DisposableEffect(Unit) {
         val receiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
-                val action = intent.action
-                val completedId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+                if (intent.action == DownloadManager.ACTION_DOWNLOAD_COMPLETE) {
+                    val completedId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+                    if (completedId == downloadId) {
+                        val (status, reason) = getDownloadStatusAndReason(context, completedId)
 
-                Log.e("FilePreview", "onReceive called. action=$action, completedId=$completedId, our downloadId=$downloadId")
-
-                if (action == DownloadManager.ACTION_DOWNLOAD_COMPLETE && completedId == downloadId) {
-                    // Check the final status
-                    val (status, reason) = getDownloadStatusAndReason(context, completedId)
-                    Log.e("FilePreview", "DownloadManager result -> status=$status, reason=$reason")
-
-                    if (status == DownloadManager.STATUS_SUCCESSFUL) {
-                        // For an image, optionally show fullscreen
-                        if (isImageFile) {
+                        if (status == DownloadManager.STATUS_SUCCESSFUL) {
+                            // If image, we can display it in fullscreen
                             val localUri = getLocalUriFromDownloadId(context, completedId)
-                            Log.e("FilePreview", "Downloaded image localUri=$localUri")
-                            if (localUri != null) {
-                                fullImageUri = localUri
-                                showFullScreenImage = true
+                            if (isImageFile) {
+                                localUri?.let {
+                                    fullImageUri = it
+                                    showFullScreenImage = true
+                                }
+                            } else {
+                                // If PDF or doc, open with external viewer
+//                                localUri?.let { openFileWithIntent(context, it, mimeType) }
                             }
+                            downloadStatus = DownloadStatus.Completed
                         } else {
-                            // If not image, open with an external app
-                            val localUri = getLocalUriFromDownloadId(context, completedId)
-                            Log.e("FilePreview", "Downloaded file localUri=$localUri")
-                            if (localUri != null) {
-                                openFileWithIntent(context, localUri, mimeType)
-                            }
+                            downloadStatus = DownloadStatus.Error
+                            Log.e("FilePreview", "Download failed with reason=$reason")
                         }
-                        downloadStatus = DownloadStatus.Completed
-                    } else {
-                        // Show that the download failed
-                        downloadStatus = DownloadStatus.Error
-                        Log.e("FilePreview", "Download failed with reason=$reason")
+                        // Reset the ID to avoid re-checking
+                        downloadId = null
                     }
-                    // Reset the ID so we don't process it again
-                    downloadId = null
                 }
             }
         }
 
         val filter = IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
-
+        // For Android 13+ (Tiramisu), use a non-exported receiver if only your app triggers it
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             context.registerReceiver(receiver, filter, Context.RECEIVER_EXPORTED)
         } else {
             context.registerReceiver(receiver, filter)
         }
 
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-//            Log.e("FilePreview", "Registering broadcast receiver with RECEIVER_NOT_EXPORTED")
-//            context.registerReceiver(receiver, filter, Context.RECEIVER_NOT_EXPORTED)
-//        } else {
-//            Log.e("FilePreview", "Registering broadcast receiver normally")
-//            context.registerReceiver(receiver, filter)
-//        }
-
         onDispose {
-            Log.e("FilePreview", "Unregistering broadcast receiver")
             context.unregisterReceiver(receiver)
         }
     }
-    // The UI Card/Box
+
+    // 5) The UI
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -248,42 +152,45 @@ fun FilePreview(
         if (isImageFile) {
             Column {
                 Text(
-                    text = fileName,
+                    text = extractedFileName, // or show your original 'fileName' if desired
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
                     color = Color(0xFF333333)
                 )
                 Spacer(Modifier.height(8.dp))
 
-                // Here’s our new subcomposable
+                // Image preview with optional “retry”
                 ImagePreviewWithRetry(
-                    url = url,
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = {
-                        // Show the same remote URL in fullscreen
-                        fullImageUri = Uri.parse(url)
-                        showFullScreenImage = true
-                    }
-                )
-
-                // Download status indicators (if you want to display them)
-                if (downloadStatus == DownloadStatus.Downloading) {
-                    Spacer(Modifier.height(8.dp))
-                    LinearProgressIndicator(
-                        color = Color(0xFF4B6BEF),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Text("Downloading...", color = Color.Gray, fontSize = 13.sp)
-                } else if (downloadStatus == DownloadStatus.Completed) {
-                    Spacer(Modifier.height(4.dp))
-                    Text("Download Complete!", color = Color(0xFF388E3C))
-                } else if (downloadStatus == DownloadStatus.Error) {
-                    Spacer(Modifier.height(4.dp))
-                    Text("Download failed!", color = Color.Red)
+                    url = finalUrl,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    // Show remote URL or local URI in fullscreen
+                    fullImageUri = Uri.parse(finalUrl)
+                    showFullScreenImage = true
                 }
 
-                // Possibly a "download icon" in bottom-right corner?
-                // For example:
+                // Download status
+                when (downloadStatus) {
+                    DownloadStatus.Downloading -> {
+                        Spacer(Modifier.height(8.dp))
+                        LinearProgressIndicator(
+                            color = Color(0xFF4B6BEF),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Text("Downloading...", color = Color.Gray, fontSize = 13.sp)
+                    }
+                    DownloadStatus.Completed -> {
+                        Spacer(Modifier.height(4.dp))
+                        Text("Descarga completa!", color = Color(0xFF388E3C))
+                    }
+                    DownloadStatus.Error -> {
+                        Spacer(Modifier.height(4.dp))
+                        Text("Descarga fallida!", color = Color.Red)
+                    }
+                    else -> {}
+                }
+
+                // Download button in corner
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -301,8 +208,8 @@ fun FilePreview(
                                     downloadStatus = DownloadStatus.Downloading
                                     downloadId = enqueueDownload(
                                         context,
-                                        url,
-                                        fileName,
+                                        finalUrl,
+                                        extractedFileName, // use the parsed filename
                                         mimeType
                                     )
                                 }
@@ -311,10 +218,10 @@ fun FilePreview(
                 }
             }
         } else {
-            // Non-image file preview
+            // If it’s not an image, show a doc/PDF preview
             Column {
                 Text(
-                    text = fileName,
+                    text = extractedFileName,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
                     color = Color(0xFF333333)
@@ -329,6 +236,7 @@ fun FilePreview(
                         modifier = Modifier.size(40.dp)
                     )
                     Spacer(Modifier.width(16.dp))
+
                     Text(
                         text = extension.uppercase(),
                         color = Color.DarkGray,
@@ -336,6 +244,7 @@ fun FilePreview(
                     )
 
                     Spacer(Modifier.weight(1f))
+
                     Icon(
                         imageVector = Icons.Default.Download,
                         contentDescription = "Download doc",
@@ -347,8 +256,8 @@ fun FilePreview(
                                     downloadStatus = DownloadStatus.Downloading
                                     downloadId = enqueueDownload(
                                         context,
-                                        fileUrl,
-                                        fileName,
+                                        finalUrl,
+                                        extractedFileName, // parse from URL
                                         mimeType
                                     )
                                 }
@@ -356,26 +265,30 @@ fun FilePreview(
                     )
                 }
 
-                // Show progress or error for doc files
-                if (downloadStatus == DownloadStatus.Downloading) {
-                    Spacer(Modifier.height(8.dp))
-                    LinearProgressIndicator(
-                        modifier = Modifier.fillMaxWidth(),
-                        color = Color(0xFF4B6BEF)
-                    )
-                    Text("Downloading...", color = Color.Gray, fontSize = 13.sp)
-                } else if (downloadStatus == DownloadStatus.Completed) {
-                    Spacer(Modifier.height(4.dp))
-                    Text("Download Complete!", color = Color(0xFF388E3C))
-                } else if (downloadStatus == DownloadStatus.Error) {
-                    Spacer(Modifier.height(4.dp))
-                    Text("Download failed!", color = Color.Red)
+                when (downloadStatus) {
+                    DownloadStatus.Downloading -> {
+                        Spacer(Modifier.height(8.dp))
+                        LinearProgressIndicator(
+                            modifier = Modifier.fillMaxWidth(),
+                            color = Azul2
+                        )
+                        Text("Descargando...", color = Color.Gray, fontSize = 13.sp)
+                    }
+                    DownloadStatus.Completed -> {
+                        Spacer(Modifier.height(4.dp))
+                        Text("Descarga completa!", color = Color(0xFF388E3C))
+                    }
+                    DownloadStatus.Error -> {
+                        Spacer(Modifier.height(4.dp))
+                        Text("Descarga fallida!", color = Color.Red)
+                    }
+                    else -> {}
                 }
             }
         }
     }
 
-    // Show fullscreen image if desired (after DownloadManager finishes)
+    // Fullscreen image
     if (showFullScreenImage && fullImageUri != null) {
         Dialog(onDismissRequest = {
             showFullScreenImage = false
@@ -403,6 +316,511 @@ fun FilePreview(
         }
     }
 }
+
+
+//@Composable
+//fun FilePreview(
+//    fileUrl: String,
+//    fileName: String,
+//    modifier: Modifier = Modifier
+//) {
+//    val context = LocalContext.current
+//
+//    // 1) Resolve final URL (replace localhost) for ALL file types
+//    val finalUrl = fileUrl.replace("localhost", Constants.HOST)
+//
+//    // Determine file type
+//    val extension = finalUrl.substringAfterLast('.', "").lowercase()
+//    val mimeType = getMimeTypeFromExtension(extension)
+//    val isImageFile = mimeType.startsWith("image/")
+//
+//    // Download states
+//    var downloadStatus by remember { mutableStateOf(DownloadStatus.Idle) }
+//    var downloadId by remember { mutableStateOf<Long?>(null) }
+//
+//    // Fullscreen image states
+//    var showFullScreenImage by remember { mutableStateOf(false) }
+//    var fullImageUri by remember { mutableStateOf<Uri?>(null) }
+//
+//    // 2) Register a BroadcastReceiver for DownloadManager
+//    DisposableEffect(Unit) {
+//        val receiver = object : BroadcastReceiver() {
+//            override fun onReceive(context: Context, intent: Intent) {
+//                val action = intent.action
+//                val completedId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+//
+//                // Only handle our own download ID
+//                if (action == DownloadManager.ACTION_DOWNLOAD_COMPLETE && completedId == downloadId) {
+//                    val (status, reason) = getDownloadStatusAndReason(context, completedId)
+//
+//                    if (status == DownloadManager.STATUS_SUCCESSFUL) {
+//                        // If image, show fullscreen. Otherwise, open with external app
+//                        val localUri = getLocalUriFromDownloadId(context, completedId)
+//
+//                        if (isImageFile) {
+//                            localUri?.let {
+//                                fullImageUri = it
+//                                showFullScreenImage = true
+//                            }
+//                        } else {
+//                            localUri?.let { openFileWithIntent(context, it, mimeType) }
+//                        }
+//                        downloadStatus = DownloadStatus.Completed
+//                    } else {
+//                        downloadStatus = DownloadStatus.Error
+//                    }
+//                    // Reset ID so we don't handle again
+//                    downloadId = null
+//                }
+//            }
+//        }
+//
+//        // Correct registration across API levels
+//        val filter = IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//            // If you only need broadcasts from your own app’s downloads:
+//            context.registerReceiver(receiver, filter, Context.RECEIVER_NOT_EXPORTED)
+//        } else {
+//            @Suppress("DEPRECATION") // For older versions
+//            context.registerReceiver(receiver, filter)
+//        }
+//
+//        onDispose {
+//            context.unregisterReceiver(receiver)
+//        }
+//    }
+//
+//    // Main UI Card
+//    Box(
+//        modifier = modifier
+//            .fillMaxWidth()
+//            .padding(8.dp)
+//            .background(CardBackgroundColor, shape = RoundedCornerShape(8.dp))
+//            .border(1.dp, CardBorderColor, RoundedCornerShape(8.dp))
+//            .padding(12.dp)
+//    ) {
+//        if (isImageFile) {
+//            Column {
+//                Text(
+//                    text = fileName,
+//                    fontSize = 16.sp,
+//                    fontWeight = FontWeight.Medium,
+//                    color = TextColorPrimary
+//                )
+//                Spacer(Modifier.height(8.dp))
+//
+//                // Show image preview
+//                ImagePreviewWithRetry(
+//                    url = finalUrl,
+//                    modifier = Modifier.fillMaxWidth(),
+//                    onClick = {
+//                        // Show remote URL in fullscreen if not downloaded yet
+//                        fullImageUri = Uri.parse(finalUrl)
+//                        showFullScreenImage = true
+//                    }
+//                )
+//
+//                // Download status indicators
+//                when (downloadStatus) {
+//                    DownloadStatus.Downloading -> {
+//                        Spacer(Modifier.height(8.dp))
+//                        LinearProgressIndicator(
+//                            color = ButtonColor,
+//                            modifier = Modifier.fillMaxWidth()
+//                        )
+//                        Text("Downloading...", color = TextColorSecondary, fontSize = 13.sp)
+//                    }
+//                    DownloadStatus.Completed -> {
+//                        Spacer(Modifier.height(4.dp))
+//                        Text("Download Complete!", color = SuccessColor)
+//                    }
+//                    DownloadStatus.Error -> {
+//                        Spacer(Modifier.height(4.dp))
+//                        Text("Download failed!", color = ErrorColor)
+//                    }
+//                    else -> {}
+//                }
+//
+//                // Download icon
+//                Box(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(top = 8.dp),
+//                    contentAlignment = Alignment.CenterEnd
+//                ) {
+//                    Icon(
+//                        imageVector = Icons.Default.Download,
+//                        contentDescription = "Download image",
+//                        tint = ButtonColor,
+//                        modifier = Modifier
+//                            .size(28.dp)
+//                            .clickable {
+//                                if (downloadStatus != DownloadStatus.Downloading) {
+//                                    downloadStatus = DownloadStatus.Downloading
+//                                    downloadId = enqueueDownload(
+//                                        context,
+//                                        finalUrl,
+//                                        fileName,
+//                                        mimeType
+//                                    )
+//                                }
+//                            }
+//                    )
+//                }
+//            }
+//        } else {
+//            // Non-image file preview
+//            Column {
+//                Text(
+//                    text = fileName,
+//                    fontSize = 16.sp,
+//                    fontWeight = FontWeight.Medium,
+//                    color = TextColorPrimary
+//                )
+//                Spacer(Modifier.height(8.dp))
+//
+//                Row(verticalAlignment = Alignment.CenterVertically) {
+//                    Icon(
+//                        imageVector = Icons.Default.Description,
+//                        contentDescription = null,
+//                        tint = Color.Gray,
+//                        modifier = Modifier.size(40.dp)
+//                    )
+//                    Spacer(Modifier.width(16.dp))
+//                    Text(
+//                        text = extension.uppercase(),
+//                        color = TextColorSecondary,
+//                        fontSize = 15.sp
+//                    )
+//
+//                    Spacer(Modifier.weight(1f))
+//
+//                    Icon(
+//                        imageVector = Icons.Default.Download,
+//                        contentDescription = "Download doc",
+//                        tint = ButtonColor,
+//                        modifier = Modifier
+//                            .size(28.dp)
+//                            .clickable {
+//                                if (downloadStatus != DownloadStatus.Downloading) {
+//                                    downloadStatus = DownloadStatus.Downloading
+//                                    downloadId = enqueueDownload(
+//                                        context,
+//                                        finalUrl,
+//                                        fileName,
+//                                        mimeType
+//                                    )
+//                                }
+//                            }
+//                    )
+//                }
+//
+//                when (downloadStatus) {
+//                    DownloadStatus.Downloading -> {
+//                        Spacer(Modifier.height(8.dp))
+//                        LinearProgressIndicator(
+//                            modifier = Modifier.fillMaxWidth(),
+//                            color = ButtonColor
+//                        )
+//                        Text("Downloading...", color = TextColorSecondary, fontSize = 13.sp)
+//                    }
+//                    DownloadStatus.Completed -> {
+//                        Spacer(Modifier.height(4.dp))
+//                        Text("Download Complete!", color = SuccessColor)
+//                    }
+//                    DownloadStatus.Error -> {
+//                        Spacer(Modifier.height(4.dp))
+//                        Text("Download failed!", color = ErrorColor)
+//                    }
+//                    else -> {}
+//                }
+//            }
+//        }
+//    }
+//
+//    // Show fullscreen image if requested
+//    if (showFullScreenImage && fullImageUri != null) {
+//        Dialog(onDismissRequest = {
+//            showFullScreenImage = false
+//            fullImageUri = null
+//        }) {
+//            Box(
+//                modifier = Modifier
+//                    .fillMaxSize()
+//                    .background(Color.Black.copy(alpha = 0.7f))
+//                    .clickable {
+//                        showFullScreenImage = false
+//                        fullImageUri = null
+//                    },
+//                contentAlignment = Alignment.Center
+//            ) {
+//                Image(
+//                    painter = rememberAsyncImagePainter(fullImageUri),
+//                    contentDescription = "Fullscreen image",
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(16.dp),
+//                    contentScale = ContentScale.Fit
+//                )
+//            }
+//        }
+//    }
+//}
+
+//@Composable
+//fun FilePreview(
+//    fileUrl: String,
+//    fileName: String,
+//    modifier: Modifier = Modifier
+//) {
+//    val context = LocalContext.current
+//
+//    // Detect if the file is an image
+//    val extension = fileUrl.substringAfterLast('.', "").lowercase()
+//    val mimeType = getMimeTypeFromExtension(extension)
+//    val isImageFile = mimeType.startsWith("image/")
+//
+//    // Download states (for saving the file)
+//    var downloadStatus by remember { mutableStateOf(DownloadStatus.Idle) }
+//    var downloadId by remember { mutableStateOf<Long?>(null) }
+//
+//    // Fullscreen image states (after the file is downloaded, if you want to open it)
+//    var showFullScreenImage by remember { mutableStateOf(false) }
+//    var fullImageUri by remember { mutableStateOf<Uri?>(null) }
+//
+//    var url = fileUrl.replace("localhost", Constants.HOST)
+//
+//    // BroadcastReceiver to check success/failure of the DownloadManager
+//    DisposableEffect(Unit) {
+//        val receiver = object : BroadcastReceiver() {
+//            override fun onReceive(context: Context, intent: Intent) {
+//                val action = intent.action
+//                val completedId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+//
+//                Log.e("FilePreview", "onReceive called. action=$action, completedId=$completedId, our downloadId=$downloadId")
+//
+//                if (action == DownloadManager.ACTION_DOWNLOAD_COMPLETE && completedId == downloadId) {
+//                    // Check the final status
+//                    val (status, reason) = getDownloadStatusAndReason(context, completedId)
+//                    Log.e("FilePreview", "DownloadManager result -> status=$status, reason=$reason")
+//
+//                    if (status == DownloadManager.STATUS_SUCCESSFUL) {
+//                        // For an image, optionally show fullscreen
+//                        if (isImageFile) {
+//                            val localUri = getLocalUriFromDownloadId(context, completedId)
+//                            Log.e("FilePreview", "Downloaded image localUri=$localUri")
+//                            if (localUri != null) {
+//                                fullImageUri = localUri
+//                                showFullScreenImage = true
+//                            }
+//                        } else {
+//                            // If not image, open with an external app
+//                            val localUri = getLocalUriFromDownloadId(context, completedId)
+//                            Log.e("FilePreview", "Downloaded file localUri=$localUri")
+//                            if (localUri != null) {
+//                                openFileWithIntent(context, localUri, mimeType)
+//                            }
+//                        }
+//                        downloadStatus = DownloadStatus.Completed
+//                    } else {
+//                        // Show that the download failed
+//                        downloadStatus = DownloadStatus.Error
+//                        Log.e("FilePreview", "Download failed with reason=$reason")
+//                    }
+//                    // Reset the ID so we don't process it again
+//                    downloadId = null
+//                }
+//            }
+//        }
+//
+//        val filter = IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
+//
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//            context.registerReceiver(receiver, filter, Context.RECEIVER_EXPORTED)
+//        } else {
+//            context.registerReceiver(receiver, filter)
+//        }
+//
+////        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+////            Log.e("FilePreview", "Registering broadcast receiver with RECEIVER_NOT_EXPORTED")
+////            context.registerReceiver(receiver, filter, Context.RECEIVER_NOT_EXPORTED)
+////        } else {
+////            Log.e("FilePreview", "Registering broadcast receiver normally")
+////            context.registerReceiver(receiver, filter)
+////        }
+//
+//        onDispose {
+//            Log.e("FilePreview", "Unregistering broadcast receiver")
+//            context.unregisterReceiver(receiver)
+//        }
+//    }
+//    // The UI Card/Box
+//    Box(
+//        modifier = modifier
+//            .fillMaxWidth()
+//            .padding(8.dp)
+//            .background(Color(0xFFF9F9F9), shape = RoundedCornerShape(8.dp))
+//            .border(1.dp, Color(0xFFE0E0E0), RoundedCornerShape(8.dp))
+//            .padding(12.dp)
+//    ) {
+//        if (isImageFile) {
+//            Column {
+//                Text(
+//                    text = fileName,
+//                    fontSize = 16.sp,
+//                    fontWeight = FontWeight.Medium,
+//                    color = Color(0xFF333333)
+//                )
+//                Spacer(Modifier.height(8.dp))
+//
+//                // Here’s our new subcomposable
+//                ImagePreviewWithRetry(
+//                    url = url,
+//                    modifier = Modifier.fillMaxWidth(),
+//                    onClick = {
+//                        // Show the same remote URL in fullscreen
+//                        fullImageUri = Uri.parse(url)
+//                        showFullScreenImage = true
+//                    }
+//                )
+//
+//                // Download status indicators (if you want to display them)
+//                if (downloadStatus == DownloadStatus.Downloading) {
+//                    Spacer(Modifier.height(8.dp))
+//                    LinearProgressIndicator(
+//                        color = Color(0xFF4B6BEF),
+//                        modifier = Modifier.fillMaxWidth()
+//                    )
+//                    Text("Downloading...", color = Color.Gray, fontSize = 13.sp)
+//                } else if (downloadStatus == DownloadStatus.Completed) {
+//                    Spacer(Modifier.height(4.dp))
+//                    Text("Download Complete!", color = Color(0xFF388E3C))
+//                } else if (downloadStatus == DownloadStatus.Error) {
+//                    Spacer(Modifier.height(4.dp))
+//                    Text("Download failed!", color = Color.Red)
+//                }
+//
+//                // Possibly a "download icon" in bottom-right corner?
+//                // For example:
+//                Box(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(top = 8.dp),
+//                    contentAlignment = Alignment.CenterEnd
+//                ) {
+//                    Icon(
+//                        imageVector = Icons.Default.Download,
+//                        contentDescription = "Download image",
+//                        tint = Color(0xFF4B6BEF),
+//                        modifier = Modifier
+//                            .size(28.dp)
+//                            .clickable {
+//                                if (downloadStatus != DownloadStatus.Downloading) {
+//                                    downloadStatus = DownloadStatus.Downloading
+//                                    downloadId = enqueueDownload(
+//                                        context,
+//                                        url,
+//                                        fileName,
+//                                        mimeType
+//                                    )
+//                                }
+//                            }
+//                    )
+//                }
+//            }
+//        } else {
+//            // Non-image file preview
+//            Column {
+//                Text(
+//                    text = fileName,
+//                    fontSize = 16.sp,
+//                    fontWeight = FontWeight.Medium,
+//                    color = Color(0xFF333333)
+//                )
+//                Spacer(Modifier.height(8.dp))
+//
+//                Row(verticalAlignment = Alignment.CenterVertically) {
+//                    Icon(
+//                        imageVector = Icons.Default.Description,
+//                        contentDescription = null,
+//                        tint = Color.Gray,
+//                        modifier = Modifier.size(40.dp)
+//                    )
+//                    Spacer(Modifier.width(16.dp))
+//                    Text(
+//                        text = extension.uppercase(),
+//                        color = Color.DarkGray,
+//                        fontSize = 15.sp
+//                    )
+//
+//                    Spacer(Modifier.weight(1f))
+//                    Icon(
+//                        imageVector = Icons.Default.Download,
+//                        contentDescription = "Download doc",
+//                        tint = Color(0xFF4B6BEF),
+//                        modifier = Modifier
+//                            .size(28.dp)
+//                            .clickable {
+//                                if (downloadStatus != DownloadStatus.Downloading) {
+//                                    downloadStatus = DownloadStatus.Downloading
+//                                    downloadId = enqueueDownload(
+//                                        context,
+//                                        fileUrl,
+//                                        fileName,
+//                                        mimeType
+//                                    )
+//                                }
+//                            }
+//                    )
+//                }
+//
+//                // Show progress or error for doc files
+//                if (downloadStatus == DownloadStatus.Downloading) {
+//                    Spacer(Modifier.height(8.dp))
+//                    LinearProgressIndicator(
+//                        modifier = Modifier.fillMaxWidth(),
+//                        color = Color(0xFF4B6BEF)
+//                    )
+//                    Text("Downloading...", color = Color.Gray, fontSize = 13.sp)
+//                } else if (downloadStatus == DownloadStatus.Completed) {
+//                    Spacer(Modifier.height(4.dp))
+//                    Text("Download Complete!", color = Color(0xFF388E3C))
+//                } else if (downloadStatus == DownloadStatus.Error) {
+//                    Spacer(Modifier.height(4.dp))
+//                    Text("Download failed!", color = Color.Red)
+//                }
+//            }
+//        }
+//    }
+//
+//    // Show fullscreen image if desired (after DownloadManager finishes)
+//    if (showFullScreenImage && fullImageUri != null) {
+//        Dialog(onDismissRequest = {
+//            showFullScreenImage = false
+//            fullImageUri = null
+//        }) {
+//            Box(
+//                modifier = Modifier
+//                    .fillMaxSize()
+//                    .background(Color.Black.copy(alpha = 0.7f))
+//                    .clickable {
+//                        showFullScreenImage = false
+//                        fullImageUri = null
+//                    },
+//                contentAlignment = Alignment.Center
+//            ) {
+//                Image(
+//                    painter = rememberAsyncImagePainter(fullImageUri),
+//                    contentDescription = "Fullscreen image",
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(16.dp),
+//                    contentScale = ContentScale.Fit
+//                )
+//            }
+//        }
+//    }
+//}
 // Simple enum for status
 enum class DownloadStatus {
     Idle,

@@ -73,8 +73,8 @@ class AddCourseViewModel(
 //                ownerId.value > 0 &&
 //                ownerName.value.isNotBlank() &&
                 section.value.isNotBlank() &&
-                subject.value.isNotBlank() &&
-                area.value != Area.NO_SELECTED
+                subject.value.isNotBlank()
+//                area.value != Area.NO_SELECTED
 
     // Lógica de validación
 
@@ -128,7 +128,7 @@ class AddCourseViewModel(
         ownerName.value = ""
         section.value = ""
         subject.value = ""
-        area.value = Area.NO_SELECTED
+        area.value = Area.CODING
     }
 
     suspend fun executeCourseRequest(id: String?){

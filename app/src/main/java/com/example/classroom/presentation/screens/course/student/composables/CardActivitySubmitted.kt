@@ -49,7 +49,7 @@ fun CardActivitySubmitted(
     val activities by viewModel.listActivitiesFlow.collectAsState()
 
 //    val activity = activities.first { it.idApi == evaluation.activityId }
-    val activity = activities.firstOrNull { it.idApi == evaluation.activityId }
+    val activity = activities.firstOrNull { it.idApi == evaluation.idApi }
 
     val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US).apply {
         timeZone = TimeZone.getTimeZone("UTC") // Parse in UTC
