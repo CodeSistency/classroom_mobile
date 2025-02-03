@@ -48,7 +48,7 @@ class AddCourseViewModel(
     var ownerName = mutableStateOf("")
     var section = mutableStateOf("")
     var subject = mutableStateOf("")
-    var area = mutableStateOf(Area.NO_SELECTED)
+    var area = mutableStateOf(Area.CODING)
 
     // Estados de validación
     var tokenError = mutableStateOf<String?>(null)
@@ -80,6 +80,7 @@ class AddCourseViewModel(
 
     fun resetState(){
         _stateCourse.value = AddCourseState(false, null, null)
+
     }
     fun validateToken() {
         tokenError.value = if (token.value.isBlank()) "El token es obligatorio" else null

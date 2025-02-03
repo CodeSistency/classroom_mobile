@@ -62,6 +62,93 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import proyecto.person.appconsultapopular.common.Constants
 
+
+//@Composable
+//fun FilePreview(
+//    fileUrl: String,
+//    fileName: String,
+//    modifier: Modifier = Modifier
+//) {
+//    val context = LocalContext.current
+//    val extension = fileUrl.substringAfterLast('.', "").lowercase()
+//    val mimeType = getMimeTypeFromExtension(extension)
+//    val isImageFile = mimeType.startsWith("image/")
+//
+//    var downloadStatus by remember { mutableStateOf(DownloadStatus.Idle) }
+//    var downloadId by remember { mutableStateOf<Long?>(null) }
+//    var downloadedFileUri by remember { mutableStateOf<Uri?>(null) }
+//
+//    var url = fileUrl.replace("localhost", Constants.HOST)
+//
+//    DisposableEffect(Unit) {
+//        val receiver = object : BroadcastReceiver() {
+//            override fun onReceive(context: Context, intent: Intent) {
+//                val completedId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+//
+//                if (completedId == downloadId) {
+//                    val (status, reason) = getDownloadStatusAndReason(context, completedId)
+//                    if (status == DownloadManager.STATUS_SUCCESSFUL) {
+//                        val localUri = getLocalUriFromDownloadId(context, completedId)
+//                        downloadedFileUri = localUri
+//                        if (!isImageFile && localUri != null) {
+//                            openFileWithIntent(context, localUri, mimeType)
+//                        }
+//                        downloadStatus = DownloadStatus.Completed
+//                    } else {
+//                        downloadStatus = DownloadStatus.Error
+//                    }
+//                    downloadId = null
+//                }
+//            }
+//        }
+//
+//        val filter = IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
+//
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//            context.registerReceiver(receiver, filter, Context.RECEIVER_EXPORTED)
+//        } else {
+//            context.registerReceiver(receiver, filter)
+//        }
+//
+//        onDispose {
+//            context.unregisterReceiver(receiver)
+//        }
+//    }
+//
+//    Column(modifier = modifier) {
+//        Text(text = fileName, fontSize = 16.sp, fontWeight = FontWeight.Medium)
+//
+//        if (isImageFile) {
+//            ImagePreviewWithRetry(url = url, modifier = Modifier.fillMaxWidth())
+//        } else {
+//            Row {
+//                Text(text = extension.uppercase(), fontSize = 15.sp)
+//                Spacer(Modifier.weight(1f))
+//                Icon(
+//                    imageVector = Icons.Default.Download,
+//                    contentDescription = "Download doc",
+//                    tint = Color(0xFF4B6BEF),
+//                    modifier = Modifier
+//                        .size(28.dp)
+//                        .clickable {
+//                            if (downloadStatus != DownloadStatus.Downloading) {
+//                                downloadStatus = DownloadStatus.Downloading
+//                                downloadId = enqueueDownload(context, fileUrl, fileName, mimeType)
+//                            }
+//                        }
+//                )
+//            }
+//        }
+//
+//        when (downloadStatus) {
+//            DownloadStatus.Downloading -> Text("Downloading...", fontSize = 13.sp)
+//            DownloadStatus.Completed -> Text("Download Complete!", color = Color(0xFF388E3C))
+//            DownloadStatus.Error -> Text("Download failed!", color = Color.Red)
+//            else -> {}
+//        }
+//    }
+//}
+
 @Composable
 fun FilePreview(
     fileUrl: String,

@@ -291,17 +291,17 @@ fun AddCourseScreenNew(
                     }
                 )
 
-                CustomSelect(
-                    label = "Área",
-                    options = Area.values().toList(),
-                    selectedOption = listOf(viewModel.area.value),
-                    onOptionSelected = { selected ->
-                        if (selected.isNotEmpty()) viewModel.area.value = selected.first()
-                        viewModel.validateArea()
-                    },
-                    multiple = false,
-                    optionDisplay = { it.displayName }
-                )
+//                CustomSelect(
+//                    label = "Área",
+//                    options = Area.values().toList(),
+//                    selectedOption = listOf(viewModel.area.value),
+//                    onOptionSelected = { selected ->
+//                        if (selected.isNotEmpty()) viewModel.area.value = selected.first()
+//                        viewModel.validateArea()
+//                    },
+//                    multiple = false,
+//                    optionDisplay = { it.displayName }
+//                )
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -340,16 +340,18 @@ fun AddCourseScreenNew(
                     dialogState = SetupCustomDialogState.Success(message = "El curso ha sido creado exitosamente")
                     delay(1000)
                     navController.popBackStack()
-                    if (id != null) {
-                        navController.navigate(Destination.HOME.screenRoute) {
-                            popUpTo(Destination.REGISTRO_COURSE.screenRoute) {
-                                inclusive = true
-                            }
-                            launchSingleTop = true
-                        }
-                        viewModel.cleanData()
-                        viewModel.resetState()
-                    }
+                    viewModel.cleanData()
+                    viewModel.resetState()
+//                    if (id != null) {
+//                        navController.navigate(Destination.HOME.screenRoute) {
+//                            popUpTo(Destination.REGISTRO_COURSE.screenRoute) {
+//                                inclusive = true
+//                            }
+//                            launchSingleTop = true
+//                        }
+//                        viewModel.cleanData()
+//                        viewModel.resetState()
+//                    }
                 }
             }
         }
