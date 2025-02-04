@@ -107,30 +107,44 @@ fun SelectedOptionDialog(
                         )
                         Spacer(modifier = Modifier.height(10.dp))
 
-                        CustomButton(
-                            onClick = {
-                            isSelectedOption = Options.JOIN_CLASS
-                            },
-                            text = "Unirse a una clase",
-                            style = NavigationButtonStyle.OutlineWithIconGradient,
-                            color1 = Azul,
-                            color2 = AzulGradient,
-                            icon = Icons.Default.ArrowForwardIos,
-                            modifier = Modifier.fillMaxWidth())
+                        user.value?.let {
+                            if (it.rol == 2){
+
+                                // Profesor
+                                CustomButton(
+                                    onClick = {
+                                        navController.navigate(Destination.REGISTRO_COURSE.screenRoute)
+                                    },
+                                    text = "Crear a una clase",
+                                    style = NavigationButtonStyle.OutlineWithIconGradient,
+                                    color1 = Azul,
+                                    color2 = AzulGradient,
+                                    icon = Icons.Default.ArrowForwardIos,
+                                    modifier = Modifier.fillMaxWidth())
+
+                            }else if (it.rol == 3){
+
+                                // Estudiante
+
+                                CustomButton(
+                                    onClick = {
+                                        isSelectedOption = Options.JOIN_CLASS
+                                    },
+                                    text = "Unirse a una clase",
+                                    style = NavigationButtonStyle.OutlineWithIconGradient,
+                                    color1 = Azul,
+                                    color2 = AzulGradient,
+                                    icon = Icons.Default.ArrowForwardIos,
+                                    modifier = Modifier.fillMaxWidth())
 
 
-                        Spacer(modifier = Modifier.height(5.dp))
+                                Spacer(modifier = Modifier.height(5.dp))
+                            }
+                        }
 
-                        CustomButton(
-                            onClick = {
-                                navController.navigate(Destination.REGISTRO_COURSE.screenRoute)
-                            },
-                            text = "Crear a una clase",
-                            style = NavigationButtonStyle.OutlineWithIconGradient,
-                            color1 = Azul,
-                            color2 = AzulGradient,
-                            icon = Icons.Default.ArrowForwardIos,
-                            modifier = Modifier.fillMaxWidth())
+
+
+
 
 
                     }

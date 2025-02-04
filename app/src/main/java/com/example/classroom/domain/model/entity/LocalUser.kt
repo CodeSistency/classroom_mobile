@@ -19,6 +19,7 @@ data class LocalUser(
     @ColumnInfo("gender") val gender: Gender,
     @ColumnInfo("birthdate") val birthdate: String,
     @ColumnInfo("phone") val phone: String,
+    @ColumnInfo("rol") val rol: Int,
 //    @ColumnInfo( "coursesId") val coursesId: String = "[]"
 )
 
@@ -69,7 +70,8 @@ fun SignInResponseDto.toLoginLocal(): LocalUser {
         phone = data.phone,
         gender = gendertoInt(data.gender),
         birthdate = data.creation,
-        firebaseToken = data.firebaseToken ?: ""
+        firebaseToken = data.firebaseToken ?: "",
+        rol = data.role
 
     )
 }
@@ -84,7 +86,8 @@ fun SignUpResponseDto.toLoginLocal(): LocalUser {
         phone = data.phone,
         gender = gendertoInt(data.gender),
         birthdate = data.creation,
-        firebaseToken = data.firebaseToken ?: ""
+        firebaseToken = data.firebaseToken ?: "",
+        rol = data.role
     )
 }
 
