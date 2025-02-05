@@ -44,6 +44,7 @@ import coil.compose.AsyncImage
 import com.example.classroom.R
 import com.example.classroom.common.CustomDialog
 import com.example.classroom.common.composables.PreviewFile.FilePreview
+import com.example.classroom.common.composables.cardWrapper.CardWrapper
 import com.example.classroom.common.getSupabaseFileUrl
 import com.example.classroom.domain.model.entity.LocalPost
 import com.example.classroom.presentation.theme.PaddingCustom
@@ -136,26 +137,15 @@ import java.util.TimeZone
 //    }
 //}
 
-
 @Composable
 fun CardPostItem(post: LocalPost, viewModel: PostsViewModel, scope: CoroutineScope, context: Context) {
-
     var isDeleteOpen by remember { mutableStateOf(false) }
-    val shape = RoundedCornerShape(12.dp)
-
     val userInfo by viewModel.userInfo.collectAsState()
 
-    Box(
-        modifier = Modifier
-            .padding(8.dp)
-            .shadow(4.dp, shape)
-            .background(Color.White, shape)
-            .fillMaxWidth()
+    CardWrapper(
+        modifier = Modifier.fillMaxWidth()
     ) {
-        Column(
-            modifier = Modifier
-                .padding(16.dp)
-        ) {
+        Column(modifier = Modifier.padding(16.dp)) {
             // Header with author and creation date
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -173,20 +163,19 @@ fun CardPostItem(post: LocalPost, viewModel: PostsViewModel, scope: CoroutineSco
                     )
 
                     val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US).apply {
-                        timeZone = TimeZone.getTimeZone("UTC") // Parse in UTC
+                        timeZone = TimeZone.getTimeZone("UTC")
                     }
-
-                    val outputFormat = SimpleDateFormat("yyyy/MM/dd", Locale.US) // Desired output format
+                    val outputFormat = SimpleDateFormat("yyyy/MM/dd", Locale.US)
 
                     val formattedDate = try {
                         val date = inputFormat.parse(post.createdAt)
-                        outputFormat.format(date ?: Date()) // Format the date properly
+                        outputFormat.format(date ?: Date())
                     } catch (e: Exception) {
-                        "2000/01/01" // Default fallback in case of error
+                        "2000/01/01"
                     }
 
                     Text(
-                        text = "$formattedDate",
+                        text = formattedDate,
                         style = TextStyle(
                             color = Color.Gray,
                             fontSize = 12.sp
@@ -195,8 +184,7 @@ fun CardPostItem(post: LocalPost, viewModel: PostsViewModel, scope: CoroutineSco
                 }
 
                 userInfo?.let {
-
-                    if (it.idApi == post.authorId){
+                    if (it.idApi == post.authorId) {
                         IconButton(onClick = { isDeleteOpen = true }) {
                             Icon(
                                 painterResource(id = R.drawable.ic_cancel),
@@ -207,14 +195,10 @@ fun CardPostItem(post: LocalPost, viewModel: PostsViewModel, scope: CoroutineSco
                         }
                     }
                 }
-
             }
 
-            if (post.content.isNotBlank()){
+            if (post.content.isNotBlank()) {
                 Spacer(modifier = Modifier.height(8.dp))
-
-                // Content
-
                 Text(
                     text = post.content,
                     style = TextStyle(
@@ -224,48 +208,13 @@ fun CardPostItem(post: LocalPost, viewModel: PostsViewModel, scope: CoroutineSco
                 )
             }
 
-
-
             // Media preview
-            if (!post.mediaUrl.isNullOrEmpty()){
-                post.mediaUrl.let { url ->
-                    Log.e("mediaurl1", url)
-
-                    val mediaUrl = getSupabaseFileUrl(url, isPublic = true, useSupabase = false)
-
-                    Log.e("mediaurl2", mediaUrl)
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    FilePreview(
-                        fileUrl = mediaUrl,
-                        fileName = "",
-//                        modifier = Modifier.padding(16.dp)
-                    )
-
-//                    when {
-//                        mediaUrl.endsWith(".jpg") || mediaUrl.endsWith(".jpeg") || mediaUrl.endsWith(".png") -> {
-//                            // Image preview using AsyncImage
-//                            AsyncImage(
-//                                model = mediaUrl,
-//                                contentDescription = "Post media image",
-//                                modifier = Modifier
-//                                    .fillMaxWidth()
-//                                    .height(200.dp)
-//                                    .clip(shape),
-//                                contentScale = ContentScale.Crop
-//                            )
-//                        }
-//                        else -> {
-//                            // File preview
-//                            FilePreviewCard(url = mediaUrl, context = context, viewModel = viewModel)
-//                        }
-//                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-
+            if (!post.mediaUrl.isNullOrEmpty()) {
+                val mediaUrl = getSupabaseFileUrl(post.mediaUrl, isPublic = true, useSupabase = false)
+                Spacer(modifier = Modifier.height(8.dp))
+                FilePreview(fileUrl = mediaUrl, fileName = "")
+                Spacer(modifier = Modifier.height(8.dp))
             }
-
-
         }
     }
 
@@ -281,6 +230,151 @@ fun CardPostItem(post: LocalPost, viewModel: PostsViewModel, scope: CoroutineSco
         )
     }
 }
+
+//@Composable
+//fun CardPostItem(post: LocalPost, viewModel: PostsViewModel, scope: CoroutineScope, context: Context) {
+//
+//    var isDeleteOpen by remember { mutableStateOf(false) }
+//    val shape = RoundedCornerShape(12.dp)
+//
+//    val userInfo by viewModel.userInfo.collectAsState()
+//
+//    Box(
+//        modifier = Modifier
+//            .padding(8.dp)
+//            .shadow(4.dp, shape)
+//            .background(Color.White, shape)
+//            .fillMaxWidth()
+//    ) {
+//        Column(
+//            modifier = Modifier
+//                .padding(16.dp)
+//        ) {
+//            // Header with author and creation date
+//            Row(
+//                modifier = Modifier.fillMaxWidth(),
+//                horizontalArrangement = Arrangement.SpaceBetween,
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                Column {
+//                    Text(
+//                        text = post.title,
+//                        style = TextStyle(
+//                            color = Color.DarkGray,
+//                            fontSize = 16.sp,
+//                            fontWeight = FontWeight.Bold
+//                        )
+//                    )
+//
+//                    val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US).apply {
+//                        timeZone = TimeZone.getTimeZone("UTC") // Parse in UTC
+//                    }
+//
+//                    val outputFormat = SimpleDateFormat("yyyy/MM/dd", Locale.US) // Desired output format
+//
+//                    val formattedDate = try {
+//                        val date = inputFormat.parse(post.createdAt)
+//                        outputFormat.format(date ?: Date()) // Format the date properly
+//                    } catch (e: Exception) {
+//                        "2000/01/01" // Default fallback in case of error
+//                    }
+//
+//                    Text(
+//                        text = "$formattedDate",
+//                        style = TextStyle(
+//                            color = Color.Gray,
+//                            fontSize = 12.sp
+//                        )
+//                    )
+//                }
+//
+//                userInfo?.let {
+//
+//                    if (it.idApi == post.authorId){
+//                        IconButton(onClick = { isDeleteOpen = true }) {
+//                            Icon(
+//                                painterResource(id = R.drawable.ic_cancel),
+//                                contentDescription = null,
+//                                tint = Color.Gray,
+//                                modifier = Modifier.size(24.dp)
+//                            )
+//                        }
+//                    }
+//                }
+//
+//            }
+//
+//            if (post.content.isNotBlank()){
+//                Spacer(modifier = Modifier.height(8.dp))
+//
+//                // Content
+//
+//                Text(
+//                    text = post.content,
+//                    style = TextStyle(
+//                        color = Color.Black,
+//                        fontSize = 14.sp
+//                    )
+//                )
+//            }
+//
+//
+//
+//            // Media preview
+//            if (!post.mediaUrl.isNullOrEmpty()){
+//                post.mediaUrl.let { url ->
+//                    Log.e("mediaurl1", url)
+//
+//                    val mediaUrl = getSupabaseFileUrl(url, isPublic = true, useSupabase = false)
+//
+//                    Log.e("mediaurl2", mediaUrl)
+//                    Spacer(modifier = Modifier.height(8.dp))
+//
+//                    FilePreview(
+//                        fileUrl = mediaUrl,
+//                        fileName = "",
+////                        modifier = Modifier.padding(16.dp)
+//                    )
+//
+////                    when {
+////                        mediaUrl.endsWith(".jpg") || mediaUrl.endsWith(".jpeg") || mediaUrl.endsWith(".png") -> {
+////                            // Image preview using AsyncImage
+////                            AsyncImage(
+////                                model = mediaUrl,
+////                                contentDescription = "Post media image",
+////                                modifier = Modifier
+////                                    .fillMaxWidth()
+////                                    .height(200.dp)
+////                                    .clip(shape),
+////                                contentScale = ContentScale.Crop
+////                            )
+////                        }
+////                        else -> {
+////                            // File preview
+////                            FilePreviewCard(url = mediaUrl, context = context, viewModel = viewModel)
+////                        }
+////                    }
+//                    Spacer(modifier = Modifier.height(8.dp))
+//                }
+//
+//            }
+//
+//
+//        }
+//    }
+//
+//    // Delete confirmation dialog
+//    if (isDeleteOpen) {
+//        CustomDialog(
+//            message = "¿Estás seguro de que quieres eliminar esta publicación?",
+//            messageBtn = "Borrar",
+//            loading = false,
+//            action = { scope.launch { viewModel.deletePostCourseRemote(post.idApi) } },
+//            dismissDialog = { isDeleteOpen = false },
+//            icon = painterResource(id = R.drawable.ic_cancel)
+//        )
+//    }
+//}
 
 @Composable
 fun FilePreviewCard(url: String, context: Context, viewModel: PostsViewModel) {

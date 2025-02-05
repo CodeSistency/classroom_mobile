@@ -65,8 +65,8 @@ fun CustomTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     imeAction: ImeAction = ImeAction.Done,
     enabled: Boolean = true,
-    shape: Shape = RoundedCornerShape(20.dp),
-    borderColor: Color = Color(0xFFB0BEC5),
+    shape: Shape = RoundedCornerShape(12.dp), // Adjusted to a modern rounded shape
+    borderColor: Color = Color(0xFFBDC6D1), // Neutral gray border color
     successColor: Color = Color(0xFF4CAF50),
     errorColor: Color = Color(0xFFF44336),
     validationRegex: ValidationRegex = ValidationRegex.AllCharacters,
@@ -79,7 +79,7 @@ fun CustomTextField(
     var isPasswordVisible by remember { mutableStateOf(false) }
     var textFieldState by remember { mutableStateOf(TextFieldState.Default) }
     var displayErrorMessage by remember { mutableStateOf(false) }
-    var selectedCountryCode by remember { mutableStateOf("+58") } // Default is +58
+    var selectedCountryCode by remember { mutableStateOf("+58") }
     var expanded by remember { mutableStateOf(false) }
 
     fun validateInput(fullText: String): Boolean {
@@ -91,12 +91,11 @@ fun CustomTextField(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Show dropdown only if showCountryCode is true
             if (showCountryCode) {
                 Box {
                     OutlinedButton(
                         onClick = { expanded = true },
-                        shape = RoundedCornerShape(12.dp),
+                        shape = RoundedCornerShape(8.dp),
                         border = BorderStroke(1.dp, borderColor),
                         modifier = Modifier.padding(end = 8.dp).height(48.dp)
                     ) {
@@ -125,37 +124,30 @@ fun CustomTextField(
             }
 
             OutlinedTextField(
-                value = value.removePrefix("$selectedCountryCode ").trimStart(), // Only display the phone number part
+                value = value.removePrefix("$selectedCountryCode ").trimStart(),
                 onValueChange = { input ->
-                    // Clean the input to ensure the country code isn't added multiple times
-                    val cleanedInput = input.trim() // Remove any extra spaces
-
-                    // If the country code exists in the input, remove it
+                    val cleanedInput = input.trim()
                     val phoneNumberPart = if (cleanedInput.startsWith(selectedCountryCode)) {
                         cleanedInput.removePrefix("$selectedCountryCode ").trimStart()
                     } else {
                         cleanedInput
                     }
 
-                    // Reconstruct the full value with the country code
                     val formattedValue = if (showCountryCode) {
                         "$selectedCountryCode $phoneNumberPart".trim()
                     } else {
                         phoneNumberPart
                     }
 
-                    // Update the full value including the country code
                     onValueChange(if (showCountryCode) formattedValue else input)
 
-                    // Validation logic
                     textFieldState = if (validateInput(if (showCountryCode) formattedValue else input)) {
                         displayErrorMessage = false
-                        if (showCountryCode){
+                        if (showCountryCode) {
                             if (phoneNumberPart.isNotEmpty()) TextFieldState.Success else TextFieldState.Default
-                        }else{
+                        } else {
                             TextFieldState.Success
                         }
-
                     } else {
                         displayErrorMessage = true
                         TextFieldState.Error
@@ -167,7 +159,6 @@ fun CustomTextField(
                     .height(56.dp)
                     .background(Color.Transparent, shape),
                 shape = shape,
-
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     backgroundColor = Color.White,
                     focusedBorderColor = when (textFieldState) {
@@ -176,21 +167,18 @@ fun CustomTextField(
                         else -> borderColor
                     },
                     unfocusedBorderColor = borderColor,
-                    cursorColor = MaterialTheme.colors.primary,
+                    cursorColor = Color.Black, // Modern black cursor
                     textColor = Color.Black
                 ),
                 keyboardOptions = keyboardOptions.copy(imeAction = imeAction),
                 keyboardActions = KeyboardActions(
-                    onNext = {
-                        onNextClick()
-                    }
+                    onNext = { onNextClick() }
                 ),
-                visualTransformation = if (password){
+                visualTransformation = if (password) {
                     if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation()
-                                                    }else{
+                } else {
                     VisualTransformation.None
-                                                         },
-
+                },
                 enabled = enabled,
                 trailingIcon = {
                     if (password) {
@@ -218,6 +206,170 @@ fun CustomTextField(
         }
     }
 }
+
+//@Composable
+//fun CustomTextField(
+//    value: String,
+//    onValueChange: (String) -> Unit,
+//    label: String,
+//    modifier: Modifier = Modifier,
+//    icon: ImageVector? = null,
+//    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+//    imeAction: ImeAction = ImeAction.Done,
+//    enabled: Boolean = true,
+//    shape: Shape = RoundedCornerShape(20.dp),
+//    borderColor: Color = Color(0xFFB0BEC5),
+//    successColor: Color = Color(0xFF4CAF50),
+//    errorColor: Color = Color(0xFFF44336),
+//    validationRegex: ValidationRegex = ValidationRegex.AllCharacters,
+//    password: Boolean = false,
+//    errorMessage: String = "Invalid input",
+//    onNextClick: () -> Unit,
+//    countryCodes: List<String> = listOf("+58", "+1", "+34", "+44", "+52", "+91"),
+//    showCountryCode: Boolean = false,
+//) {
+//    var isPasswordVisible by remember { mutableStateOf(false) }
+//    var textFieldState by remember { mutableStateOf(TextFieldState.Default) }
+//    var displayErrorMessage by remember { mutableStateOf(false) }
+//    var selectedCountryCode by remember { mutableStateOf("+58") } // Default is +58
+//    var expanded by remember { mutableStateOf(false) }
+//
+//    fun validateInput(fullText: String): Boolean {
+//        return validationRegex.pattern.matches(fullText)
+//    }
+//
+//    Column(modifier = modifier.fillMaxWidth()) {
+//        Row(
+//            modifier = Modifier.fillMaxWidth(),
+//            verticalAlignment = Alignment.CenterVertically
+//        ) {
+//            // Show dropdown only if showCountryCode is true
+//            if (showCountryCode) {
+//                Box {
+//                    OutlinedButton(
+//                        onClick = { expanded = true },
+//                        shape = RoundedCornerShape(12.dp),
+//                        border = BorderStroke(1.dp, borderColor),
+//                        modifier = Modifier.padding(end = 8.dp).height(48.dp)
+//                    ) {
+//                        Text(text = selectedCountryCode, fontSize = 14.sp)
+//                        Icon(
+//                            imageVector = Icons.Default.ArrowDropDown,
+//                            contentDescription = null,
+//                            tint = Color.Gray
+//                        )
+//                    }
+//
+//                    DropdownMenu(
+//                        expanded = expanded,
+//                        onDismissRequest = { expanded = false }
+//                    ) {
+//                        countryCodes.forEach { code ->
+//                            DropdownMenuItem(onClick = {
+//                                selectedCountryCode = code
+//                                expanded = false
+//                            }) {
+//                                Text(text = code, fontSize = 14.sp)
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//
+//            OutlinedTextField(
+//                value = value.removePrefix("$selectedCountryCode ").trimStart(), // Only display the phone number part
+//                onValueChange = { input ->
+//                    // Clean the input to ensure the country code isn't added multiple times
+//                    val cleanedInput = input.trim() // Remove any extra spaces
+//
+//                    // If the country code exists in the input, remove it
+//                    val phoneNumberPart = if (cleanedInput.startsWith(selectedCountryCode)) {
+//                        cleanedInput.removePrefix("$selectedCountryCode ").trimStart()
+//                    } else {
+//                        cleanedInput
+//                    }
+//
+//                    // Reconstruct the full value with the country code
+//                    val formattedValue = if (showCountryCode) {
+//                        "$selectedCountryCode $phoneNumberPart".trim()
+//                    } else {
+//                        phoneNumberPart
+//                    }
+//
+//                    // Update the full value including the country code
+//                    onValueChange(if (showCountryCode) formattedValue else input)
+//
+//                    // Validation logic
+//                    textFieldState = if (validateInput(if (showCountryCode) formattedValue else input)) {
+//                        displayErrorMessage = false
+//                        if (showCountryCode){
+//                            if (phoneNumberPart.isNotEmpty()) TextFieldState.Success else TextFieldState.Default
+//                        }else{
+//                            TextFieldState.Success
+//                        }
+//
+//                    } else {
+//                        displayErrorMessage = true
+//                        TextFieldState.Error
+//                    }
+//                },
+//                label = { Text(text = label, fontSize = 12.sp, color = Color.Gray) },
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .height(56.dp)
+//                    .background(Color.Transparent, shape),
+//                shape = shape,
+//
+//                colors = TextFieldDefaults.outlinedTextFieldColors(
+//                    backgroundColor = Color.White,
+//                    focusedBorderColor = when (textFieldState) {
+//                        TextFieldState.Success -> successColor
+//                        TextFieldState.Error -> errorColor
+//                        else -> borderColor
+//                    },
+//                    unfocusedBorderColor = borderColor,
+//                    cursorColor = MaterialTheme.colors.primary,
+//                    textColor = Color.Black
+//                ),
+//                keyboardOptions = keyboardOptions.copy(imeAction = imeAction),
+//                keyboardActions = KeyboardActions(
+//                    onNext = {
+//                        onNextClick()
+//                    }
+//                ),
+//                visualTransformation = if (password){
+//                    if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation()
+//                                                    }else{
+//                    VisualTransformation.None
+//                                                         },
+//
+//                enabled = enabled,
+//                trailingIcon = {
+//                    if (password) {
+//                        IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
+//                            Icon(
+//                                imageVector = if (isPasswordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+//                                contentDescription = if (isPasswordVisible) "Hide password" else "Show password",
+//                                tint = Color.Gray
+//                            )
+//                        }
+//                    }
+//                }
+//            )
+//        }
+//
+//        if (displayErrorMessage) {
+//            Text(
+//                text = errorMessage,
+//                color = errorColor,
+//                fontSize = 12.sp,
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(start = 16.dp, top = 4.dp)
+//            )
+//        }
+//    }
+//}
 
 //@Composable
 //fun CustomTextField(

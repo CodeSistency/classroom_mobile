@@ -33,13 +33,13 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.classroom.R
 import com.example.classroom.common.CustomDialog
+import com.example.classroom.common.composables.cardWrapper.CardWrapper
 import com.example.classroom.domain.model.entity.LocalActivities
 import com.example.classroom.domain.model.entity.LocalStudents
 import com.example.classroom.domain.model.entity.LocalUser
 import com.example.classroom.presentation.navigation.Destination
 import com.example.classroom.presentation.theme.Azul2
 import com.example.classroom.presentation.theme.PaddingCustom
-
 @Composable
 fun CardStudent(
     student: LocalStudents,
@@ -48,65 +48,60 @@ fun CardStudent(
     action: () -> Unit,
     courseId: String,
     navController: NavController,
-){
-    val shape = RoundedCornerShape(PaddingCustom.MEDIUM.size)
+) {
     var isDeleteOpen by remember { mutableStateOf(false) }
-    Box(modifier = Modifier){
-        Box(
-            modifier = Modifier
-                .shadow(8.dp, shape)
-                .background(Color.White, shape)
-                .padding(16.dp)
-                .clickable {
-                    navController.navigate(
-                        "${Destination.STUDENT_EVALUATIONS.screenRoute}?idStudent=${student.idApi}&idCourse=${courseId}"
-                    )
-                }
+
+    CardWrapper(
+        modifier = Modifier.clickable {
+            navController.navigate(
+                "${Destination.STUDENT_EVALUATIONS.screenRoute}?idStudent=${student.idApi}&idCourse=${courseId}"
+            )
+        }
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                Arrangement.SpaceBetween
-            ){
-                Column {
-                    Text(
-                        text = student.name + " ${student.lastname}",
-                        style = TextStyle(
-                            color = Color.DarkGray,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-//                            fontFamily = InterTight
-                        )
+            Column {
+                Text(
+                    text = "${student.name} ${student.lastname}",
+                    style = TextStyle(
+                        color = Color.DarkGray,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
                     )
-                    Spacer(modifier = Modifier.height(5.dp))
-                    Text(
-                        text = student.email,
-                        style = TextStyle(
-                            color = Color.DarkGray,
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Bold,
-//                            fontFamily = InterTight
-                        )
+                )
+                Spacer(modifier = Modifier.height(5.dp))
+                Text(
+                    text = student.email,
+                    style = TextStyle(
+                        color = Color.DarkGray,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold,
                     )
-                }
-                IconButton(onClick = {
-                    isDeleteOpen = true
-                }) {
-                    Icon(painterResource(id = R.drawable.ic_cancel),
-                        contentDescription = null,
-                        tint = Color.Gray,
-                        modifier = Modifier.size(35.dp)
-                        )
-                }
+                )
+            }
+
+            IconButton(onClick = { isDeleteOpen = true }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_cancel),
+                    contentDescription = null,
+                    tint = Color.Gray,
+                    modifier = Modifier.size(35.dp)
+                )
             }
         }
-        Box(modifier = Modifier
-            .height(80.dp)
-            .width(5.dp)
-            .background(Azul2, RoundedCornerShape(PaddingCustom.MEDIUM.size))
-            .align(Alignment.CenterStart),)
+
+//        Box(
+//            modifier = Modifier
+//                .height(80.dp)
+//                .width(5.dp)
+//                .background(Azul2, RoundedCornerShape(PaddingCustom.MEDIUM.size))
+//                .align(Alignment.CenterStart)
+//        )
     }
 
-    if (isDeleteOpen){
+    if (isDeleteOpen) {
         CustomDialog(
             message = msgDelete,
             messageBtn = msgDeleteBtn,
@@ -116,6 +111,85 @@ fun CardStudent(
             icon = painterResource(id = R.drawable.ic_person_remove)
         )
     }
-
 }
+
+
+//@Composable
+//fun CardStudent(
+//    student: LocalStudents,
+//    msgDelete: String,
+//    msgDeleteBtn: String,
+//    action: () -> Unit,
+//    courseId: String,
+//    navController: NavController,
+//){
+//    val shape = RoundedCornerShape(PaddingCustom.MEDIUM.size)
+//    var isDeleteOpen by remember { mutableStateOf(false) }
+//    Box(modifier = Modifier){
+//        Box(
+//            modifier = Modifier
+//                .shadow(8.dp, shape)
+//                .background(Color.White, shape)
+//                .padding(16.dp)
+//                .clickable {
+//                    navController.navigate(
+//                        "${Destination.STUDENT_EVALUATIONS.screenRoute}?idStudent=${student.idApi}&idCourse=${courseId}"
+//                    )
+//                }
+//        ) {
+//            Row(
+//                modifier = Modifier.fillMaxWidth(),
+//                Arrangement.SpaceBetween
+//            ){
+//                Column {
+//                    Text(
+//                        text = student.name + " ${student.lastname}",
+//                        style = TextStyle(
+//                            color = Color.DarkGray,
+//                            fontSize = 20.sp,
+//                            fontWeight = FontWeight.Bold,
+////                            fontFamily = InterTight
+//                        )
+//                    )
+//                    Spacer(modifier = Modifier.height(5.dp))
+//                    Text(
+//                        text = student.email,
+//                        style = TextStyle(
+//                            color = Color.DarkGray,
+//                            fontSize = 10.sp,
+//                            fontWeight = FontWeight.Bold,
+////                            fontFamily = InterTight
+//                        )
+//                    )
+//                }
+//                IconButton(onClick = {
+//                    isDeleteOpen = true
+//                }) {
+//                    Icon(painterResource(id = R.drawable.ic_cancel),
+//                        contentDescription = null,
+//                        tint = Color.Gray,
+//                        modifier = Modifier.size(35.dp)
+//                        )
+//                }
+//            }
+//        }
+//        Box(modifier = Modifier
+//            .height(80.dp)
+//            .width(5.dp)
+//            .background(Azul2, RoundedCornerShape(PaddingCustom.MEDIUM.size))
+//            .align(Alignment.CenterStart),)
+//    }
+//
+//    if (isDeleteOpen){
+//        CustomDialog(
+//            message = msgDelete,
+//            messageBtn = msgDeleteBtn,
+//            loading = false,
+//            action = { action() },
+//            dismissDialog = { isDeleteOpen = false },
+//            icon = painterResource(id = R.drawable.ic_person_remove)
+//        )
+//    }
+//
+//}
 

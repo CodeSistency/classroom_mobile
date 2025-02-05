@@ -13,7 +13,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
@@ -42,8 +41,6 @@ import androidx.navigation.NavHostController
 import com.example.classroom.R
 import com.example.classroom.common.composables.customDialogs.SetupCustomDialog
 import com.example.classroom.common.composables.customDialogs.SetupCustomDialogState
-import com.example.classroom.data.remote.dto.courses.CourseRequestDto
-import com.example.classroom.data.remote.dto.login.signUp.SignUpRequestDto
 import com.example.classroom.presentation.navigation.Destination
 import com.example.classroom.presentation.screens.auth.composables.ItemInputField
 import com.example.classroom.presentation.screens.course.CourseViewmodel

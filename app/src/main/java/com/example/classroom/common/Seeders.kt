@@ -48,7 +48,7 @@ class Seeders(
                 gender = Gender.Woman,
                 birthdate = "1990-01-01",
                 phone = "123-456-7890",
-
+                rol = 1
             )
         )
         users.forEach { dao.insertOrUpdateUser(it) }

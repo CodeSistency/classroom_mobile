@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import com.example.classroom.R
+import com.example.classroom.common.composables.cardWrapper.CardWrapper
 import com.example.classroom.domain.model.entity.LocalActivities
 import com.example.classroom.domain.model.entity.Status
 import com.example.classroom.presentation.navigation.Destination
@@ -61,13 +62,13 @@ fun CardActivity(
     viewModel: ActivityViewmodel,
     action: () -> Unit
 ) {
-
     val activities by viewModel.listActivitiesSubmitted.collectAsState()
 
-    val activitySubmitted = activities.firstOrNull { it.activityId == activity.idApi && it.studentId == userId && it.courseId == courseId }
+    val activitySubmitted = activities.firstOrNull {
+        it.activityId == activity.idApi && it.studentId == userId && it.courseId == courseId
+    }
 
-    val shape = RoundedCornerShape(PaddingCustom.MEDIUM.size)
-    var isSendActivityOpen by remember { mutableStateOf(false) }
+    val isSendActivityOpen = remember { mutableStateOf(false) }
 
     // Date comparison
     val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
@@ -75,114 +76,227 @@ fun CardActivity(
     val endDate = dateFormatter.parse(activity.endDate) ?: currentDate
     val isDatePast = endDate.before(currentDate)
 
-
-    Box(modifier = Modifier) {
-        Box(
-            modifier = Modifier
-                .shadow(8.dp, shape)
-                .background(Color.White, shape)
-                .padding(16.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column {
-                    Text(
-                        text = activity.title,
-                        style = TextStyle(
-                            color = Color.DarkGray,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                        ),
-                        modifier = Modifier.fillMaxWidth(0.70f)
+    CardWrapper(
+        modifier = Modifier.clickable {
+            if (!isDatePast) {
+                if (activity.isQuizz) {
+                    navController.navigate(
+                        "${Destination.ANSWER_QUIZZ.screenRoute}?quizzId=${activity.quizzId}"
                     )
-                    Spacer(modifier = Modifier.height(5.dp))
-
-                    if (isDatePast) {
-                        Text(
-                            text = "La fecha ya pasó",
-                            style = TextStyle(
-                                color = Color.DarkGray,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold,
-                            )
-                        )
-                    } else {
-                        Column {
-                            Text(
-                                text = "Inicio: ${activity.startDate} - ${activity.endDate}",
-                                style = TextStyle(
-                                    color = Color.DarkGray,
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            )
-//                            Spacer(modifier = Modifier.height(4.dp))
-//                            Text(
-//                                text = "Fecha de finalización: ${activity.endDate}",
-//                                style = TextStyle(
-//                                    color = Color.DarkGray,
-//                                    fontSize = 12.sp,
-//                                    fontWeight = FontWeight.Bold,
-//                                )
-//                            )
-                        }
-                    }
-
-
-                }
-
-                // Disable interaction if the date has passed
-                if (!isDatePast) {
-                    IconButton(onClick = {
-                        if (activity.isQuizz) {
-                            navController.navigate(
-                                "${Destination.ANSWER_QUIZZ.screenRoute}?quizzId=${activity.quizzId}"
-                            )
-                        } else {
-                            Log.e("user student id", userId.toString())
-                            navController.navigate(
-                                "${Destination.STUDENT_UPLOAD_EVALUATION.screenRoute}?idStudent=$userId&idActivity=${activity.idApi}&idCourse=$courseId"
-                            )
-                        }
-                    }) {
-                        Icon(
-                            Icons.Default.Send,
-                            contentDescription = null,
-                            tint = Color.Gray,
-                            modifier = Modifier.size(35.dp)
-                        )
-                    }
                 } else {
-                    if (activitySubmitted != null){
-                        Row(modifier = Modifier) {
-                            Text(text = "Entregada${if(activitySubmitted.grade > 0) ": ${activitySubmitted.grade}" else ""} ")
-                        }
-                    }else{
-                        Text(text = "No entregada")
-
-                    }
+                    navController.navigate(
+                        "${Destination.STUDENT_UPLOAD_EVALUATION.screenRoute}?idStudent=$userId&idActivity=${activity.idApi}&idCourse=$courseId"
+                    )
                 }
             }
         }
-        Box(
-            modifier = Modifier
-                .height(80.dp)
-                .width(5.dp)
-                .background(Azul2, RoundedCornerShape(PaddingCustom.MEDIUM.size))
-                .align(Alignment.CenterStart)
-        )
-    }
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column {
+                Text(
+                    text = activity.title,
+                    style = TextStyle(
+                        color = Color.DarkGray,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                    ),
+                    modifier = Modifier.fillMaxWidth(0.70f)
+                )
+                Spacer(modifier = Modifier.height(5.dp))
 
-    // Commented-out dialog if needed in the future
-    // if (isSendActivityOpen){
-    //     SendActivityDialog(
-    //         action = { action() },
-    //         onDismissRequest = { isSendActivityOpen = false },
-    //     )
-    // }
+                if (isDatePast) {
+                    Text(
+                        text = "La fecha ya pasó",
+                        style = TextStyle(
+                            color = Color.DarkGray,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    )
+                } else {
+                    Text(
+                        text = "Inicio: ${activity.startDate} - ${activity.endDate}",
+                        style = TextStyle(
+                            color = Color.DarkGray,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+                }
+            }
+
+            if (isDatePast) {
+                if (activitySubmitted != null) {
+                    Text(
+                        text = "Entregada${if (activitySubmitted.grade > 0) ": ${activitySubmitted.grade}" else ""}",
+                        style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                    )
+                } else {
+                    Text(
+                        text = "No entregada",
+                        style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                    )
+                }
+            } else {
+                IconButton(onClick = {
+                    if (activity.isQuizz) {
+                        navController.navigate(
+                            "${Destination.ANSWER_QUIZZ.screenRoute}?quizzId=${activity.quizzId}"
+                        )
+                    } else {
+                        navController.navigate(
+                            "${Destination.STUDENT_UPLOAD_EVALUATION.screenRoute}?idStudent=$userId&idActivity=${activity.idApi}&idCourse=$courseId"
+                        )
+                    }
+                }) {
+                    Icon(
+                        Icons.Default.Send,
+                        contentDescription = null,
+                        tint = Color.Gray,
+                        modifier = Modifier.size(35.dp)
+                    )
+                }
+            }
+        }
+    }
 }
+
+
+
+//@Composable
+//fun CardActivity(
+//    activity: LocalActivities,
+//    userId: String,
+//    courseId: String,
+//    navController: NavController,
+//    viewModel: ActivityViewmodel,
+//    action: () -> Unit
+//) {
+//
+//    val activities by viewModel.listActivitiesSubmitted.collectAsState()
+//
+//    val activitySubmitted = activities.firstOrNull { it.activityId == activity.idApi && it.studentId == userId && it.courseId == courseId }
+//
+//    val shape = RoundedCornerShape(PaddingCustom.MEDIUM.size)
+//    var isSendActivityOpen by remember { mutableStateOf(false) }
+//
+//    // Date comparison
+//    val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+//    val currentDate = Date()
+//    val endDate = dateFormatter.parse(activity.endDate) ?: currentDate
+//    val isDatePast = endDate.before(currentDate)
+//
+//
+//    Box(modifier = Modifier) {
+//        Box(
+//            modifier = Modifier
+//                .shadow(8.dp, shape)
+//                .background(Color.White, shape)
+//                .padding(16.dp)
+//        ) {
+//            Row(
+//                modifier = Modifier.fillMaxWidth(),
+//                horizontalArrangement = Arrangement.SpaceBetween
+//            ) {
+//                Column {
+//                    Text(
+//                        text = activity.title,
+//                        style = TextStyle(
+//                            color = Color.DarkGray,
+//                            fontSize = 20.sp,
+//                            fontWeight = FontWeight.Bold,
+//                        ),
+//                        modifier = Modifier.fillMaxWidth(0.70f)
+//                    )
+//                    Spacer(modifier = Modifier.height(5.dp))
+//
+//                    if (isDatePast) {
+//                        Text(
+//                            text = "La fecha ya pasó",
+//                            style = TextStyle(
+//                                color = Color.DarkGray,
+//                                fontSize = 12.sp,
+//                                fontWeight = FontWeight.Bold,
+//                            )
+//                        )
+//                    } else {
+//                        Column {
+//                            Text(
+//                                text = "Inicio: ${activity.startDate} - ${activity.endDate}",
+//                                style = TextStyle(
+//                                    color = Color.DarkGray,
+//                                    fontSize = 12.sp,
+//                                    fontWeight = FontWeight.Bold
+//                                )
+//                            )
+////                            Spacer(modifier = Modifier.height(4.dp))
+////                            Text(
+////                                text = "Fecha de finalización: ${activity.endDate}",
+////                                style = TextStyle(
+////                                    color = Color.DarkGray,
+////                                    fontSize = 12.sp,
+////                                    fontWeight = FontWeight.Bold,
+////                                )
+////                            )
+//                        }
+//                    }
+//
+//
+//                }
+//
+//                // Disable interaction if the date has passed
+//                if (!isDatePast) {
+//                    IconButton(onClick = {
+//                        if (activity.isQuizz) {
+//                            navController.navigate(
+//                                "${Destination.ANSWER_QUIZZ.screenRoute}?quizzId=${activity.quizzId}"
+//                            )
+//                        } else {
+//                            Log.e("user student id", userId.toString())
+//                            navController.navigate(
+//                                "${Destination.STUDENT_UPLOAD_EVALUATION.screenRoute}?idStudent=$userId&idActivity=${activity.idApi}&idCourse=$courseId"
+//                            )
+//                        }
+//                    }) {
+//                        Icon(
+//                            Icons.Default.Send,
+//                            contentDescription = null,
+//                            tint = Color.Gray,
+//                            modifier = Modifier.size(35.dp)
+//                        )
+//                    }
+//                } else {
+//                    if (activitySubmitted != null){
+//                        Row(modifier = Modifier) {
+//                            Text(text = "Entregada${if(activitySubmitted.grade > 0) ": ${activitySubmitted.grade}" else ""} ")
+//                        }
+//                    }else{
+//                        Text(text = "No entregada")
+//
+//                    }
+//                }
+//            }
+//        }
+//        Box(
+//            modifier = Modifier
+//                .height(80.dp)
+//                .width(5.dp)
+//                .background(Azul2, RoundedCornerShape(PaddingCustom.MEDIUM.size))
+//                .align(Alignment.CenterStart)
+//        )
+//    }
+//
+//    // Commented-out dialog if needed in the future
+//    // if (isSendActivityOpen){
+//    //     SendActivityDialog(
+//    //         action = { action() },
+//    //         onDismissRequest = { isSendActivityOpen = false },
+//    //     )
+//    // }
+//}
 
 //@Composable
 //fun CardActivity(

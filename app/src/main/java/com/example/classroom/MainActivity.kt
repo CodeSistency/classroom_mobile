@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
@@ -32,18 +31,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import com.example.classroom.common.animations.gsap.delay
 import com.example.classroom.common.firebase.saveTokenToPreferences
 import com.example.classroom.domain.services.ChatBackgroundService
+import kotlinx.coroutines.launch
 
 
 class MainActivity : ComponentActivity() {
@@ -51,27 +49,29 @@ class MainActivity : ComponentActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splashscreen = installSplashScreen()
+        var keepSplashScreen = true
         super.onCreate(savedInstanceState)
 //        Seeders(lifecycle).seedDatabase(App.appModule.db.appDao, App.appModule.db.quizDao)
         requestNotificationPermission(this)
 
+        splashscreen.setKeepOnScreenCondition { keepSplashScreen }
+        lifecycleScope.launch {
+            delay(5000)
+            keepSplashScreen = false
+        }
         setContent {
-            var showSplash by remember { mutableStateOf(true) }
             val navController = rememberNavController()
             val systemUiController = rememberSystemUiController()
             val isUserLogged by produceState<List<LocalUser?>?>(initialValue = null, producer = {
                 value = App.appModule.db.appDao.getUserInfo()
             })
 
-            LaunchedEffect(Unit) {
-                delay(3000) // Show splash screen for 3 seconds
-                showSplash = false
-            }
+
 
             ClassroomTheme {
-                if (showSplash) {
-                    SplashScreen()
-                } else {
+
+
                     Surface(
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background
@@ -87,7 +87,7 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                     }
-                }
+
             }
         }
 

@@ -2,8 +2,6 @@ package com.example.classroom.presentation.screens.activity.addActivity
 
 import android.annotation.SuppressLint
 import android.os.Build
-import android.util.Log
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -17,7 +15,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
@@ -50,15 +47,11 @@ import com.example.classroom.R
 import com.example.classroom.common.composables.customDialogs.SetupCustomDialogState
 import com.example.classroom.common.composables.datePicker.DatePickerWithDialog
 import com.example.classroom.data.remote.dto.activities.ActivityRequestDto
-import com.example.classroom.data.remote.dto.courses.CourseRequestDto
 import com.example.classroom.presentation.screens.activity.ActivityViewmodel
 import com.example.classroom.presentation.screens.activity.addActivity.states.ActivityFormEvent
 import com.example.classroom.presentation.screens.auth.composables.ItemInputField
-import com.example.classroom.presentation.screens.auth.signUp.SignUpFormEvent
-import com.example.classroom.presentation.screens.course.CourseViewmodel
 import com.example.classroom.presentation.theme.Azul
 import com.example.classroom.presentation.theme.PaddingCustom
-import kotlinx.coroutines.launch
 import proyecto.person.appconsultapopular.common.SnackbarDelegate
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter

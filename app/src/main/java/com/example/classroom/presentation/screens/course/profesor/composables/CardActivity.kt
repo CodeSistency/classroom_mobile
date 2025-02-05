@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.classroom.R
 import com.example.classroom.common.CustomDialog
+import com.example.classroom.common.composables.cardWrapper.CardWrapper
 import com.example.classroom.domain.model.entity.LocalActivities
 import com.example.classroom.domain.model.entity.Status
 import com.example.classroom.presentation.navigation.Destination
@@ -54,114 +55,66 @@ fun CardActivity(
     viewModel: AddActivityViewModel,
     navController: NavController
 ) {
-    val shape = RoundedCornerShape(PaddingCustom.MEDIUM.size)
     var isDeleteOpen by remember { mutableStateOf(false) }
 
     // Format dates and compare
-
     val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     val currentDate = Date()
-    val endDate = if (activity.endDate.isNotBlank()) {
+    val endDate = activity.endDate.takeIf { it.isNotBlank() }?.let {
         try {
-            dateFormatter.parse(activity.endDate) ?: currentDate
+            dateFormatter.parse(it) ?: currentDate
         } catch (e: ParseException) {
-            currentDate // Fallback to current date in case of parsing failure
+            currentDate
         }
-    } else {
-        currentDate // Fallback if the date string is empty
-    }
+    } ?: currentDate
 
-//    val endDate = dateFormatter.parse(activity.endDate) ?: currentDate
     val isDatePast = endDate.before(currentDate)
 
-    Box(modifier = Modifier) {
-        Box(
-            modifier = Modifier
-                .shadow(8.dp, shape)
-                .background(Color.White, shape)
-                .padding(16.dp)
+    CardWrapper {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                Arrangement.SpaceBetween
-            ) {
-                Column {
-                    Text(
-                        text = activity.title,
-                        style = TextStyle(
-                            color = Color.DarkGray,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                        )
+            Column {
+                Text(
+                    text = activity.title,
+                    style = TextStyle(
+                        color = Color.DarkGray,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
                     )
-                    Spacer(modifier = Modifier.height(5.dp))
+                )
+                Spacer(modifier = Modifier.height(5.dp))
 
-                    if (isDatePast) {
-                        Text(
-                            text = "La fecha ya pasó",
-                            style = TextStyle(
-                                color = Color.DarkGray,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                        )
-                    } else {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "Inicio: ${activity.startDate} - ${activity.endDate}",
-                                style = TextStyle(
-                                    color = Color.DarkGray,
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            )
-//                            Spacer(modifier = Modifier.height(4.dp))
-//                            Text(
-//                                text = "${activity.endDate}",
-//                                style = TextStyle(
-//                                    color = Color.DarkGray,
-//                                    fontSize = 12.sp,
-//                                    fontWeight = FontWeight.Bold
-//                                )
-//                            )
-                        }
-                    }
-                }
+                Text(
+                    text = if (isDatePast) "La fecha ya pasó" else "Inicio: ${activity.startDate} - ${activity.endDate}",
+                    style = TextStyle(
+                        color = Color.DarkGray,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+            }
 
-                Row {
-//                    IconButton(onClick = {
-//                        viewModel.fillForm(activity)
-//                        navController.navigate(Destination.REGISTRO_ACTIVITY.screenRoute + "?idCourse=${activity.idCourse}&id=${activity.idApi}")
-//                    }) {
-//                        Icon(
-//                            Icons.Default.Edit,
-//                            contentDescription = null,
-//                            tint = Color.Gray,
-//                            modifier = Modifier.size(25.dp)
-//                        )
-//                    }
-                    IconButton(onClick = {
-                        isDeleteOpen = true
-                    }) {
-                        Icon(
-                            painterResource(id = R.drawable.ic_cancel),
-                            contentDescription = null,
-                            tint = Color.Gray,
-                            modifier = Modifier.size(25.dp)
-                        )
-                    }
+            Row {
+                IconButton(onClick = { isDeleteOpen = true }) {
+                    Icon(
+                        painterResource(id = R.drawable.ic_cancel),
+                        contentDescription = null,
+                        tint = Color.Gray,
+                        modifier = Modifier.size(25.dp)
+                    )
                 }
             }
         }
-        Box(
-            modifier = Modifier
-                .height(80.dp)
-                .width(5.dp)
-                .background(Azul2, RoundedCornerShape(PaddingCustom.MEDIUM.size))
-                .align(Alignment.CenterStart)
-        )
+
+//        Box(
+//            modifier = Modifier
+//                .height(80.dp)
+//                .width(5.dp)
+//                .background(Azul2, RoundedCornerShape(PaddingCustom.MEDIUM.size))
+//                .align(Alignment.CenterStart)
+//        )
     }
 
     if (isDeleteOpen) {
@@ -175,5 +128,137 @@ fun CardActivity(
         )
     }
 }
+
+
+//@Composable
+//fun CardActivity(
+//    activity: LocalActivities,
+//    msgDelete: String,
+//    msgDeleteBtn: String,
+//    action: () -> Unit,
+//    viewModel: AddActivityViewModel,
+//    navController: NavController
+//) {
+//    val shape = RoundedCornerShape(PaddingCustom.MEDIUM.size)
+//    var isDeleteOpen by remember { mutableStateOf(false) }
+//
+//    // Format dates and compare
+//
+//    val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+//    val currentDate = Date()
+//    val endDate = if (activity.endDate.isNotBlank()) {
+//        try {
+//            dateFormatter.parse(activity.endDate) ?: currentDate
+//        } catch (e: ParseException) {
+//            currentDate // Fallback to current date in case of parsing failure
+//        }
+//    } else {
+//        currentDate // Fallback if the date string is empty
+//    }
+//
+////    val endDate = dateFormatter.parse(activity.endDate) ?: currentDate
+//    val isDatePast = endDate.before(currentDate)
+//
+//    Box(modifier = Modifier) {
+//        Box(
+//            modifier = Modifier
+//                .shadow(8.dp, shape)
+//                .background(Color.White, shape)
+//                .padding(16.dp)
+//        ) {
+//            Row(
+//                modifier = Modifier.fillMaxWidth(),
+//                Arrangement.SpaceBetween
+//            ) {
+//                Column {
+//                    Text(
+//                        text = activity.title,
+//                        style = TextStyle(
+//                            color = Color.DarkGray,
+//                            fontSize = 20.sp,
+//                            fontWeight = FontWeight.Bold,
+//                        )
+//                    )
+//                    Spacer(modifier = Modifier.height(5.dp))
+//
+//                    if (isDatePast) {
+//                        Text(
+//                            text = "La fecha ya pasó",
+//                            style = TextStyle(
+//                                color = Color.DarkGray,
+//                                fontSize = 12.sp,
+//                                fontWeight = FontWeight.Bold
+//                            )
+//                        )
+//                    } else {
+//                        Row(
+//                            verticalAlignment = Alignment.CenterVertically
+//                        ) {
+//                            Text(
+//                                text = "Inicio: ${activity.startDate} - ${activity.endDate}",
+//                                style = TextStyle(
+//                                    color = Color.DarkGray,
+//                                    fontSize = 12.sp,
+//                                    fontWeight = FontWeight.Bold
+//                                )
+//                            )
+////                            Spacer(modifier = Modifier.height(4.dp))
+////                            Text(
+////                                text = "${activity.endDate}",
+////                                style = TextStyle(
+////                                    color = Color.DarkGray,
+////                                    fontSize = 12.sp,
+////                                    fontWeight = FontWeight.Bold
+////                                )
+////                            )
+//                        }
+//                    }
+//                }
+//
+//                Row {
+////                    IconButton(onClick = {
+////                        viewModel.fillForm(activity)
+////                        navController.navigate(Destination.REGISTRO_ACTIVITY.screenRoute + "?idCourse=${activity.idCourse}&id=${activity.idApi}")
+////                    }) {
+////                        Icon(
+////                            Icons.Default.Edit,
+////                            contentDescription = null,
+////                            tint = Color.Gray,
+////                            modifier = Modifier.size(25.dp)
+////                        )
+////                    }
+//                    IconButton(onClick = {
+//                        isDeleteOpen = true
+//                    }) {
+//                        Icon(
+//                            painterResource(id = R.drawable.ic_cancel),
+//                            contentDescription = null,
+//                            tint = Color.Gray,
+//                            modifier = Modifier.size(25.dp)
+//                        )
+//                    }
+//                }
+//            }
+//        }
+//        Box(
+//            modifier = Modifier
+//                .height(80.dp)
+//                .width(5.dp)
+//                .background(Azul2, RoundedCornerShape(PaddingCustom.MEDIUM.size))
+//                .align(Alignment.CenterStart)
+//        )
+//    }
+//
+//    if (isDeleteOpen) {
+//        CustomDialog(
+//            message = msgDelete,
+//            messageBtn = msgDeleteBtn,
+//            loading = false,
+//            action = { action() },
+//            dismissDialog = { isDeleteOpen = false },
+//            icon = painterResource(id = R.drawable.ic_cancel)
+//        )
+//    }
+//}
 
 
