@@ -159,7 +159,7 @@ fun FileUploadComponent(
                     backgroundColor = Azul2
                 )
             ) {
-                Text("Limpiar")
+                Text("Limpiar", color = Color.White)
             }
         }
     }

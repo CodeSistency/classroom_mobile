@@ -29,6 +29,10 @@ class SubmissionsRepositoryImpl(
         return dao.getSubmissionsForStudentByCourse(studentId, courseId)
     }
 
+    override suspend fun getAllSubmissions(): Flow<List<LocalActivitySubmission>> {
+        return dao.getAllSubmissions()
+    }
+
     override suspend fun addSubmissionsWithoutDuplicates(submissions: List<LocalActivitySubmission>) {
         return dao.addSubmissionsWithoutDuplicates(submissions)
     }

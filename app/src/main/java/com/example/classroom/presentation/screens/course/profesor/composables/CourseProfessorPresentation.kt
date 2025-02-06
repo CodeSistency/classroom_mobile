@@ -75,6 +75,7 @@ import com.example.classroom.presentation.theme.Azul3
 import com.example.classroom.presentation.theme.AzulGradient
 import com.example.classroom.presentation.theme.Gris
 import com.example.classroom.presentation.theme.PaddingCustom
+import com.example.classroom.presentation.theme.Poppins
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import proyecto.person.appconsultapopular.common.shimmerEffects.ListShimmer
@@ -184,7 +185,9 @@ fun CourseProfessorPresentation(
                             style = TextStyle(
                                 Color.White,
                                 fontSize = 26.sp,
-                                FontWeight.Bold
+                                FontWeight.Bold,
+                                fontFamily = Poppins
+
                             ))
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(text = courseInfo.value.let {
@@ -197,6 +200,7 @@ fun CourseProfessorPresentation(
                             style = TextStyle(
                                 Color.White,
                                 fontSize = 16.sp,
+                                fontFamily = Poppins
                             )
                         )
 

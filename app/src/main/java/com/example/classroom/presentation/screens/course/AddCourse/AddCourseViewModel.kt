@@ -133,7 +133,8 @@ class AddCourseViewModel(
 
     suspend fun executeCourseRequest(id: String?){
 
-        var course = userInfo?.first()?.let {
+       var user = repositoryBundle.loginRepository.getUserInfo()?.first()
+        var course = user?.let {
             CourseRequestDto(
                 description = description.value,
                 title = title.value,

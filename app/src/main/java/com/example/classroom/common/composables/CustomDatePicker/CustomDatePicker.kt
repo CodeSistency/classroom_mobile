@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.classroom.presentation.theme.Azul
+import com.example.classroom.presentation.theme.Azul2
 import com.example.classroom.presentation.theme.AzulGradient
 import java.util.*
 
@@ -60,7 +61,8 @@ fun CustomDatePicker(
             modifier = modifier
                 .fillMaxWidth()
                 .background(
-                    Brush.linearGradient(listOf(color1, color2)),
+                    Color(0xFFBDC6D1),
+//                    Brush.linearGradient(listOf(color1, color2)),
                     shape = RoundedCornerShape(16.dp)
                 )
                 .clickable { isDialogOpen = true }
@@ -75,7 +77,7 @@ fun CustomDatePicker(
             Icon(
                 imageVector = Icons.Default.CalendarToday,
                 contentDescription = null,
-                tint = Color.White,
+                tint = Azul2,
                 modifier = Modifier.align(Alignment.CenterEnd)
             )
         }

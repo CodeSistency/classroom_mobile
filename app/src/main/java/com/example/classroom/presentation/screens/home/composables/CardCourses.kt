@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -36,6 +37,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.example.classroom.R
 import com.example.classroom.common.CustomDialog
@@ -63,19 +65,19 @@ fun CardCourses(
 
     Box(modifier = Modifier.fillMaxWidth()) {  // Wrap everything inside a Box
         // Colored Indicator on the Left
-        Box(
-            modifier = Modifier
-                .height(80.dp)
-                .width(5.dp)
-                .background(Azul2, RoundedCornerShape(PaddingCustom.MEDIUM.size))
-                .align(Alignment.CenterStart)  // Now it works inside this Box
-        )
+//        Box(
+//            modifier = Modifier
+//                .height(80.dp)
+//                .width(5.dp)
+//                .background(Azul2, RoundedCornerShape(PaddingCustom.MEDIUM.size))
+//                .align(Alignment.CenterStart)  // Now it works inside this Box
+//        )
 
         // The CardWrapper containing course information
         CardWrapper(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 8.dp) // Adds a small gap from the colored indicator
+//                .padding(start = 8.dp) // Adds a small gap from the colored indicator
                 .clickable {
                     navController.navigate("${Destination.COURSES.screenRoute}?id=${course.idApi}&email=${email}&isOwner=${isOwner}")
                 }
@@ -87,69 +89,113 @@ fun CardCourses(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = course.title,
-                        style = TextStyle(
-                            color = Color.DarkGray,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        modifier = Modifier.weight(1f) // Ensures text wraps properly
-                    )
 
-                    if (course.verified) {
-                        Icon(
-                            imageVector = Icons.Default.Verified,
-//                            painter = painterResource(id = R.drawable.ic_verified),
-                            contentDescription = "Verified Course",
-                            tint = Azul2,
-                            modifier = Modifier.size(20.dp)
+
+                    Column {
+                        Text(
+                            text = course.title,
+                            style = TextStyle(
+                                color = Color.DarkGray,
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold
+                            ),
+                            modifier = Modifier.weight(1f) // Ensures text wraps properly
                         )
+
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        // Subject and Section
+                        Text(
+                            text = "${course.subject} - ${course.section}",
+                            style = TextStyle(
+                                color = Color.Gray,
+                                fontSize = 14.sp
+                            )
+                        )
+
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        // Owner Name (if not the owner)
+                        if (!isOwner) {
+                            Text(
+                                text = "Creado por: ${course.ownerName}",
+                                style = TextStyle(
+                                    color = Color.Gray,
+                                    fontSize = 12.sp,
+                                    fontStyle = FontStyle.Italic
+                                )
+                            )
+                        }
+
                     }
-                }
 
-                Spacer(modifier = Modifier.height(4.dp))
 
-                // Subject and Section
-                Text(
-                    text = "${course.subject} - ${course.section}",
-                    style = TextStyle(
-                        color = Color.Gray,
-                        fontSize = 14.sp
-                    )
-                )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        if (isMyCourse) {
+                            IconButton(onClick = { isDeleteOpen = true }) {
+                                Icon(
+                                    painterResource(id = R.drawable.ic_cancel),
+                                    contentDescription = "Delete Course",
+                                    tint = Color.Gray,
+                                    modifier = Modifier.size(28.dp)
+                                )
+                            }
+                        }
 
-                Spacer(modifier = Modifier.height(4.dp))
+                        Spacer(modifier = Modifier.width(2.dp))
 
-                // Owner Name (if not the owner)
-                if (!isOwner) {
-                    Text(
-                        text = "Created by: ${course.ownerName}",
-                        style = TextStyle(
-                            color = Color.Gray,
-                            fontSize = 12.sp,
-                            fontStyle = FontStyle.Italic
-                        )
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Action Row (Delete if it's the user’s course)
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    if (isMyCourse) {
-                        IconButton(onClick = { isDeleteOpen = true }) {
+                        if (course.verified) {
                             Icon(
-                                painterResource(id = R.drawable.ic_cancel),
-                                contentDescription = "Delete Course",
-                                tint = Color.Gray,
-                                modifier = Modifier.size(24.dp)
+                                imageVector = Icons.Default.Verified,
+//                            painter = painterResource(id = R.drawable.ic_verified),
+                                contentDescription = "Verified Course",
+                                tint = Azul2,
+                                modifier = Modifier.size(48.dp)
                             )
                         }
                     }
+//
+//
+//                    Text(
+//                        text = course.title,
+//                        style = TextStyle(
+//                            color = Color.DarkGray,
+//                            fontSize = 20.sp,
+//                            fontWeight = FontWeight.Bold
+//                        ),
+//                        modifier = Modifier.weight(1f) // Ensures text wraps properly
+//                    )
+//
+//                    if (course.verified) {
+//                        Icon(
+//                            imageVector = Icons.Default.Verified,
+////                            painter = painterResource(id = R.drawable.ic_verified),
+//                            contentDescription = "Verified Course",
+//                            tint = Azul2,
+//                            modifier = Modifier.size(20.dp)
+//                        )
+//                    }
+//                }
+//
+//
+//
+//                Spacer(modifier = Modifier.height(8.dp))
+//
+//                // Action Row (Delete if it's the user’s course)
+//                Row(
+//                    modifier = Modifier.fillMaxWidth(),
+//                    horizontalArrangement = Arrangement.End
+//                ) {
+//                    if (isMyCourse) {
+//                        IconButton(onClick = { isDeleteOpen = true }) {
+//                            Icon(
+//                                painterResource(id = R.drawable.ic_cancel),
+//                                contentDescription = "Delete Course",
+//                                tint = Color.Gray,
+//                                modifier = Modifier.size(24.dp)
+//                            )
+//                        }
+//                    }
                 }
             }
         }

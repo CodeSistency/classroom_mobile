@@ -124,13 +124,13 @@ fun AddActivityScreenNew(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 // Logo Image
-                Image(
-                    modifier = Modifier
-                        .size(90.dp)
-                        .padding(8.dp),
-                    painter = painterResource(id = R.drawable.ic_logo),
-                    contentDescription = "logo"
-                )
+//                Image(
+//                    modifier = Modifier
+//                        .size(90.dp)
+//                        .padding(8.dp),
+//                    painter = painterResource(id = R.drawable.ic_logo),
+//                    contentDescription = "logo"
+//                )
 
                 // Form Fields
                 CustomTextField(
