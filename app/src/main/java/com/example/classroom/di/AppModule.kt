@@ -158,7 +158,7 @@ class AppModuleImpl(
 
             install(HttpTimeout) {
                 requestTimeoutMillis = 120000 // 2 minutes
-                connectTimeoutMillis = 60000 // 1 minute
+                connectTimeoutMillis = 6000 // 1 minute
                 socketTimeoutMillis = 120000 // 2 minutes
             }
 

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
@@ -103,28 +104,25 @@ fun SignUpScreenNew(
         secondaryButton = null,
         content = {
             Column(Modifier.fillMaxSize()) {
+
                 Spacer(modifier = Modifier.padding(top = 10.dp))
 
-                // Logo Image
-                LogoImage()
+                LazyColumn {
+                    item {
 
-                // Form Inputs
-                FormInputs(
-                    viewModel = viewModel,
-                    focusManager = focusManager
-                )
+//                        // Logo Image
+//                        LogoImage()
 
-                // Gender Picker
-                CustomSelect(
-                    label = "Género",
-                    options = Gender.values().toList(),
-                    selectedOption = listOf(viewModel.gender.value),
-                    onOptionSelected = { selected ->
-                        if (selected.isNotEmpty()) viewModel.gender.value = selected.first()
-                    },
-                    multiple = false,
-                    optionDisplay = { it.displayName }
-                )
+                        // Form Inputs
+                        FormInputs(
+                            viewModel = viewModel,
+                            focusManager = focusManager
+                        )
+
+
+                    }
+                }
+
             }
         }
     )
@@ -237,6 +235,17 @@ fun FormInputs(
         )
 
         Spacer(modifier = Modifier.height(8.dp))
+        // Gender Picker
+        CustomSelect(
+            label = "Género",
+            options = Gender.values().toList(),
+            selectedOption = listOf(viewModel.gender.value),
+            onOptionSelected = { selected ->
+                if (selected.isNotEmpty()) viewModel.gender.value = selected.first()
+            },
+            multiple = false,
+            optionDisplay = { it.displayName }
+        )
     }
 }
 

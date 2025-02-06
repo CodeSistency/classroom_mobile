@@ -46,7 +46,7 @@ fun CardActivitySubmitted(
 ) {
     val activities by viewModel.listActivitiesFlow.collectAsState()
 
-    val activity = activities.firstOrNull { it.idApi == evaluation.idApi }
+    val activity = activities.firstOrNull { it.idApi == evaluation.activityId }
 
     val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US).apply {
         timeZone = TimeZone.getTimeZone("UTC") // Parse in UTC
@@ -98,13 +98,7 @@ fun CardActivitySubmitted(
                     }
                 }
 
-                Box(
-                    modifier = Modifier
-                        .height(90.dp)
-                        .width(5.dp)
-                        .background(Azul2, RoundedCornerShape(PaddingCustom.MEDIUM.size))
-                        .align(Alignment.CenterStart)
-                )
+
             }
 
         }

@@ -131,6 +131,7 @@ fun AddPostForm(
                 viewModel.validateContent()
             },
             label = "Contenido",
+            singleLine = false,
             errorMessage = viewModel.contentError.value ?: "",
             onNextClick = {
                 focusManager.moveFocus(FocusDirection.Down)

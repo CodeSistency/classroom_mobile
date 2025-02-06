@@ -57,6 +57,7 @@ import com.example.classroom.presentation.theme.Azul3
 import com.example.classroom.presentation.theme.AzulGradient
 import com.example.classroom.presentation.theme.Gris
 import com.example.classroom.presentation.theme.PaddingCustom
+import com.example.classroom.presentation.theme.Poppins
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import proyecto.person.appconsultapopular.common.shimmerEffects.ListShimmer
@@ -134,7 +135,8 @@ fun HomePresentation(viewModel: HomeViewmodel, navController: NavController, add
                             style = TextStyle(
                                 Color.White,
                                 fontSize = 26.sp,
-                                FontWeight.Bold
+                                FontWeight.Bold,
+                                fontFamily = Poppins
                             ))
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(text = userInfo.value.let {
@@ -147,6 +149,8 @@ fun HomePresentation(viewModel: HomeViewmodel, navController: NavController, add
                             style = TextStyle(
                                 Color.White,
                                 fontSize = 16.sp,
+                                fontFamily = Poppins
+
                             )
                         )
                     }
@@ -253,8 +257,10 @@ fun HomePresentation(viewModel: HomeViewmodel, navController: NavController, add
                             }
                             1 -> {
                                 Log.e("Composition", "ListMyCourses Composed")  // Logs when the composable is recomposed
+userInfo.value?.let {
+    ListMyCourses(viewModel= viewModel, scope =  scope, navController = navController, addCourseViewModel = addCourseViewModel, email = it.email, idUser = it.idApi)
 
-                                ListMyCourses(viewModel= viewModel, scope =  scope, navController = navController, addCourseViewModel = addCourseViewModel, email = userInfo.value!!.email, idUser = userInfo.value!!.idApi)
+}
                             }
                         }
                     }

@@ -122,7 +122,7 @@ fun SelectedOptionDialog(
                                     icon = Icons.Default.ArrowForwardIos,
                                     modifier = Modifier.fillMaxWidth())
 
-                            }else if (it.rol == 3){
+                            }else if (it.rol == 1){
 
                                 // Estudiante
 

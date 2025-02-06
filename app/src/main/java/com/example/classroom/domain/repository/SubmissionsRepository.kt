@@ -21,6 +21,10 @@ interface SubmissionsRepository {
 
     suspend fun getSubmissionsForStudentByCourse(studentId: String, courseId: String): Flow<List<LocalActivitySubmission>> // Return as Flow
 
+
+    suspend fun getAllSubmissions(): Flow<List<LocalActivitySubmission>> // Return as Flow
+
+
     suspend fun addSubmissionsWithoutDuplicates(submissions: List<LocalActivitySubmission>)
 
     suspend fun getAllSubmissionsForActivity(activityId: String): Flow<List<LocalActivitySubmission>> // Return as Flow

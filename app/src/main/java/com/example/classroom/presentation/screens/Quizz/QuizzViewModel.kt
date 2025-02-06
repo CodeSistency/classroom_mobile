@@ -320,48 +320,54 @@ class QuizzViewModel(
             }
 
             // Build DTO
-            val dto = AnswerQuizzDto(
-                userId = _userInfo.value?.idApi?.toInt() ?: return@launch,
-                answers = selectedAnswers
-            )
+            val dto = repositoryBundle.loginRepository.getUserInfo().first()?.let {
+                AnswerQuizzDto(
+                    userId = it.idApi.toInt() ?: return@launch,
+                    answers = selectedAnswers
+                )
+            }
 
             // Make remote call
-            answerQuizzUseCase(dto, idQuizz = quizId).onEach { result ->
-                when (result) {
-                    is Resource.Error -> {
-                        _stateAnswerQuizz.value = AnswerQuizzState(error = result.message)
-                    }
-                    is Resource.Loading -> {
-                        _stateAnswerQuizz.value = AnswerQuizzState(isLoading = true)
-                    }
-                    is Resource.Success -> {
-                        val response = result.data
-                        _stateAnswerQuizz.value = AnswerQuizzState(info = response)
+            if (dto != null) {
+                answerQuizzUseCase(dto, idQuizz = quizId).onEach { result ->
+                    when (result) {
+                        is Resource.Error -> {
+                            _stateAnswerQuizz.value = AnswerQuizzState(error = result.message)
+                        }
 
-                        // Optionally save the response locally
-                        response?.data?.let { answer ->
-                            saveAnswerDataToLocalDatabase(answer)
-                            _userInfo.value?.let {
-                                repositoryBundle.submissionsRepository.addOrUpdateSubmission(
-                                    LocalActivitySubmission(
-                                        courseId = answer.quizz.activity.courseId.toString(),
-                                        id = 0,
-                                        documentUrl = null,
-                                        activityId = answer.quizz.activityId.toString(),
-                                        grade = answer.grade.toDouble(),
-                                        studentId = it.idApi,
-                                        comment = "quizz",
-                                        submissionDate = answer.submission.createDate,
-idApi = answer.submission.id.toString()
+                        is Resource.Loading -> {
+                            _stateAnswerQuizz.value = AnswerQuizzState(isLoading = true)
+                        }
+
+                        is Resource.Success -> {
+                            val response = result.data
+                            _stateAnswerQuizz.value = AnswerQuizzState(info = response)
+
+                            // Optionally save the response locally
+                            response?.data?.let { answer ->
+                                saveAnswerDataToLocalDatabase(answer)
+                                _userInfo.value?.let {
+                                    repositoryBundle.submissionsRepository.addOrUpdateSubmission(
+                                        LocalActivitySubmission(
+                                            courseId = answer.quizz.activity.courseId.toString(),
+                                            id = 0,
+                                            documentUrl = null,
+                                            activityId = answer.quizz.activityId.toString(),
+                                            grade = answer.grade.toDouble(),
+                                            studentId = it.idApi,
+                                            comment = "quizz",
+                                            submissionDate = answer.submission.createDate,
+                                            idApi = answer.submission.id.toString()
                                         )
-                                )
+                                    )
+                                }
+
+
                             }
-
-
                         }
                     }
-                }
-            }.launchIn(viewModelScope)
+                }.launchIn(viewModelScope)
+            }
         }
     }
 

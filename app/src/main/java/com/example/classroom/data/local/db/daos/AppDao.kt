@@ -205,6 +205,9 @@ interface AppDao {
     @Query("SELECT * FROM localActivitySubmission_table WHERE student_id = :studentId AND course_id = :courseId")
     fun getSubmissionsForStudentByCourse(studentId: String, courseId: String): Flow<List<LocalActivitySubmission>> // Return as Flow
 
+    @Query("SELECT * FROM localActivitySubmission_table")
+    fun getAllSubmissions(): Flow<List<LocalActivitySubmission>>
+
     @Query(
         "SELECT * FROM localActivitySubmission_table " +
                 "WHERE activity_id = :activityId AND student_id = :studentId"

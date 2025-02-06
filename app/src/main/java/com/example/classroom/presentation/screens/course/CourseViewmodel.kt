@@ -356,10 +356,16 @@ class CourseViewmodel(
     fun getLocalEvaluations(courseId: String, studentId: String) {
         Log.e("submitted", "courseid ${courseId} studentId ${studentId}")
         viewModelScope.launch {
-            repositoryBundle.submissionsRepository.getSubmissionsForStudentByCourse(studentId, courseId).collect {
-                Log.e("evaluaciones", _listActivitiesFlow.value.toString())
-                _listActivitiesSubmittedFlow.value = it
+//            repositoryBundle.submissionsRepository.getSubmissionsForStudentByCourse(studentId, courseId).collect {
+//                Log.e("evaluaciones", it.toString())
+//                _listActivitiesSubmittedFlow.value = it
+//            }
+
+            repositoryBundle.submissionsRepository.getAllSubmissions().collect {
+                Log.e("evaluaciones", it.toString())
+                _listActivitiesSubmittedFlow.value = it.filter { it.studentId == studentId && it.courseId == courseId }
             }
+
 
         }
 //        viewModelScope.launch {

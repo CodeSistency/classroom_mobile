@@ -145,7 +145,7 @@ fun CardPostItem(post: LocalPost, viewModel: PostsViewModel, scope: CoroutineSco
     CardWrapper(
         modifier = Modifier.fillMaxWidth()
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(4.dp)) {
             // Header with author and creation date
             Row(
                 modifier = Modifier.fillMaxWidth(),

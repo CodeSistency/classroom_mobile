@@ -60,6 +60,7 @@ fun CustomTextField(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
+    singleLine: Boolean = true,
     modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
@@ -125,6 +126,7 @@ fun CustomTextField(
 
             OutlinedTextField(
                 value = value.removePrefix("$selectedCountryCode ").trimStart(),
+                singleLine = singleLine,
                 onValueChange = { input ->
                     val cleanedInput = input.trim()
                     val phoneNumberPart = if (cleanedInput.startsWith(selectedCountryCode)) {
