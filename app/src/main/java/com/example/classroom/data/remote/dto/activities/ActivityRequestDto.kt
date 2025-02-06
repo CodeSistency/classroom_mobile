@@ -43,6 +43,8 @@ data class ActivityRequestDto(
     val email: String,
     @SerialName("start_date")
     val startDate: String,
+    @SerialName("ponderacion")
+    val ponderacion: Int,
     @SerialName("end_date")
     val endDate: String,
     @SerialName("status_id")

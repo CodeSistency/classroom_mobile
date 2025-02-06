@@ -7,6 +7,7 @@ import com.example.classroom.data.remote.dto.evaluations.reviewEvaluationDto.Rev
 import com.example.classroom.data.remote.dto.evaluations.sendEvaluationRequestDto.SendEvaluationRequestDto
 import com.example.classroom.data.remote.dto.evaluations.sendEvaluationRequestDto.SendEvaluationResponseDto
 import com.example.classroom.domain.model.entity.LocalActivitySubmission
+import com.example.classroom.domain.model.entity.StudentProgress
 
 import kotlinx.coroutines.flow.Flow
 import okhttp3.Response
@@ -24,12 +25,18 @@ interface SubmissionsRepository {
 
     suspend fun getAllSubmissionsForActivity(activityId: String): Flow<List<LocalActivitySubmission>> // Return as Flow
 
+    fun getTotalPonderation(studentId: String, courseId: String): Flow<Int>
+
+    fun getStudentProgress(studentId: String, courseId: String): Flow<StudentProgress>
+
+
 
     //REMOTE
 
     suspend fun getActivitiesSubmited(courseId: String, userId: String): ResponseGenericAPi<EvaluationsSentResponseDto>
 
     suspend fun submitActivityToServerAndSync(submission: SendEvaluationRequestDto): ResponseGenericAPi<SendEvaluationResponseDto>
+
 
     suspend fun reviewActivityToServerAndSync(review: ReviewEvaluationRequestDto): ResponseGenericAPi<ReviewEvaluationsResponseDto>
 

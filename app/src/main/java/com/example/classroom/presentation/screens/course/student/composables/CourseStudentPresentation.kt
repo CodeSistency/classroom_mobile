@@ -89,6 +89,8 @@ fun CourseStudentPresentation(
     val activitySubmittedInput = courseViewmodel.activitySubmittedInput.collectAsStateWithLifecycle()
 
 
+
+
     LaunchedEffect(key1 = true, block = {
         courseViewmodel.getCourseByIdLocal(id)
         viewModel.getActivitiesByCourse(id)

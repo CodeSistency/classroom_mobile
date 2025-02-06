@@ -16,6 +16,7 @@ import com.example.classroom.domain.model.entity.LocalActivitySubmission
 import com.example.classroom.domain.model.entity.LocalCourses
 import com.example.classroom.domain.model.entity.LocalStudents
 import com.example.classroom.domain.model.entity.LocalUser
+import com.example.classroom.domain.model.entity.StudentPerformance
 import com.example.classroom.domain.model.entity.toCoursesLocal
 import com.example.classroom.domain.use_case.activities.GetActivitiesUseCase
 import com.example.classroom.domain.use_case.courses.GetCoursesByIdUseCase
@@ -37,6 +38,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
@@ -49,6 +51,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import proyecto.person.appconsultapopular.common.Resource
 import timber.log.Timber
@@ -425,6 +428,19 @@ class CourseViewmodel(
                     }
                 }
             }
+        }
+    }
+
+
+    val studentPerformance: StateFlow<StudentPerformance> =
+        getStudentPerformance("student123", "courseABC")
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), StudentPerformance(0.0, 0))
+    fun getStudentPerformance(studentId: String, courseId: String): Flow<StudentPerformance> {
+        return combine(
+            repositoryBundle.submissionsRepository.getStudentProgress(studentId, courseId),
+            repositoryBundle.submissionsRepository.getTotalPonderation(studentId, courseId)
+        ) { progress, totalPonderation ->
+            StudentPerformance(progress.weightedGrade ?: 0.0, totalPonderation ?: 0)
         }
     }
 }

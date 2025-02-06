@@ -26,12 +26,17 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.classroom.common.composables.RetryComponent.RetryComponent
+import com.example.classroom.common.composables.UserProgress.StudentPerformanceEmoji
+import com.example.classroom.common.composables.UserProgress.StudentPerformanceHeatmap
+import com.example.classroom.common.composables.UserProgress.StudentProgressGauge
+import com.example.classroom.common.composables.UserProgress.StudentStackedProgress
 import com.example.classroom.presentation.screens.activity.studentEvaluations.composable.EvaluationItem
 import com.example.classroom.presentation.screens.course.CourseViewmodel
 import kotlinx.coroutines.launch
@@ -45,6 +50,9 @@ fun ListActivitiesSubmitted(
     studentId: String,
     courseId: String
 ) {
+
+    val studentPerformance by viewModel.studentPerformance.collectAsState()
+
     val scope = rememberCoroutineScope()
 
     // Trigger data loading when the screen is first displayed
@@ -52,6 +60,8 @@ fun ListActivitiesSubmitted(
         viewModel.observeLocalEvaluations(courseId, studentId)
 //        viewModel.getActivitiesByStudent(courseId, studentId)
         viewModel.getLocalEvaluations(courseId, studentId)
+
+        viewModel.getStudentPerformance(studentId, courseId)
     }
 
     val uiState = viewModel.stateStudentEvaluations.value
@@ -85,6 +95,17 @@ fun ListActivitiesSubmitted(
                 Log.e("evaluaciones UI", lista.value.toString())
 
 
+                Column {
+
+                    StudentPerformanceEmoji(weightedGrade = studentPerformance.weightedGrade, totalPonderation = studentPerformance.totalPonderation)
+                    Spacer(modifier = Modifier.height(3.dp))
+                    StudentPerformanceHeatmap(weightedGrade = studentPerformance.weightedGrade, totalPonderation = studentPerformance.totalPonderation)
+                    Spacer(modifier = Modifier.height(3.dp))
+                    StudentProgressGauge(weightedGrade = studentPerformance.weightedGrade, totalPonderation = studentPerformance.totalPonderation)
+                    Spacer(modifier = Modifier.height(3.dp))
+                    StudentStackedProgress(weightedGrade = studentPerformance.weightedGrade, totalPonderation = studentPerformance.totalPonderation)
+
+                }
                 if (lista.value.isEmpty()) {
                     Column(
                         modifier = Modifier.fillMaxSize(),

@@ -113,6 +113,8 @@ data class QuizActivityDto(
     val digital: Boolean,
     val post: PostDto? = null, // Added `post` field
     val isQuizz: Boolean,
+    @SerialName("ponderacion")
+    val ponderacion: Int,
     @SerialName("statusId")
     val statusId: Int? = null // Nullable to handle missing values
 )

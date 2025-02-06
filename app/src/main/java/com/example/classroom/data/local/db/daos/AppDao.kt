@@ -13,6 +13,8 @@ import com.example.classroom.domain.model.entity.LocalCourses
 import com.example.classroom.domain.model.entity.LocalPost
 import com.example.classroom.domain.model.entity.LocalStudents
 import com.example.classroom.domain.model.entity.LocalUser
+import com.example.classroom.domain.model.entity.StudentPerformance
+import com.example.classroom.domain.model.entity.StudentProgress
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -216,6 +218,30 @@ interface AppDao {
     // Insert a list of submissions (fallback for batch operations)
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSubmissions(submissions: List<LocalActivitySubmission>)
+
+    @Query("""
+        SELECT SUM(la.grade * (la.ponderacion / 100.0)) as weightedGrade, 
+               SUM(la.ponderacion) as totalPonderation
+        FROM localActivities_table la
+        INNER JOIN localActivitySubmission_table las ON la.idApi = las.activity_id
+        WHERE las.student_id = :studentId AND las.course_id = :courseId
+    """)
+    fun getStudentProgress(studentId: String, courseId: String): Flow<StudentProgress>
+
+    @Query("""
+        SELECT SUM(la.ponderacion) 
+        FROM localActivities_table la
+        INNER JOIN localActivitySubmission_table las ON la.idApi = las.activity_id
+        WHERE las.student_id = :studentId AND las.course_id = :courseId
+    """)
+    fun getTotalPonderation(studentId: String, courseId: String): Flow<Int>
+
+//    @Transaction
+//    suspend fun getStudentPerformance(studentId: String, courseId: String): StudentPerformance {
+//        val progress = getStudentProgress(studentId, courseId) ?: StudentProgress(0.0, 0)
+//        val totalPonderation = getTotalPonderation(studentId, courseId) ?: 0
+//        return StudentPerformance(progress.weightedGrade ?: 0.0, totalPonderation)
+//    }
 
     // Define a transaction for adding non-duplicate submissions
 //    @Transaction

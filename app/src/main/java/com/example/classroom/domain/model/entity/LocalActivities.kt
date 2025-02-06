@@ -8,6 +8,7 @@ import com.example.classroom.data.remote.dto.activities.GetActivitiesResponseDto
 import com.example.classroom.data.remote.dto.activities.GetActivitiesWithQuizzResponseDto
 import com.example.classroom.data.remote.dto.login.signIn.SignInResponseDto
 import com.example.classroom.data.remote.dto.quizz.CreateQuizzResponseDto
+import kotlinx.serialization.SerialName
 
 @Entity("localActivities_table")
 data class LocalActivities(
@@ -19,6 +20,7 @@ data class LocalActivities(
     @ColumnInfo("grade") val grade: Double = 0.0,
     @ColumnInfo("start_date") val startDate: String,
     @ColumnInfo("end_date") val endDate: String,
+    @ColumnInfo("ponderacion") val ponderacion: Int,
     @ColumnInfo("status") val status: Status,
     @ColumnInfo("isQuizz") val isQuizz: Boolean = false,
     @ColumnInfo("quizzId") val quizzId: String? = null,
@@ -61,7 +63,8 @@ fun ActivityResponseDto.toLocal(): LocalActivities {
         grade = data.grade,
         idCourse = data.idCourse.toString(),
         startDate = data.startDate ?: "",
-        status = Status.fromId(data.status)
+        status = Status.fromId(data.status),
+        ponderacion = data.ponderacion
 
     )
 }
@@ -77,6 +80,7 @@ fun GetActivitiesResponseDto.toLocal() : List<LocalActivities>{
             endDate = it.endDate,
             grade = it.grade,
             idCourse = it.idCourse.toString(),
+            ponderacion = it.ponderacion
         )
     }
 }
@@ -92,6 +96,7 @@ fun GetActivitiesWithQuizzResponseDto.toLocal() : List<LocalActivities>{
             endDate = it.endDate,
             grade = it.grade,
             idCourse = it.idCourse.toString(),
+            ponderacion = it.ponderacion
         )
     }
 }
@@ -108,6 +113,7 @@ fun GetActivitiesWithQuizzResponseDto.Activity.toLocalActivity(): LocalActivitie
         quizzId = this.idApi.toString(),
         isQuizz = this.isQuizz,
         status = Status.fromId(this.status),
+        ponderacion = this.ponderacion
     )
 }
 
@@ -124,7 +130,9 @@ fun CreateQuizzResponseDto.toLocalActivities(idCourse: String, startDate: String
         endDate = endDate,
         status = Status.OPEN,
         isQuizz = activity.isQuizz,
-        quizzId = this.data.id.toString()
+        quizzId = this.data.id.toString(),
+        ponderacion = activity.ponderacion
+
     )
 }
 

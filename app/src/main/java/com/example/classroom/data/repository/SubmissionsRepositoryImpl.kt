@@ -9,6 +9,7 @@ import com.example.classroom.data.remote.dto.evaluations.reviewEvaluationDto.Rev
 import com.example.classroom.data.remote.dto.evaluations.sendEvaluationRequestDto.SendEvaluationRequestDto
 import com.example.classroom.data.remote.dto.evaluations.sendEvaluationRequestDto.SendEvaluationResponseDto
 import com.example.classroom.domain.model.entity.LocalActivitySubmission
+import com.example.classroom.domain.model.entity.StudentProgress
 import com.example.classroom.domain.repository.SubmissionsRepository
 import kotlinx.coroutines.flow.Flow
 
@@ -36,6 +37,17 @@ class SubmissionsRepositoryImpl(
 
     override suspend fun getAllSubmissionsForActivity(activityId: String): Flow<List<LocalActivitySubmission>> {
         return dao.getAllSubmissionsForActivity(activityId)
+    }
+
+    override fun getTotalPonderation(studentId: String, courseId: String): Flow<Int> {
+        return dao.getTotalPonderation(studentId, courseId)
+    }
+
+    override fun getStudentProgress(
+        studentId: String,
+        courseId: String
+    ): Flow<StudentProgress> {
+        return dao.getStudentProgress(studentId, courseId)
     }
 
 

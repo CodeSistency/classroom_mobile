@@ -64,6 +64,8 @@ data class GetActivitiesResponseDto(
         val title: String,
         @SerialName("description")
         val description: String?,
+        @SerialName("ponderacion")
+        val ponderacion: Int,
         @SerialName("grade")
         val grade: Double,
         @SerialName("start_date")
@@ -96,6 +98,8 @@ data class GetActivitiesWithQuizzResponseDto(
         val title: String,
         @SerialName("description")
         val description: String?,
+        @SerialName("ponderacion")
+        val ponderacion: Int,
         @SerialName("grade")
         val grade: Double, // Changed to `String` to match `"grade": "0"` in the JSON.
         @SerialName("start_date")

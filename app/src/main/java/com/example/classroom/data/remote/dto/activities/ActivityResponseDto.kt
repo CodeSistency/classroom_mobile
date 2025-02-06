@@ -27,6 +27,8 @@ data class ActivityResponseDto(
         val description: String?,
         @SerialName("grade")
         val grade: Double,
+        @SerialName("ponderacion")
+        val ponderacion: Int,
         @SerialName("start_date")
         val startDate: String?,
         @SerialName("end_date")

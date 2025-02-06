@@ -22,6 +22,16 @@ data class LocalActivitySubmission(
     @ColumnInfo(name = "grade") val grade: Double = 0.0 // Grade given by the professor
 )
 
+
+data class StudentPerformance(
+    val weightedGrade: Double,
+    val totalPonderation: Int
+)
+
+data class StudentProgress(
+    val weightedGrade: Double?,
+    val totalPonderation: Int?
+)
 fun ReviewEvaluationsResponseDto.toActivitySubmission(): LocalActivitySubmission {
     return LocalActivitySubmission(
         activityId = "",
