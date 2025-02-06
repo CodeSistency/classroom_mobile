@@ -226,7 +226,8 @@ fun AddActivityScreen(
                                         endDate = state.endDate,
                                         idCourse = idCourse.toInt(),
                                         grade = state.grade.toDouble(),
-                                        email = email
+                                        email = email,
+                                        ponderacion = 0
                                     )
                                     ))
 

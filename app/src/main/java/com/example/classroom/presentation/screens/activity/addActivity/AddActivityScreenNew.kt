@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHost
@@ -36,6 +37,8 @@ import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.classroom.R
@@ -154,6 +157,28 @@ fun AddActivityScreenNew(
                         focusManager.moveFocus(FocusDirection.Down)
                     }
                 )
+
+                CustomTextField(
+                    value = viewModel.ponderacion.value.toString(),
+                    onValueChange = {
+                        it.toIntOrNull()?.let { num ->
+                            if (num in 1..99){
+                                viewModel.ponderacion.value = num
+
+                            }
+                        }
+                    },
+                    infoMessage = "La ponderacion deber ser menor a 100",
+                    label = "Ponderacion",
+                    onNextClick = {
+                        focusManager.moveFocus(FocusDirection.Down)
+                    },
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Done
+                    ),
+                )
+
 
                 CustomDatePicker(
                     label = "Fecha de Inicio",

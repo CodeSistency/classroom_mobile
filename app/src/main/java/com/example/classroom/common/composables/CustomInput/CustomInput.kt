@@ -66,13 +66,14 @@ fun CustomTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     imeAction: ImeAction = ImeAction.Done,
     enabled: Boolean = true,
-    shape: Shape = RoundedCornerShape(12.dp), // Adjusted to a modern rounded shape
-    borderColor: Color = Color(0xFFBDC6D1), // Neutral gray border color
+    shape: Shape = RoundedCornerShape(12.dp),
+    borderColor: Color = Color(0xFFBDC6D1),
     successColor: Color = Color(0xFF4CAF50),
     errorColor: Color = Color(0xFFF44336),
     validationRegex: ValidationRegex = ValidationRegex.AllCharacters,
     password: Boolean = false,
     errorMessage: String = "Invalid input",
+    infoMessage: String? = null, // New optional info message parameter
     onNextClick: () -> Unit,
     countryCodes: List<String> = listOf("+58", "+1", "+34", "+44", "+52", "+91"),
     showCountryCode: Boolean = false,
@@ -169,7 +170,7 @@ fun CustomTextField(
                         else -> borderColor
                     },
                     unfocusedBorderColor = borderColor,
-                    cursorColor = Color.Black, // Modern black cursor
+                    cursorColor = Color.Black,
                     textColor = Color.Black
                 ),
                 keyboardOptions = keyboardOptions.copy(imeAction = imeAction),
@@ -200,6 +201,18 @@ fun CustomTextField(
             Text(
                 text = errorMessage,
                 color = errorColor,
+                fontSize = 12.sp,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, top = 4.dp)
+            )
+        }
+
+        // Show the infoMessage if available
+        if (infoMessage != null && displayErrorMessage == false) {
+            Text(
+                text = infoMessage,
+                color = Color.Gray,
                 fontSize = 12.sp,
                 modifier = Modifier
                     .fillMaxWidth()

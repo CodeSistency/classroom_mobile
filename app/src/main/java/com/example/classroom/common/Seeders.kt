@@ -122,7 +122,8 @@ class Seeders(
                 grade = 100.0,
                 startDate = "2023-01-01",
                 endDate = "2023-01-10",
-                status = Status.OPEN
+                status = Status.OPEN,
+                ponderacion = 0
             ),
             LocalActivities(
                 idApi = "activity2",
@@ -132,7 +133,8 @@ class Seeders(
                 grade = 100.0,
                 startDate = "2023-02-01",
                 endDate = "2023-02-10",
-                status = Status.OPEN
+                status = Status.OPEN,
+                ponderacion = 0
             )
         )
         activities.forEach { dao.insertOrUpdateActivity(it) }

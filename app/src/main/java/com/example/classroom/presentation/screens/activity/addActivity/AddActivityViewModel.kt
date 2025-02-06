@@ -46,6 +46,7 @@ class AddActivityViewModel(
 
     var title = mutableStateOf("")
     var description = mutableStateOf("")
+    var ponderacion = mutableStateOf(0)
     var grade = mutableDoubleStateOf(0.0)
     var email = mutableStateOf("")
     var startDate = mutableStateOf("")
@@ -55,6 +56,7 @@ class AddActivityViewModel(
     // Estados de validación
     var titleError = mutableStateOf<String?>(null)
     var gradeError = mutableStateOf<String?>(null)
+    var ponderacionError = mutableStateOf<Int?>(null)
     var emailError = mutableStateOf<String?>(null)
     var startDateError = mutableStateOf<String?>(null)
     var endDateError = mutableStateOf<String?>(null)
@@ -68,6 +70,8 @@ class AddActivityViewModel(
                 startDateError.value == null &&
                 endDateError.value == null &&
                 statusError.value == null &&
+                ponderacionError.value == null &&
+
                 title.value.isNotBlank() &&
                 grade.value >= 0 &&
 //                email.value.isNotBlank() &&
@@ -93,6 +97,10 @@ class AddActivityViewModel(
         startDateError.value = if (startDate.value.isBlank()) "La fecha de inicio es obligatoria" else null
     }
 
+    fun validatePonderacion() {
+        titleError.value = if (ponderacion.value < 0) "Es obligatorio ponderacion" else null
+    }
+
     fun validateEndDate() {
         endDateError.value = if (endDate.value.isBlank()) "La fecha de finalización es obligatoria" else null
     }
@@ -105,6 +113,8 @@ class AddActivityViewModel(
         title.value = activity.title
         description.value = activity.description ?: ""
         grade.value = activity.grade
+        ponderacion.value = activity.ponderacion
+
         startDate.value = activity.startDate
         endDate.value = activity.endDate
         status.value = activity.status
@@ -113,6 +123,7 @@ class AddActivityViewModel(
         title.value = ""
         description.value = ""
         grade.value = 0.0
+        ponderacion.value = 0
         email.value = ""
         startDate.value = ""
         endDate.value = ""
@@ -132,7 +143,9 @@ class AddActivityViewModel(
                 email = it.email,
                 startDate = startDate.value,
                 endDate = endDate.value,
-                statusId = status.value.id
+                statusId = status.value.id,
+                ponderacion = ponderacion.value
+
             )
         }
 
