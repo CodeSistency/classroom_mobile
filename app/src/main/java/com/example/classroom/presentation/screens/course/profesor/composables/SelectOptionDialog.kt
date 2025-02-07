@@ -81,7 +81,7 @@ fun SelectedOptionDialog(
 
                 when(isSelectedOption){
                     OptionsActivity.SELECT_OPTION -> {
-                        Text(text = "Selecciona una opcion",
+                        Text(text = "Selecciona una opción",
                             style = TextStyle(
                                 fontWeight = FontWeight.Normal,
                                 fontSize = 18.sp,

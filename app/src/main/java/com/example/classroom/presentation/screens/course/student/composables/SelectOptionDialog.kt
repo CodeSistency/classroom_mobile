@@ -79,7 +79,7 @@ fun SelectedOptionDialogStudent(
 
                 when(isSelectedOption){
                     Options.NO_SELECTED -> {
-                        Text(text = "Selecciona una opcion",
+                        Text(text = "Selecciona una opción",
                             style = TextStyle(
                                 fontWeight = FontWeight.Normal,
                                 fontSize = 18.sp,

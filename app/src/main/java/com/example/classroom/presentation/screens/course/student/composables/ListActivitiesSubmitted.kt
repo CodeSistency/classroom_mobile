@@ -61,7 +61,7 @@ fun ListActivitiesSubmitted(
 //        viewModel.getActivitiesByStudent(courseId, studentId)
         viewModel.getLocalEvaluations(courseId, studentId)
 
-        viewModel.getStudentPerformance(studentId, courseId)
+        viewModel.fetchStudentPerformance(studentId, courseId)
     }
 
     val uiState = viewModel.stateStudentEvaluations.value
@@ -95,17 +95,17 @@ fun ListActivitiesSubmitted(
                 Log.e("evaluaciones UI", lista.value.toString())
 
 
-                Column {
-
-                    StudentPerformanceEmoji(weightedGrade = studentPerformance.weightedGrade, totalPonderation = studentPerformance.totalPonderation)
-                    Spacer(modifier = Modifier.height(3.dp))
-                    StudentPerformanceHeatmap(weightedGrade = studentPerformance.weightedGrade, totalPonderation = studentPerformance.totalPonderation)
-                    Spacer(modifier = Modifier.height(3.dp))
-                    StudentProgressGauge(weightedGrade = studentPerformance.weightedGrade, totalPonderation = studentPerformance.totalPonderation)
-                    Spacer(modifier = Modifier.height(3.dp))
-                    StudentStackedProgress(weightedGrade = studentPerformance.weightedGrade, totalPonderation = studentPerformance.totalPonderation)
-
-                }
+//                Column {
+//
+//                    StudentPerformanceEmoji(weightedGrade = studentPerformance.weightedGrade, totalPonderation = studentPerformance.totalPonderation)
+//                    Spacer(modifier = Modifier.height(3.dp))
+//                    StudentPerformanceHeatmap(weightedGrade = studentPerformance.weightedGrade, totalPonderation = studentPerformance.totalPonderation)
+//                    Spacer(modifier = Modifier.height(3.dp))
+//                    StudentProgressGauge(weightedGrade = studentPerformance.weightedGrade, totalPonderation = studentPerformance.totalPonderation)
+//                    Spacer(modifier = Modifier.height(3.dp))
+//                    StudentStackedProgress(weightedGrade = studentPerformance.weightedGrade, totalPonderation = studentPerformance.totalPonderation)
+//
+//                }
                 if (lista.value.isEmpty()) {
                     Column(
                         modifier = Modifier.fillMaxSize(),
@@ -137,6 +137,13 @@ fun ListActivitiesSubmitted(
                         contentPadding = PaddingValues(6.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
+                        item {
+                            Box(modifier = Modifier.padding(horizontal = 3.dp)){
+                                StudentStackedProgress(weightedGrade = studentPerformance.weightedGrade, totalPonderation = studentPerformance.totalPonderation)
+
+                            }
+                            Spacer(modifier = Modifier.height(4.dp))
+                        }
                         items(lista.value) { evaluation ->
                             CardActivitySubmitted(
                                 evaluation = evaluation,

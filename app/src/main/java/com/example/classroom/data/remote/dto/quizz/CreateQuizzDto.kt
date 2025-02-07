@@ -6,6 +6,8 @@ import kotlinx.serialization.Serializable
 data class CreateQuizzDto(
     val title: String,                // The title of the quiz
     val description: String,          // The description of the quiz
+    val ponderacion: Int,          // The description of the quiz
+
     val grade: String,                   // The grade associated with the quiz
     val startDate: String,            // The start date of the quiz
     val endDate: String,              // The end date of the quiz

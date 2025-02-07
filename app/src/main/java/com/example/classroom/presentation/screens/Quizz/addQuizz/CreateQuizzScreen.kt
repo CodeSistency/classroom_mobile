@@ -76,149 +76,6 @@ import com.example.classroom.presentation.theme.AzulGradient
 import kotlinx.coroutines.delay
 
 
-//@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
-//@Composable
-//fun CreateQuizzScreen(viewModel: QuizzViewModel, courseId: String, navController: NavController, focusManager: FocusManager) {
-//    var questions by remember { mutableStateOf(mutableListOf<QuestionDto>()) }
-//    val state = viewModel.stateCreateQuizz.collectAsState()
-//    var dialogState: SetupCustomDialogState by remember {
-//        mutableStateOf(SetupCustomDialogState.Default())
-//    }
-//
-//    Scaffold(
-//        topBar = {
-//            Row(
-//                modifier = Modifier
-//                    .background(Azul)
-//                    .fillMaxWidth(),
-//                verticalAlignment = Alignment.CenterVertically
-//            ) {
-//                IconButton(onClick = { navController.popBackStack() }) {
-//                    Icon(
-//                        imageVector = Icons.Default.ArrowBack,
-//                        contentDescription = null,
-//                        tint = Color.White
-//                    )
-//                }
-//                Spacer(modifier = Modifier.width(3.dp))
-//                Text(text = "Crear Quizz", color = Color.White, fontSize = 16.sp)
-//            }
-//        }
-//    ) {
-//        LazyColumn(modifier = Modifier.padding(16.dp)) {
-//
-//            item {
-//                // Title
-//                CustomTextField(
-//                    value = viewModel.title.value,
-//                    onValueChange = { viewModel.title.value = it },
-//                    label = "Título",
-//                    errorMessage = viewModel.titleError.value ?: "",
-//                    onNextClick = { focusManager.moveFocus(FocusDirection.Down) }
-//                )
-//
-//                Spacer(modifier = Modifier.height(8.dp))
-//
-//                // Questions
-//                questions.forEachIndexed { index, question ->
-//                    Text("Pregunta ${index + 1}", style = MaterialTheme.typography.h6)
-//
-//                    // Question text
-//                    CustomTextField(
-//                        value = question.text,
-//                        onValueChange = { newText ->
-//                            questions[index] = question.copy(text = newText)
-//                        },
-//                        label = "Texto de la pregunta",
-//                        errorMessage = if (question.text.isBlank()) "La pregunta no puede estar vacía" else "",
-//                        onNextClick = { focusManager.moveFocus(FocusDirection.Down) }
-//
-//                    )
-//
-//                    // Options
-//                    question.options.forEachIndexed { optIndex, option ->
-//                        Row(verticalAlignment = Alignment.CenterVertically) {
-//                            CustomTextField(
-//                                value = option,
-//                                onValueChange = { newOption ->
-//                                    questions[index].options[optIndex] = newOption
-//                                },
-//                                label = "Opción ${optIndex + 1}",
-//                                errorMessage = if (question.text.isBlank()) "La pregunta no puede estar vacía" else "",
-//                                onNextClick = { focusManager.moveFocus(FocusDirection.Down) }
-//                            )
-//                            Spacer(modifier = Modifier.width(8.dp))
-//                            Checkbox(
-//                                checked = question.answer == optIndex,
-//                                onCheckedChange = {
-//                                    questions[index] = question.copy(answer = optIndex)
-//                                }
-//                            )
-//                            Text("Correcta")
-//                        }
-//                    }
-//
-//                    // Add Option Button
-//                    Button(onClick = {
-//                        if (question.options.size < 4) {
-//                            questions[index].options.add("")
-//                        }
-//                    }) {
-//                        Text("Añadir Opción")
-//                    }
-//
-//                    Spacer(modifier = Modifier.height(16.dp))
-//                }
-//
-//                // Add Question Button
-//                Button(onClick = {
-//                    questions.add(QuestionDto(text = "", options = mutableListOf("", ""), answer = -1))
-//                }) {
-//                    Text("Añadir Pregunta")
-//                }
-//
-//                Spacer(modifier = Modifier.height(16.dp))
-//
-//                // Create Quiz Button
-//                CustomButton(
-//                    text = "Crear Quizz",
-//                    color1 = Azul,
-//                    color2 = AzulGradient,
-//                    style = NavigationButtonStyle.SolidGradient,
-//                    onClick = {
-//                        viewModel.createQuizRemote(idCourse = courseId, questions)
-//                    })
-//            }
-//
-//        }
-//    }
-//
-//    LaunchedEffect(key1 = state.value, block = {
-//        when{
-//            state.value.isLoading -> {
-//                dialogState = SetupCustomDialogState.Loading()
-//            }
-//            state.value.error != null -> {
-//                dialogState = SetupCustomDialogState.Error(state.value.error?.uiMessage)
-//            }
-//
-//            else -> {
-//                if (state.value.info != null){
-//                    dialogState = SetupCustomDialogState.Success(message = "Se ha creado la actividad exitosamente")
-//                    delay(1000)
-//                    navController.popBackStack()
-////                    viewModel.resetForm()
-//                }
-//            }
-//        }
-//    })
-//
-//    SetupCustomDialog(setupCustomDialogState = dialogState, showDialog = dialogState != SetupCustomDialogState.Default()) {
-//        dialogState = SetupCustomDialogState.Default()
-//    }
-//}
-
-
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun CreateQuizzScreen(viewModel: QuizzViewModel, courseId: String, navController: NavController, focusManager: FocusManager) {
@@ -286,6 +143,23 @@ fun CreateQuizzScreen(viewModel: QuizzViewModel, courseId: String, navController
                                 onValueChange = { viewModel.description.value = it },
                                 label = "Descripción del Quizz",
                                 errorMessage = viewModel.descriptionError.value ?: "",
+                                onNextClick = { focusManager.moveFocus(FocusDirection.Down) }
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            CustomTextField(
+                                value = viewModel.ponderacion.value.toString(),
+                                onValueChange = {
+                                    it.toIntOrNull()?.let { num ->
+                                        if (num in 1..99){
+                                            viewModel.ponderacion.value = num
+
+                                        }
+                                    }
+                                },
+                                label = "Ponderación del Quizz",
+                                errorMessage = viewModel.ponderacionError.value ?: "",
                                 onNextClick = { focusManager.moveFocus(FocusDirection.Down) }
                             )
 

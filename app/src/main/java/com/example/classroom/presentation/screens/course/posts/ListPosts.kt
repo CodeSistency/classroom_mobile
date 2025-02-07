@@ -45,6 +45,9 @@ fun ListPosts(viewModel: PostsViewModel, courseId: String, scope: CoroutineScope
     LaunchedEffect(true) {
         viewModel.fetchPosts(courseId)
     }
+    LaunchedEffect(postsState.info) {
+        Log.d("DEBUG", "Updated postsState: ${postsState.info}")
+    }
 
     // Pull-to-refresh state linked to isLoading
     val pullRefreshState = rememberPullRefreshState(
@@ -68,7 +71,7 @@ fun ListPosts(viewModel: PostsViewModel, courseId: String, scope: CoroutineScope
                 ListShimmer(quantity = 10)
             }
             postsState.info != null -> {
-                if (postsState.info!!.isEmpty()) {
+                if (postsState.info?.isEmpty() == true) {
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.Center,
@@ -98,6 +101,31 @@ fun ListPosts(viewModel: PostsViewModel, courseId: String, scope: CoroutineScope
                         }
                     }
                 }
+            }
+            else -> { Log.e("entro en el else", "else")
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+
+                    RetryComponent(mensaje = "No hay publicaciones", onRetryClick = {
+                        scope.launch {
+                            viewModel.getPostsByCourseRemote(courseId)
+                        }
+                    })
+
+//                        Text(text = "No hay publicaciones")
+//                        Spacer(modifier = Modifier.height(10.dp))
+//                        IconButton(onClick = {
+//                            scope.launch {
+//                                viewModel.getPostsByCourseRemote(courseId)
+//                            }
+//                        }) {
+//                            Icon(Icons.Outlined.Sync, contentDescription = null)
+//                        }
+                }
+
             }
         }
 

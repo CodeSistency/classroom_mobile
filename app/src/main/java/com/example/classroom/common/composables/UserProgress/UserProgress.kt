@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
@@ -25,6 +26,9 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.classroom.presentation.theme.Azul
+import com.example.classroom.presentation.theme.Azul2
+import com.example.classroom.presentation.theme.Poppins
 
 @Composable
 fun StudentProgressGauge(weightedGrade: Double, totalPonderation: Int) {
@@ -151,38 +155,94 @@ fun StudentStackedProgress(weightedGrade: Double, totalPonderation: Int) {
     val animatedGrade = animateFloatAsState(targetValue = (weightedGrade / 100f).coerceIn(0.0, 1.0).toFloat())
     val animatedPonderation = animateFloatAsState(targetValue = (totalPonderation / 100f).coerceIn(0f, 1f))
 
-    Column(Modifier.padding(16.dp)) {
-        Text("Student Performance", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+    Column {
+        Text("Progreso de la materia", fontWeight = FontWeight.Bold, fontSize = 18.sp)
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(6.dp))
 
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(20.dp)
+                .height(18.dp)
                 .clip(RoundedCornerShape(8.dp))
-                .background(Color.Gray.copy(alpha = 0.2f))
+                .background(Color.Gray.copy(alpha = 0.2f)) // Background bar
         ) {
-            Row(
+            // Blue (Total Ponderation)
+            Box(
                 modifier = Modifier
                     .fillMaxWidth(animatedPonderation.value)
-                    .height(20.dp)
-                    .background(Color.Blue.copy(alpha = 0.7f))
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(animatedGrade.value)
-                        .background(Color.Green)
-                )
-            }
+                    .height(18.dp)
+                    .background(Color.Gray.copy(alpha = 0.6f), RoundedCornerShape(topEnd = 50f, bottomEnd = 50f))
+            )
+
+            // Green (Weighted Grade) - This is drawn **on top** of blue
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(animatedGrade.value)
+                    .height(18.dp)
+                    .background(Azul, RoundedCornerShape(topEnd = 50f, bottomEnd = 50f))
+            )
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(6.dp))
 
-        Text(
-            text = "Grade: ${String.format("%.1f", weightedGrade)}%, Completed: ${totalPonderation}%",
-            fontSize = 14.sp,
-            color = Color.Gray
-        )
+        // Inline Legend
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(text = "Promedio ${String.format("%.1f", weightedGrade)}%", fontSize = 12.sp, color = Color.DarkGray)
+            Spacer(modifier = Modifier.width(4.dp))
+            Box(modifier = Modifier.size(12.dp).background(Azul, shape = CircleShape))
+            Spacer(modifier = Modifier.width(12.dp))
+            Text(text = "Ponderación evaluada: ${totalPonderation}%", fontSize = 12.sp, color = Color.DarkGray)
+            Spacer(modifier = Modifier.width(4.dp))
+            Box(modifier = Modifier.size(12.dp).background(Color.Gray.copy(alpha = 0.6f), shape = CircleShape))
+        }
+
+//        Text(
+//            text = "Nota: ${String.format("%.1f", weightedGrade)}%, Ponderación evaluada: ${totalPonderation}%",
+//            fontSize = 12.sp,
+//            color = Color.Gray
+//        )
     }
 }
+
+
+//@Composable
+//fun StudentStackedProgress(weightedGrade: Double, totalPonderation: Int) {
+//    val animatedGrade = animateFloatAsState(targetValue = (weightedGrade / 100f).coerceIn(0.0, 1.0).toFloat())
+//    val animatedPonderation = animateFloatAsState(targetValue = (totalPonderation / 100f).coerceIn(0f, 1f))
+//
+//    Column() {
+//        Text("Progreso de la materia", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+//
+//        Spacer(modifier = Modifier.height(6.dp))
+//
+//        Box(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .height(18.dp)
+//                .clip(RoundedCornerShape(8.dp))
+//                .background(Color.Gray.copy(alpha = 0.2f))
+//        ) {
+//            Row(
+//                modifier = Modifier
+//                    .fillMaxWidth(animatedPonderation.value)
+//                    .height(18.dp)
+//                    .background(Color.Blue.copy(alpha = 0.7f))
+//            ) {
+//                Box(
+//                    modifier = Modifier
+//                        .fillMaxWidth(animatedGrade.value)
+//                        .background(Color.Green)
+//                )
+//            }
+//        }
+//
+//        Spacer(modifier = Modifier.height(6.dp))
+//
+//        Text(
+//            text = "Nota: ${String.format("%.1f", weightedGrade)}%, Ponderación evaluada: ${totalPonderation}%",
+//            fontSize = 12.sp,
+//            color = Color.Gray
+//        )
+//    }
+//}

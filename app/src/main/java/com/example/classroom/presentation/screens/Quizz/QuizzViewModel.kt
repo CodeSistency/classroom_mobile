@@ -1,6 +1,7 @@
 package com.example.classroom.presentation.screens.Quizz
 
 import android.util.Log
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -151,6 +152,7 @@ class QuizzViewModel(
     // State for form fields
     val title = mutableStateOf("")
     val description = mutableStateOf("")
+    val ponderacion = mutableIntStateOf(0)
     val grade = mutableStateOf("0.0")
     val startDate = mutableStateOf("")
     val endDate = mutableStateOf("")
@@ -162,6 +164,7 @@ class QuizzViewModel(
     // Error states for validation
     val titleError = mutableStateOf<String?>(null)
     val descriptionError = mutableStateOf<String?>(null)
+    val ponderacionError = mutableStateOf<String?>(null)
     val gradeError = mutableStateOf<String?>(null)
     val startDateError = mutableStateOf<String?>(null)
     val endDateError = mutableStateOf<String?>(null)
@@ -196,6 +199,10 @@ class QuizzViewModel(
         emailError.value = if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email.value).matches()) "Invalid email" else null
     }
 
+    fun validatePonderacion() {
+        ponderacionError.value = if (ponderacion.value in 1..99) null else "La ponderacion debe ser enter 1 y 100"
+
+    }
     fun validateStatus() {
         statusError.value = if (status.value == Status.NO_SELECTED) "Debe seleccionar un estado" else null
     }
@@ -444,6 +451,7 @@ class QuizzViewModel(
         viewModelScope.launch {
             // Validation
             validateTitle()
+            validatePonderacion()
             validateDescription()
             validateStartDate()
             validateEndDate()
@@ -451,7 +459,8 @@ class QuizzViewModel(
             // Check if there are form-level errors
             if (listOf(
                     titleError.value, descriptionError.value,
-                    startDateError.value, endDateError.value
+                    startDateError.value, endDateError.value,
+                ponderacionError.value
                 ).any { it != null }
             ) return@launch
 
@@ -472,6 +481,7 @@ class QuizzViewModel(
                     description = description.value,
                     grade = grade.value.toString(), // Default grade to 0 if not provided
                     startDate = startDate.value,
+                    ponderacion = ponderacion.value,
                     endDate = endDate.value,
                     email = it.email,
                     digital = digital.value,

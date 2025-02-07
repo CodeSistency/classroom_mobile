@@ -40,6 +40,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -438,16 +439,36 @@ class CourseViewmodel(
     }
 
 
-    val studentPerformance: StateFlow<StudentPerformance> =
-        getStudentPerformance("student123", "courseABC")
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), StudentPerformance(0.0, 0))
-    fun getStudentPerformance(studentId: String, courseId: String): Flow<StudentPerformance> {
+    private val _studentPerformance = MutableStateFlow(StudentPerformance(0.0, 0))
+    val studentPerformance: StateFlow<StudentPerformance> = _studentPerformance.asStateFlow()//        getStudentPerformance("student123", "courseABC")
+//            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), StudentPerformance(0.0, 0))
+
+    fun fetchStudentPerformance(studentId: String, courseId: String){
+        viewModelScope.launch {
+            getStudentPerformance(studentId, courseId)
+                .collect { performance ->
+                    _studentPerformance.value = performance
+                }
+        }
+    }
+
+        fun getStudentPerformance(studentId: String, courseId: String): Flow<StudentPerformance> {
         return combine(
             repositoryBundle.submissionsRepository.getStudentProgress(studentId, courseId),
             repositoryBundle.submissionsRepository.getTotalPonderation(studentId, courseId)
         ) { progress, totalPonderation ->
-            StudentPerformance(progress.weightedGrade ?: 0.0, totalPonderation ?: 0)
+            val weightedGrade = progress?.weightedGrade ?: 0.0
+            val totalPonderationValue = totalPonderation ?: 1 // Prevent division by zero
+
+            Log.e("StudentPerformance", "Student ID: $studentId, Course ID: $courseId")
+            Log.e("StudentPerformance", "Raw Progress: $progress")
+            Log.e("StudentPerformance", "Raw Total Ponderation: $totalPonderation")
+            Log.e("StudentPerformance", "Computed Weighted Grade: $weightedGrade")
+            Log.e("StudentPerformance", "Computed Total Ponderation: $totalPonderationValue")
+
+            StudentPerformance(weightedGrade, totalPonderationValue)
         }
     }
+
 }
 
