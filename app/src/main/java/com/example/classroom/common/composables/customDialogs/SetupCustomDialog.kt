@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,6 +22,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
+import com.example.classroom.R
 import com.example.classroom.presentation.theme.PaddingCustom
 import com.example.classroom.common.composables.customDialogs.dialogs.ErrorDialog
 import com.example.classroom.common.composables.customDialogs.dialogs.LoadingDialog
@@ -43,20 +50,18 @@ fun SetupCustomDialog(
     setupCustomDialogState: SetupCustomDialogState,
     showDialog: Boolean,
     onDismissRequest: () -> Unit = {},
-    customClick: () -> Unit = {},
     onClick: () -> Unit
 ) {
     if (!showDialog) return
 
     when (setupCustomDialogState) {
-        is SetupCustomDialogState.Default -> {}
         is SetupCustomDialogState.Error -> {
             StyledDialog(
                 title = "Error!",
-                icon = Icons.Default.Error,
+                lottieRes = R.raw.animation_error, // Replace with your Lottie JSON file
                 iconColor = Color.Red,
-                message = setupCustomDialogState.messageDialog ?: "Un error inesperado ha ocurrido.",
-                buttonText = "CERRAR",
+                message = setupCustomDialogState.messageDialog ?: "An unexpected error occurred.",
+                buttonText = "CLOSE",
                 buttonColor = Color.Red,
                 onDismissRequest = onDismissRequest,
                 onClick = onClick
@@ -64,12 +69,12 @@ fun SetupCustomDialog(
         }
         is SetupCustomDialogState.Success -> {
             StyledDialog(
-                title = "Exitoso!",
-                icon = Icons.Default.CheckCircle,
-                iconColor = Exito,
-                message = setupCustomDialogState.messageDialog ?: "Operaciòn completada con exito.",
+                title = "Success!",
+                lottieRes = R.raw.animation_success,
+                iconColor = Color.Green,
+                message = setupCustomDialogState.messageDialog ?: "Operation completed successfully.",
                 buttonText = "OK",
-                buttonColor = Exito,
+                buttonColor = Color.Green,
                 onDismissRequest = onDismissRequest,
                 onClick = onClick
             )
@@ -77,22 +82,77 @@ fun SetupCustomDialog(
         is SetupCustomDialogState.Warning -> {
             StyledDialog(
                 title = "Warning!",
-                icon = Icons.Default.Warning,
-                iconColor = Warning,
-                message = setupCustomDialogState.messageDialog ?: "Por favor se cuidadoso.",
-                buttonText = "ENTENDIDO",
-                buttonColor = Warning,
+                lottieRes = R.raw.animation_warning,
+                iconColor = Color.Yellow,
+                message = setupCustomDialogState.messageDialog ?: "Please be careful.",
+                buttonText = "UNDERSTOOD",
+                buttonColor = Color.Yellow,
                 onDismissRequest = onDismissRequest,
-                secondaryButtonText = "CANCELAR",
-                secondaryClick = customClick,
                 onClick = onClick
             )
         }
         is SetupCustomDialogState.Loading -> {
             LoadingDialog()
         }
+        else -> {}
     }
 }
+
+//@Composable
+//fun SetupCustomDialog(
+//    setupCustomDialogState: SetupCustomDialogState,
+//    showDialog: Boolean,
+//    onDismissRequest: () -> Unit = {},
+//    customClick: () -> Unit = {},
+//    onClick: () -> Unit
+//) {
+//    if (!showDialog) return
+//
+//    when (setupCustomDialogState) {
+//        is SetupCustomDialogState.Default -> {}
+//        is SetupCustomDialogState.Error -> {
+//            StyledDialog(
+//                title = "Error!",
+//                icon = Icons.Default.Error,
+//                iconColor = Color.Red,
+//                message = setupCustomDialogState.messageDialog ?: "Un error inesperado ha ocurrido.",
+//                buttonText = "CERRAR",
+//                buttonColor = Color.Red,
+//                onDismissRequest = onDismissRequest,
+//                onClick = onClick
+//            )
+//        }
+//        is SetupCustomDialogState.Success -> {
+//            StyledDialog(
+//                title = "Exitoso!",
+//                icon = Icons.Default.CheckCircle,
+//                iconColor = Exito,
+//                message = setupCustomDialogState.messageDialog ?: "Operaciòn completada con exito.",
+//                buttonText = "OK",
+//                buttonColor = Exito,
+//                onDismissRequest = onDismissRequest,
+//                onClick = onClick
+//            )
+//        }
+//        is SetupCustomDialogState.Warning -> {
+//            StyledDialog(
+//                title = "Warning!",
+//                icon = Icons.Default.Warning,
+//                iconColor = Warning,
+//                message = setupCustomDialogState.messageDialog ?: "Por favor se cuidadoso.",
+//                buttonText = "ENTENDIDO",
+//                buttonColor = Warning,
+//                onDismissRequest = onDismissRequest,
+//                secondaryButtonText = "CANCELAR",
+//                secondaryClick = customClick,
+//                onClick = onClick
+//            )
+//        }
+//        is SetupCustomDialogState.Loading -> {
+//            LoadingDialog()
+//        }
+//    }
+//}
 //@Composable
 //fun SetupCustomDialog(
 //    setupCustomDialogState: SetupCustomDialogState,
@@ -127,118 +187,186 @@ fun SetupCustomDialog(
 //    }    }
 //}
 
+
 @Composable
 fun StyledDialog(
     title: String,
-    icon: ImageVector,
+    lottieRes: Int, // Lottie Animation Resource
     iconColor: Color,
     message: String,
     buttonText: String,
     buttonColor: Color,
     onDismissRequest: () -> Unit = {},
-    secondaryButtonText: String? = null,
-    secondaryClick: (() -> Unit)? = null,
     onClick: () -> Unit
 ) {
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(lottieRes))
+    val progress by animateLottieCompositionAsState(composition)
+
     Dialog(onDismissRequest = onDismissRequest) {
         Card(
             shape = RoundedCornerShape(16.dp),
-            modifier = Modifier
-                .width(300.dp) // Tamaño fijo del diálogo
-                .wrapContentHeight() // Ajustar la altura según el contenido
+            modifier = Modifier.width(300.dp)
         ) {
             Column(
-//                modifier = Modifier.padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Encabezado
+                // Header
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-
                         .height(40.dp)
-                        .background(
-                            iconColor,
-                            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
-                        ),
-                    contentAlignment = Alignment.CenterStart
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(horizontal = 10.dp)
-                        ) {
-                        Icon(
-                            icon,
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = title,
-                            style = MaterialTheme.typography.h6,
-                            color = Color.White
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Contenedor del mensaje centrado
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f, fill = false) // No ocupar todo el espacio vertical
-                        .padding(vertical = 16.dp), // Espaciado vertical
+                        .background(iconColor, shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = message,
-                        style = MaterialTheme.typography.body1,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(horizontal = 10.dp)
-                    )
+                    Text(text = title, style = MaterialTheme.typography.h6, color = Color.White)
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Botones
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    // Botón secundario (opcional)
-                    if (secondaryButtonText != null && secondaryClick != null) {
-                        OutlinedButton(
-                            onClick = secondaryClick,
-                            modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(50),
-                            border = BorderStroke(1.dp, iconColor)
-                        ) {
-                            Text(
-                                text = secondaryButtonText,
-                                style = TextStyle(color = iconColor)
-                            )
-                        }
-                    }
+                // Lottie Animation
+                LottieAnimation(
+                    composition = composition,
+                    progress = { progress },
+                    modifier = Modifier.size(100.dp)
+                )
 
-                    // Botón principal
-                    Button(
-                        onClick = onClick,
-                        modifier = Modifier.weight(1f).padding(10.dp),
-                        shape = RoundedCornerShape(50),
-                        colors = ButtonDefaults.buttonColors(backgroundColor = buttonColor)
-                    ) {
-                        Text(
-                            text = buttonText,
-                            color = Color.White
-                        )
-                    }
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Message
+                Text(
+                    text = message,
+                    style = MaterialTheme.typography.body1,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 10.dp)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Button
+                Button(
+                    onClick = onClick,
+                    modifier = Modifier.fillMaxWidth().padding(10.dp),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = buttonColor),
+                    shape = RoundedCornerShape(50)
+                ) {
+                    Text(text = buttonText, color = Color.White)
                 }
             }
         }
     }
 }
+//@Composable
+//fun StyledDialog(
+//    title: String,
+//    icon: ImageVector,
+//    iconColor: Color,
+//    message: String,
+//    buttonText: String,
+//    buttonColor: Color,
+//    onDismissRequest: () -> Unit = {},
+//    secondaryButtonText: String? = null,
+//    secondaryClick: (() -> Unit)? = null,
+//    onClick: () -> Unit
+//) {
+//    Dialog(onDismissRequest = onDismissRequest) {
+//        Card(
+//            shape = RoundedCornerShape(16.dp),
+//            modifier = Modifier
+//                .width(300.dp) // Tamaño fijo del diálogo
+//                .wrapContentHeight() // Ajustar la altura según el contenido
+//        ) {
+//            Column(
+////                modifier = Modifier.padding(16.dp),
+//                horizontalAlignment = Alignment.CenterHorizontally
+//            ) {
+//                // Encabezado
+//                Box(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//
+//                        .height(40.dp)
+//                        .background(
+//                            iconColor,
+//                            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+//                        ),
+//                    contentAlignment = Alignment.CenterStart
+//                ) {
+//                    Row(
+//                        verticalAlignment = Alignment.CenterVertically,
+//                        modifier = Modifier.padding(horizontal = 10.dp)
+//                        ) {
+//                        Icon(
+//                            icon,
+//                            contentDescription = null,
+//                            tint = Color.White,
+//                            modifier = Modifier.size(24.dp)
+//                        )
+//                        Spacer(modifier = Modifier.width(8.dp))
+//                        Text(
+//                            text = title,
+//                            style = MaterialTheme.typography.h6,
+//                            color = Color.White
+//                        )
+//                    }
+//                }
+//
+//                Spacer(modifier = Modifier.height(16.dp))
+//
+//                // Contenedor del mensaje centrado
+//                Box(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .weight(1f, fill = false) // No ocupar todo el espacio vertical
+//                        .padding(vertical = 16.dp), // Espaciado vertical
+//                    contentAlignment = Alignment.Center
+//                ) {
+//                    Text(
+//                        text = message,
+//                        style = MaterialTheme.typography.body1,
+//                        textAlign = TextAlign.Center,
+//                        modifier = Modifier.padding(horizontal = 10.dp)
+//                    )
+//                }
+//
+//                Spacer(modifier = Modifier.height(16.dp))
+//
+//                // Botones
+//                Row(
+//                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+//                    modifier = Modifier.fillMaxWidth()
+//                ) {
+//                    // Botón secundario (opcional)
+//                    if (secondaryButtonText != null && secondaryClick != null) {
+//                        OutlinedButton(
+//                            onClick = secondaryClick,
+//                            modifier = Modifier.weight(1f),
+//                            shape = RoundedCornerShape(50),
+//                            border = BorderStroke(1.dp, iconColor)
+//                        ) {
+//                            Text(
+//                                text = secondaryButtonText,
+//                                style = TextStyle(color = iconColor)
+//                            )
+//                        }
+//                    }
+//
+//                    // Botón principal
+//                    Button(
+//                        onClick = onClick,
+//                        modifier = Modifier.weight(1f).padding(10.dp),
+//                        shape = RoundedCornerShape(50),
+//                        colors = ButtonDefaults.buttonColors(backgroundColor = buttonColor)
+//                    ) {
+//                        Text(
+//                            text = buttonText,
+//                            color = Color.White
+//                        )
+//                    }
+//                }
+//            }
+//        }
+//    }
+//}
 
 
 //@Composable
