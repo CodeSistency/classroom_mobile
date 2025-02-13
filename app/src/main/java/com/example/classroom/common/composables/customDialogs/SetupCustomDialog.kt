@@ -60,8 +60,8 @@ fun SetupCustomDialog(
                 title = "Error!",
                 lottieRes = R.raw.animation_error, // Replace with your Lottie JSON file
                 iconColor = Color.Red,
-                message = setupCustomDialogState.messageDialog ?: "An unexpected error occurred.",
-                buttonText = "CLOSE",
+                message = setupCustomDialogState.messageDialog ?: "Ha ocurrido un error inesperado.",
+                buttonText = "Cerror",
                 buttonColor = Color.Red,
                 onDismissRequest = onDismissRequest,
                 onClick = onClick
@@ -69,10 +69,10 @@ fun SetupCustomDialog(
         }
         is SetupCustomDialogState.Success -> {
             StyledDialog(
-                title = "Success!",
+                title = "Exito!",
                 lottieRes = R.raw.animation_success,
                 iconColor = Color.Green,
-                message = setupCustomDialogState.messageDialog ?: "Operation completed successfully.",
+                message = setupCustomDialogState.messageDialog ?: "Operación completada exitosamente.",
                 buttonText = "OK",
                 buttonColor = Color.Green,
                 onDismissRequest = onDismissRequest,
@@ -84,8 +84,8 @@ fun SetupCustomDialog(
                 title = "Warning!",
                 lottieRes = R.raw.animation_warning,
                 iconColor = Color.Yellow,
-                message = setupCustomDialogState.messageDialog ?: "Please be careful.",
-                buttonText = "UNDERSTOOD",
+                message = setupCustomDialogState.messageDialog ?: "Por favor se cuidadoso.",
+                buttonText = "Entendido",
                 buttonColor = Color.Yellow,
                 onDismissRequest = onDismissRequest,
                 onClick = onClick
