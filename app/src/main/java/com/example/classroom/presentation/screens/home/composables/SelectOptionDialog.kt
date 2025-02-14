@@ -203,7 +203,7 @@ fun SelectedOptionDialog(
                                 }
                             },
                             text = "Unirse",
-                            isLoading = state.isLoading,
+//                            isLoading = state.isLoading,
                             style = NavigationButtonStyle.SolidGradient,
                             color1 = Azul,
                             color2 = AzulGradient,
@@ -229,6 +229,8 @@ fun SelectedOptionDialog(
                 else -> {
                     if (state.info != null){
                         dialogState = SetupCustomDialogState.Success(message = "Te has unido exitosamente al curso")
+                        delay(1000)
+                        dismissDialog()
                     }
                 }
             }

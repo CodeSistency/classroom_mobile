@@ -111,11 +111,11 @@ fun HomeScreen(
                 }
             }
         },
-        drawerContent = {
-            NotificationsDrawer(viewmodel, scope, onClose = {
-                scope.launch { drawerState.close() }
-            })
-        }
+//        drawerContent = {
+//            NotificationsDrawer(viewmodel, scope, onClose = {
+//                scope.launch { drawerState.close() }
+//            })
+//        }
     )
 
     if (isDialogOpen){
